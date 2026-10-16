@@ -1,0 +1,16 @@
+{
+  "name": "concepttrace-ai-workspace",
+  "version": "1.0.0",
+  "private": true,
+  "description": "ConceptTrace AI - Learn • Improve • Succeed",
+  "scripts": {
+    "dev": "concurrently -k -p \"[{name}]\" -n \"BACKEND,FRONTEND\" -c \"blue,green\" \"npm run dev:backend\" \"npm run dev:frontend\"",
+    "dev:backend": "npm --prefix backend run dev",
+    "dev:frontend": "npm --prefix frontend run dev",
+    "build": "npm --prefix backend run build && npm --prefix frontend run build",
+    "test": "npm --prefix backend run test"
+  },
+  "devDependencies": {
+    "concurrently": "^8.2.2"
+  }
+}

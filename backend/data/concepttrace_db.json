@@ -1,0 +1,778 @@
+{
+  "profiles": [
+    {
+      "id": "test-user-001",
+      "email": "teststudent@example.com",
+      "full_name": "Test Student",
+      "role": "student",
+      "created_at": "2026-10-16T18:13:18.811Z",
+      "updated_at": "2026-10-16T18:13:18.811Z"
+    },
+    {
+      "id": "test-user-001",
+      "email": "teststudent@example.com",
+      "full_name": "Test Student",
+      "role": "student",
+      "created_at": "2026-10-16T18:13:45.647Z",
+      "updated_at": "2026-10-16T18:13:45.647Z"
+    },
+    {
+      "id": "9655e787-7a5d-48b4-acce-88b049efadff",
+      "email": "student_1792175240476@concepttrace.ai",
+      "full_name": "Sharath Kumar",
+      "role": "student",
+      "created_at": "2026-10-16T18:27:20.804Z",
+      "updated_at": "2026-10-16T18:27:20.804Z"
+    },
+    {
+      "id": "eyJhbGciOiJFUzI1NiIsImtpZCI6IjQzN2M4ODFhLTBlNTEtNGNlYy05YTE1LWM3NmMzNjFjMWI1NCIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJodHRwczovL211a2Roam50Zm11eHVmdWppem5tLnN1cGFiYXNlLmNvL2F1dGgvdjEiLCJzdWIiOiIwNzFjYThlYy0xZGQzLTRlMDktYjkyNy03YWIxODU5NTE1YTgiLCJhdWQiOiJhdXRoZW50aWNhdGVkIiwiZXhwIjoxNzkyMjI5OTAyLCJpYXQiOjE3OTIyMjYzMDIsImVtYWlsIjoic2hhcmF0aGJrMTA5QGdtYWlsLmNvbSIsInBob25lIjoiIiwiYXBwX21ldGFkYXRhIjp7InByb3ZpZGVyIjoiZ29vZ2xlIiwicHJvdmlkZXJzIjpbImdvb2dsZSJdfSwidXNlcl9tZXRhZGF0YSI6eyJhdmF0YXJfdXJsIjoiaHR0cHM6Ly9saDMuZ29vZ2xldXNlcmNvbnRlbnQuY29tL2EvQUNnOG9jTHhwQjJCaTlqYk5wVGcyamZuUjdOY2dTZ05CTGx5VHZZd1VFM0J0QURLV1g1QVpCWHM9czk2LWMiLCJlbWFpbCI6InNoYXJhdGhiazEwOUBnbWFpbC5jb20iLCJlbWFpbF92ZXJpZmllZCI6dHJ1ZSwiZnVsbF9uYW1lIjoiU2hhcmF0aCBCIEsiLCJpc3MiOiJodHRwczovL2FjY291bnRzLmdvb2dsZS5jb20iLCJuYW1lIjoiU2hhcmF0aCBCIEsiLCJwaG9uZV92ZXJpZmllZCI6ZmFsc2UsInBpY3R1cmUiOiJodHRwczovL2xoMy5nb29nbGV1c2VyY29udGVudC5jb20vYS9BQ2c4b2NMeHBCMkJpOWpiTnBUZzJqZm5SN05jZ1NnTkJMbHlUdll3VUUzQnRBREtXWDVBWkJYcz1zOTYtYyIsInByb3ZpZGVyX2lkIjoiMTA1Njc1OTM4NjIxMjI5ODA3OTU1Iiwic3ViIjoiMTA1Njc1OTM4NjIxMjI5ODA3OTU1In0sInJvbGUiOiJhdXRoZW50aWNhdGVkIiwiYWFsIjoiYWFsMSIsImFtciI6W3sibWV0aG9kIjoib2F1dGgiLCJ0aW1lc3RhbXAiOjE3OTIyMjYzMDJ9XSwic2Vzc2lvbl9pZCI6ImM0NzRlNzY2LTRhMWUtNDkwYi1iNjdjLTVmYWE0YjUyY2U5NCIsImlzX2Fub255bW91cyI6ZmFsc2V9.mHnmDuwOTLb0n-xRtvgfk0_lOAXOH8Yl8oUdWX1elOm4cMwUfTpDDAmHHswPH-A85rMR8wZCjNGXSd_3MYJA8Q",
+      "email": "sharathbk109@gmail.com",
+      "full_name": "Sharath B K",
+      "role": "student",
+      "created_at": "2026-10-17T08:53:39.906Z",
+      "updated_at": "2026-10-17T08:53:39.906Z"
+    }
+  ],
+  "education_profiles": [
+    {
+      "user_id": "test-user-001",
+      "board": "CBSE",
+      "class_level": 10,
+      "academic_year": "2026-27",
+      "preferred_language": "English",
+      "onboarding_completed": true,
+      "updated_at": "2026-10-16T18:13:45.651Z"
+    },
+    {
+      "user_id": "9655e787-7a5d-48b4-acce-88b049efadff",
+      "board": "CBSE",
+      "class_level": 10,
+      "academic_year": "2026-27",
+      "preferred_language": "English",
+      "onboarding_completed": true,
+      "updated_at": "2026-10-16T18:27:20.823Z"
+    }
+  ],
+  "student_subjects": [
+    {
+      "id": "859936e3-f616-468d-80f6-6781f25dd65d",
+      "user_id": "test-user-001",
+      "subject_name": "Mathematics",
+      "created_at": "2026-10-16T18:13:45.653Z"
+    },
+    {
+      "id": "bda21e36-d688-4f67-ab0a-f3b697c6cab0",
+      "user_id": "test-user-001",
+      "subject_name": "Science",
+      "created_at": "2026-10-16T18:13:45.653Z"
+    },
+    {
+      "id": "988b8046-daa2-4590-8072-8788a5c55afc",
+      "user_id": "9655e787-7a5d-48b4-acce-88b049efadff",
+      "subject_name": "Mathematics",
+      "created_at": "2026-10-16T18:27:20.825Z"
+    },
+    {
+      "id": "e906ae5a-e18b-43c0-adc1-594a975264a6",
+      "user_id": "9655e787-7a5d-48b4-acce-88b049efadff",
+      "subject_name": "Science",
+      "created_at": "2026-10-16T18:27:20.825Z"
+    }
+  ],
+  "syllabus_topics": [
+    {
+      "id": "10000001-0000-0000-0000-000000000001",
+      "board": "CBSE",
+      "class_level": 10,
+      "academic_year": "2026-27",
+      "subject": "Mathematics",
+      "chapter": "Real Numbers",
+      "topic": "Fundamental Theorem of Arithmetic",
+      "description": "Prime factorization and proofs of irrationality of square roots.",
+      "source_status": "configured",
+      "created_at": "2026-10-16T18:12:45.269Z"
+    },
+    {
+      "id": "10000001-0000-0000-0000-000000000002",
+      "board": "CBSE",
+      "class_level": 10,
+      "academic_year": "2026-27",
+      "subject": "Mathematics",
+      "chapter": "Polynomials",
+      "topic": "Zeroes of a Polynomial",
+      "description": "Relationship between zeroes and coefficients of quadratic polynomials.",
+      "source_status": "configured",
+      "created_at": "2026-10-16T18:12:45.270Z"
+    },
+    {
+      "id": "10000001-0000-0000-0000-000000000003",
+      "board": "CBSE",
+      "class_level": 10,
+      "academic_year": "2026-27",
+      "subject": "Mathematics",
+      "chapter": "Quadratic Equations",
+      "topic": "Solving by Factorization & Quadratic Formula",
+      "description": "Roots of quadratic equations, discriminant, and nature of roots.",
+      "source_status": "configured",
+      "created_at": "2026-10-16T18:12:45.270Z"
+    },
+    {
+      "id": "10000001-0000-0000-0000-000000000004",
+      "board": "CBSE",
+      "class_level": 10,
+      "academic_year": "2026-27",
+      "subject": "Mathematics",
+      "chapter": "Arithmetic Progressions",
+      "topic": "nth Term and Sum of AP",
+      "description": "Common difference, general term formula, and sum of n terms.",
+      "source_status": "configured",
+      "created_at": "2026-10-16T18:12:45.270Z"
+    },
+    {
+      "id": "10000001-0000-0000-0000-000000000005",
+      "board": "CBSE",
+      "class_level": 10,
+      "academic_year": "2026-27",
+      "subject": "Mathematics",
+      "chapter": "Trigonometry",
+      "topic": "Trigonometric Ratios & Identities",
+      "description": "Values of trigonometric ratios, sin^2 + cos^2 = 1.",
+      "source_status": "configured",
+      "created_at": "2026-10-16T18:12:45.270Z"
+    },
+    {
+      "id": "10000001-0000-0000-0000-000000000006",
+      "board": "CBSE",
+      "class_level": 10,
+      "academic_year": "2026-27",
+      "subject": "Science",
+      "chapter": "Chemical Reactions and Equations",
+      "topic": "Balancing Chemical Equations",
+      "description": "Types of chemical reactions: combination, decomposition, displacement, redox.",
+      "source_status": "configured",
+      "created_at": "2026-10-16T18:12:45.270Z"
+    },
+    {
+      "id": "10000001-0000-0000-0000-000000000007",
+      "board": "CBSE",
+      "class_level": 10,
+      "academic_year": "2026-27",
+      "subject": "Science",
+      "chapter": "Light - Reflection and Refraction",
+      "topic": "Lens Formula & Magnification",
+      "description": "Spherical mirrors, refraction through lenses, power of lens.",
+      "source_status": "configured",
+      "created_at": "2026-10-16T18:12:45.270Z"
+    },
+    {
+      "id": "10000001-0000-0000-0000-000000000008",
+      "board": "CBSE",
+      "class_level": 10,
+      "academic_year": "2026-27",
+      "subject": "Science",
+      "chapter": "Electricity",
+      "topic": "Ohms Law and Resistance in Series & Parallel",
+      "description": "Electric potential, resistivity, combination of resistors, heating effects.",
+      "source_status": "configured",
+      "created_at": "2026-10-16T18:12:45.270Z"
+    },
+    {
+      "id": "10000001-0000-0000-0000-000000000009",
+      "board": "CBSE",
+      "class_level": 11,
+      "academic_year": "2026-27",
+      "subject": "Physics",
+      "chapter": "Kinematics",
+      "topic": "Equations of Motion with Constant Acceleration",
+      "description": "v = u + at, s = ut + 0.5at^2, v^2 = u^2 + 2as, projectile motion.",
+      "source_status": "configured",
+      "created_at": "2026-10-16T18:12:45.270Z"
+    },
+    {
+      "id": "10000001-0000-0000-0000-000000000010",
+      "board": "CBSE",
+      "class_level": 11,
+      "academic_year": "2026-27",
+      "subject": "Physics",
+      "chapter": "Laws of Motion",
+      "topic": "Newtons Laws & Free Body Diagrams",
+      "description": "Inertia, momentum, F=ma, impulse, static and kinetic friction.",
+      "source_status": "configured",
+      "created_at": "2026-10-16T18:12:45.270Z"
+    },
+    {
+      "id": "10000001-0000-0000-0000-000000000011",
+      "board": "CBSE",
+      "class_level": 11,
+      "academic_year": "2026-27",
+      "subject": "Physics",
+      "chapter": "Work, Energy and Power",
+      "topic": "Work-Energy Theorem & Conservation of Energy",
+      "description": "Kinetic energy, potential energy of a spring, power.",
+      "source_status": "configured",
+      "created_at": "2026-10-16T18:12:45.270Z"
+    },
+    {
+      "id": "10000001-0000-0000-0000-000000000012",
+      "board": "CBSE",
+      "class_level": 11,
+      "academic_year": "2026-27",
+      "subject": "Chemistry",
+      "chapter": "Some Basic Concepts of Chemistry",
+      "topic": "Mole Concept & Stoichiometry",
+      "description": "Molar mass, empirical and molecular formulas, limiting reagent.",
+      "source_status": "configured",
+      "created_at": "2026-10-16T18:12:45.270Z"
+    },
+    {
+      "id": "10000001-0000-0000-0000-000000000013",
+      "board": "CBSE",
+      "class_level": 11,
+      "academic_year": "2026-27",
+      "subject": "Chemistry",
+      "chapter": "Structure of Atom",
+      "topic": "Bohrs Model & Quantum Numbers",
+      "description": "Planck quantum theory, de Broglie relation, Heisenberg uncertainty.",
+      "source_status": "configured",
+      "created_at": "2026-10-16T18:12:45.270Z"
+    },
+    {
+      "id": "10000001-0000-0000-0000-000000000015",
+      "board": "CBSE",
+      "class_level": 12,
+      "academic_year": "2026-27",
+      "subject": "Mathematics",
+      "chapter": "Continuity and Differentiability",
+      "topic": "Chain Rule & Derivative of Implicit Functions",
+      "description": "Limits, continuity, differentiability, logarithmic differentiation.",
+      "source_status": "configured",
+      "created_at": "2026-10-16T18:12:45.270Z"
+    },
+    {
+      "id": "10000001-0000-0000-0000-000000000016",
+      "board": "CBSE",
+      "class_level": 12,
+      "academic_year": "2026-27",
+      "subject": "Mathematics",
+      "chapter": "Integrals",
+      "topic": "Definite Integrals & Properties",
+      "description": "Substitution, integration by parts, partial fractions.",
+      "source_status": "configured",
+      "created_at": "2026-10-16T18:12:45.270Z"
+    },
+    {
+      "id": "10000001-0000-0000-0000-000000000017",
+      "board": "CBSE",
+      "class_level": 12,
+      "academic_year": "2026-27",
+      "subject": "Mathematics",
+      "chapter": "Differential Equations",
+      "topic": "Homogeneous & Linear Differential Equations",
+      "description": "Order and degree, general and particular solutions, integrating factor.",
+      "source_status": "configured",
+      "created_at": "2026-10-16T18:12:45.270Z"
+    },
+    {
+      "id": "10000001-0000-0000-0000-000000000018",
+      "board": "CBSE",
+      "class_level": 12,
+      "academic_year": "2026-27",
+      "subject": "Physics",
+      "chapter": "Electric Charges and Fields",
+      "topic": "Gauss Law and Applications",
+      "description": "Coulombs law, electric field lines, electric flux, Gauss theorem.",
+      "source_status": "configured",
+      "created_at": "2026-10-16T18:12:45.270Z"
+    },
+    {
+      "id": "10000001-0000-0000-0000-000000000019",
+      "board": "CBSE",
+      "class_level": 12,
+      "academic_year": "2026-27",
+      "subject": "Physics",
+      "chapter": "Current Electricity",
+      "topic": "Kirchhoffs Rules & Wheatstone Bridge",
+      "description": "Drift velocity, junction rule, loop rule, meter bridge calculations.",
+      "source_status": "configured",
+      "created_at": "2026-10-16T18:12:45.270Z"
+    },
+    {
+      "id": "10000001-0000-0000-0000-000000000020",
+      "board": "CBSE",
+      "class_level": 12,
+      "academic_year": "2026-27",
+      "subject": "Physics",
+      "chapter": "Ray Optics and Optical Instruments",
+      "topic": "Total Internal Reflection & Prism Dispersion",
+      "description": "Refraction at spherical surfaces, lens maker formula, microscope, telescope.",
+      "source_status": "configured",
+      "created_at": "2026-10-16T18:12:45.270Z"
+    }
+  ],
+  "topic_prerequisites": [
+    {
+      "topic_id": "10000001-0000-0000-0000-000000000003",
+      "prerequisite_topic_id": "10000001-0000-0000-0000-000000000002"
+    },
+    {
+      "topic_id": "10000001-0000-0000-0000-000000000010",
+      "prerequisite_topic_id": "10000001-0000-0000-0000-000000000009"
+    },
+    {
+      "topic_id": "10000001-0000-0000-0000-000000000011",
+      "prerequisite_topic_id": "10000001-0000-0000-0000-000000000010"
+    },
+    {
+      "topic_id": "10000001-0000-0000-0000-000000000016",
+      "prerequisite_topic_id": "10000001-0000-0000-0000-000000000015"
+    },
+    {
+      "topic_id": "10000001-0000-0000-0000-000000000017",
+      "prerequisite_topic_id": "10000001-0000-0000-0000-000000000016"
+    },
+    {
+      "topic_id": "10000001-0000-0000-0000-000000000019",
+      "prerequisite_topic_id": "10000001-0000-0000-0000-000000000008"
+    }
+  ],
+  "queries": [
+    {
+      "user_id": "9655e787-7a5d-48b4-acce-88b049efadff",
+      "input_type": "text",
+      "question_text": "Solve 2x + 5 = 15",
+      "extracted_text": "Solve 2x + 5 = 15",
+      "file_path": null,
+      "subject": "Mathematics",
+      "topic_id": null,
+      "chapter": null,
+      "status": "completed",
+      "extraction_confidence": 1,
+      "id": "21c6e9e6-9ec7-4fdd-8f1d-f1fb7e2a78fd",
+      "created_at": "2026-10-16T18:27:20.839Z",
+      "updated_at": "2026-10-16T18:27:20.845Z"
+    }
+  ],
+  "solutions": [
+    {
+      "query_id": "21c6e9e6-9ec7-4fdd-8f1d-f1fb7e2a78fd",
+      "explanation": "Solution for: Solve 2x + 5 = 15",
+      "structured_steps": [
+        {
+          "step_number": 1,
+          "title": "Isolate the variable term",
+          "content": "Given 2x + 5 = 15. Subtract 5 on both sides: 2x = 15 - 5 = 10.",
+          "reason": "Inverse operations eliminate the constant term on the left side of the equation."
+        },
+        {
+          "step_number": 2,
+          "title": "Solve for x by division",
+          "content": "Divide both sides by the coefficient of x (2): x = 10 / 2 = 5.",
+          "reason": "Dividing by the coefficient isolates the variable x to yield its exact root."
+        },
+        {
+          "step_number": 3,
+          "title": "Check and state final answer",
+          "content": "Substitute x = 5 into LHS: 2(5) + 5 = 10 + 5 = 15 (equals RHS). Therefore, the solution is x = 5.",
+          "reason": "Substitution confirms that the calculated value satisfies the original equation."
+        }
+      ],
+      "final_answer": "x = 5",
+      "verification_status": "verified",
+      "verification_method": "Independent symbolic evaluation (mathjs algebra evaluator)",
+      "verification_details": {
+        "details": "Verified by substituting proposed root (5) into LHS (2x + 5) and RHS (15). Evaluated result: LHS = 15, RHS = 15 (difference: 0.000000)."
+      },
+      "concept_analysis": [
+        {
+          "concept": "Fundamental Theorem of Arithmetic",
+          "evidence": "Question explicitly exercises core problem-solving methods from Real Numbers.",
+          "confidence": 0.95
+        },
+        {
+          "concept": "Balance and Equality Operations",
+          "evidence": "Step-by-step transformation utilizes bidirectional equality rules.",
+          "confidence": 0.9
+        }
+      ],
+      "possible_mistakes": [
+        {
+          "mistake": "Sign transposition error",
+          "evidence": "Common student mistake is forgetting to flip signs when moving terms across the equals sign (+ becomes -, - becomes +).",
+          "suggested_correction": "Always explicitly show the operation on both sides of the equation before simplifying."
+        },
+        {
+          "mistake": "Arithmetic division error",
+          "evidence": "Dividing the wrong term or inverted fractions when solving for the final variable.",
+          "suggested_correction": "Check that both sides are divided by the exact coefficient including any negative signs."
+        }
+      ],
+      "prerequisite_concepts": [
+        {
+          "concept": "Basic Arithmetic Operations & Order of Operations (PEMDAS/BODMAS)",
+          "reason": "Required for correct evaluation of compound expressions and fractions."
+        },
+        {
+          "concept": "Integers and Signed Numbers",
+          "reason": "Handling positive and negative values correctly during transposition."
+        }
+      ],
+      "practice_questions": [
+        {
+          "question_text": "What is the value of x if 3x + 9 = 24?",
+          "question_type": "mcq",
+          "options": [
+            "A) x = 5",
+            "B) x = 3",
+            "C) x = 7",
+            "D) x = 15"
+          ],
+          "correct_answer": "A) x = 5",
+          "explanation": "Subtract 9 from 24 to get 15, then divide 15 by 3 to get x = 5.",
+          "topic": "Fundamental Theorem of Arithmetic",
+          "difficulty": "easy"
+        },
+        {
+          "question_text": "Solve for y: 4y - 8 = 16",
+          "question_type": "mcq",
+          "options": [
+            "A) y = 4",
+            "B) y = 6",
+            "C) y = 8",
+            "D) y = 2"
+          ],
+          "correct_answer": "B) y = 6",
+          "explanation": "Add 8 to both sides: 4y = 24. Divide by 4: y = 6.",
+          "topic": "Fundamental Theorem of Arithmetic",
+          "difficulty": "medium"
+        }
+      ],
+      "uncertainty_notes": [
+        "AI provider offline mode: Using verified curriculum reasoning. Add GEMINI_API_KEY for dynamic generative synthesis."
+      ],
+      "model_metadata": {
+        "processed_at": "2026-10-16T18:27:20.843Z"
+      },
+      "id": "ad362ea9-eb5e-47a5-846b-e5bb13b493b8",
+      "created_at": "2026-10-16T18:27:20.843Z"
+    }
+  ],
+  "practice_sessions": [
+    {
+      "user_id": "test-user-001",
+      "subject": "Mathematics",
+      "status": "in_progress",
+      "question_count": 1,
+      "id": "34955425-9588-4a6f-a175-d9b012f6ffc8",
+      "started_at": "2026-10-16T18:13:18.819Z"
+    },
+    {
+      "user_id": "test-user-001",
+      "subject": "Mathematics",
+      "status": "in_progress",
+      "question_count": 1,
+      "id": "f7ccf2f8-8ae1-4e63-8e7a-da1735ce4208",
+      "started_at": "2026-10-16T18:13:45.659Z"
+    },
+    {
+      "user_id": "9655e787-7a5d-48b4-acce-88b049efadff",
+      "subject": "Mathematics",
+      "status": "completed",
+      "question_count": 3,
+      "id": "08ff4210-1459-4a90-8577-d09d16f31b20",
+      "started_at": "2026-10-16T18:27:20.859Z",
+      "completed_at": "2026-10-16T18:27:20.894Z"
+    }
+  ],
+  "practice_questions": [
+    {
+      "session_id": "34955425-9588-4a6f-a175-d9b012f6ffc8",
+      "question_text": "What is 3 + 4?",
+      "question_type": "mcq",
+      "options": [
+        "A) 7",
+        "B) 8",
+        "C) 9",
+        "D) 10"
+      ],
+      "correct_answer": "A) 7",
+      "explanation": "3 + 4 = 7",
+      "difficulty": "easy",
+      "validation_status": "validated",
+      "id": "9f7e8a3e-d757-4f88-a315-858f946108a8",
+      "created_at": "2026-10-16T18:13:18.821Z"
+    },
+    {
+      "session_id": "f7ccf2f8-8ae1-4e63-8e7a-da1735ce4208",
+      "question_text": "What is 3 + 4?",
+      "question_type": "mcq",
+      "options": [
+        "A) 7",
+        "B) 8",
+        "C) 9",
+        "D) 10"
+      ],
+      "correct_answer": "A) 7",
+      "explanation": "3 + 4 = 7",
+      "difficulty": "easy",
+      "validation_status": "validated",
+      "id": "e3da7609-0115-4fa8-9af6-88898357c3e1",
+      "created_at": "2026-10-16T18:13:45.661Z"
+    },
+    {
+      "session_id": "08ff4210-1459-4a90-8577-d09d16f31b20",
+      "question_text": "If f(x) = 2x^2 + 3x - 5, what is f(2)?",
+      "question_type": "mcq",
+      "options": [
+        "A) 9",
+        "B) 7",
+        "C) 11",
+        "D) 5"
+      ],
+      "correct_answer": "A) 9",
+      "explanation": "f(2) = 2(2)^2 + 3(2) - 5 = 2(4) + 6 - 5 = 8 + 6 - 5 = 9.",
+      "difficulty": "medium",
+      "validation_status": "validated",
+      "id": "e3138a49-f0a4-4775-8d22-c8af09ebf55c",
+      "created_at": "2026-10-16T18:27:20.861Z"
+    },
+    {
+      "session_id": "08ff4210-1459-4a90-8577-d09d16f31b20",
+      "question_text": "What is the discriminant of the quadratic equation 2x^2 - 4x + 3 = 0?",
+      "question_type": "mcq",
+      "options": [
+        "A) -8",
+        "B) 8",
+        "C) 16",
+        "D) -16"
+      ],
+      "correct_answer": "A) -8",
+      "explanation": "Discriminant D = b^2 - 4ac = (-4)^2 - 4(2)(3) = 16 - 24 = -8.",
+      "difficulty": "medium",
+      "validation_status": "validated",
+      "id": "6e27a830-710e-4d51-819c-8f0f3771cb2e",
+      "created_at": "2026-10-16T18:27:20.861Z"
+    },
+    {
+      "session_id": "08ff4210-1459-4a90-8577-d09d16f31b20",
+      "question_text": "In an Arithmetic Progression with first term a = 4 and common difference d = 3, what is the 10th term (a_10)?",
+      "question_type": "mcq",
+      "options": [
+        "A) 31",
+        "B) 34",
+        "C) 28",
+        "D) 30"
+      ],
+      "correct_answer": "A) 31",
+      "explanation": "a_n = a + (n - 1)d => a_10 = 4 + (10 - 1)*3 = 4 + 27 = 31.",
+      "difficulty": "medium",
+      "validation_status": "validated",
+      "id": "b39a019b-0c9b-4f88-8d1e-d2917a2b4f33",
+      "created_at": "2026-10-16T18:27:20.861Z"
+    }
+  ],
+  "practice_attempts": [
+    {
+      "user_id": "test-user-001",
+      "session_id": "34955425-9588-4a6f-a175-d9b012f6ffc8",
+      "question_id": "9f7e8a3e-d757-4f88-a315-858f946108a8",
+      "submitted_answer": "A) 7",
+      "is_correct": true,
+      "eligible_for_metrics": true,
+      "feedback": "Correct",
+      "id": "4e57fc19-5cd3-43d2-bd73-11e47a775bcb",
+      "attempted_at": "2026-10-16T18:13:18.822Z"
+    },
+    {
+      "user_id": "test-user-001",
+      "session_id": "f7ccf2f8-8ae1-4e63-8e7a-da1735ce4208",
+      "question_id": "e3da7609-0115-4fa8-9af6-88898357c3e1",
+      "submitted_answer": "A) 7",
+      "is_correct": true,
+      "eligible_for_metrics": true,
+      "feedback": "Correct",
+      "id": "a5e4f7eb-52d8-40d1-8230-5b3ccda1fd8c",
+      "attempted_at": "2026-10-16T18:13:45.663Z"
+    },
+    {
+      "user_id": "9655e787-7a5d-48b4-acce-88b049efadff",
+      "session_id": "08ff4210-1459-4a90-8577-d09d16f31b20",
+      "question_id": "e3138a49-f0a4-4775-8d22-c8af09ebf55c",
+      "submitted_answer": "A",
+      "is_correct": true,
+      "eligible_for_metrics": true,
+      "feedback": "Correct! Excellent concept application.",
+      "id": "7ee31690-4151-46ec-9a31-68aa211189e6",
+      "attempted_at": "2026-10-16T18:27:20.873Z"
+    },
+    {
+      "user_id": "9655e787-7a5d-48b4-acce-88b049efadff",
+      "session_id": "08ff4210-1459-4a90-8577-d09d16f31b20",
+      "question_id": "6e27a830-710e-4d51-819c-8f0f3771cb2e",
+      "submitted_answer": "A",
+      "is_correct": true,
+      "eligible_for_metrics": true,
+      "feedback": "Correct! Excellent concept application.",
+      "id": "b27ada19-cf92-47b3-b291-052d13d59e80",
+      "attempted_at": "2026-10-16T18:27:20.878Z"
+    },
+    {
+      "user_id": "9655e787-7a5d-48b4-acce-88b049efadff",
+      "session_id": "08ff4210-1459-4a90-8577-d09d16f31b20",
+      "question_id": "b39a019b-0c9b-4f88-8d1e-d2917a2b4f33",
+      "submitted_answer": "A",
+      "is_correct": true,
+      "eligible_for_metrics": true,
+      "feedback": "Correct! Excellent concept application.",
+      "id": "03a9150f-ac2a-42a1-a70e-684bcae12af6",
+      "attempted_at": "2026-10-16T18:27:20.883Z"
+    }
+  ],
+  "study_sessions": [
+    {
+      "id": "b84f4432-22de-4b9d-938f-0256b5624567",
+      "user_id": "test-user-001",
+      "started_at": "2026-10-16T18:13:18.824Z",
+      "last_active_at": "2026-10-16T18:13:18.827Z",
+      "tracked_seconds": 1,
+      "session_status": "completed",
+      "created_at": "2026-10-16T18:13:18.824Z",
+      "ended_at": "2026-10-16T18:13:45.666Z"
+    },
+    {
+      "id": "67e03baf-77c9-4fef-9fdd-7dec68f490ed",
+      "user_id": "test-user-001",
+      "started_at": "2026-10-16T18:13:45.669Z",
+      "last_active_at": "2026-10-16T18:13:45.672Z",
+      "tracked_seconds": 15,
+      "session_status": "active",
+      "created_at": "2026-10-16T18:13:45.669Z"
+    },
+    {
+      "id": "ec471095-1734-425e-89df-b2f469dc8bb5",
+      "user_id": "9655e787-7a5d-48b4-acce-88b049efadff",
+      "started_at": "2026-10-16T18:27:20.899Z",
+      "last_active_at": "2026-10-16T18:27:20.907Z",
+      "tracked_seconds": 30,
+      "session_status": "active",
+      "created_at": "2026-10-16T18:27:20.899Z"
+    }
+  ],
+  "learning_activity": [
+    {
+      "user_id": "test-user-001",
+      "activity_type": "study_session",
+      "metadata": {
+        "action": "start",
+        "session_id": "b84f4432-22de-4b9d-938f-0256b5624567"
+      },
+      "id": "0aae3e0e-666f-4912-b3e1-a0bf1b92ad12",
+      "occurred_at": "2026-10-16T18:13:18.826Z"
+    },
+    {
+      "user_id": "test-user-001",
+      "activity_type": "study_session",
+      "metadata": {
+        "action": "start",
+        "session_id": "67e03baf-77c9-4fef-9fdd-7dec68f490ed"
+      },
+      "id": "3d74930f-30e9-4b2d-bcb4-ca31cca158dc",
+      "occurred_at": "2026-10-16T18:13:45.671Z"
+    },
+    {
+      "user_id": "9655e787-7a5d-48b4-acce-88b049efadff",
+      "activity_type": "question",
+      "query_id": "21c6e9e6-9ec7-4fdd-8f1d-f1fb7e2a78fd",
+      "metadata": {
+        "subject": "Mathematics",
+        "topic": "Fundamental Theorem of Arithmetic"
+      },
+      "id": "6bcf5675-a069-44d0-ae10-80473c2af68f",
+      "occurred_at": "2026-10-16T18:27:20.846Z"
+    },
+    {
+      "user_id": "9655e787-7a5d-48b4-acce-88b049efadff",
+      "activity_type": "practice",
+      "session_id": "08ff4210-1459-4a90-8577-d09d16f31b20",
+      "metadata": {
+        "subject": "Mathematics",
+        "topic": "General Concepts",
+        "count": 3
+      },
+      "id": "7e34ddbb-16d2-49e4-aa3e-dc421e05724f",
+      "occurred_at": "2026-10-16T18:27:20.862Z"
+    },
+    {
+      "user_id": "9655e787-7a5d-48b4-acce-88b049efadff",
+      "activity_type": "study_session",
+      "metadata": {
+        "action": "start",
+        "session_id": "ec471095-1734-425e-89df-b2f469dc8bb5"
+      },
+      "id": "72ca5d51-c141-4d6b-b54e-008ee1bb4a93",
+      "occurred_at": "2026-10-16T18:27:20.900Z"
+    }
+  ],
+  "user_settings": [
+    {
+      "user_id": "test-user-001",
+      "notification_preferences": {
+        "email": true,
+        "weak_topic_alerts": true,
+        "streak_reminders": true
+      },
+      "privacy_preferences": {
+        "allow_analytics": true,
+        "share_progress": false
+      },
+      "updated_at": "2026-10-16T18:13:18.811Z"
+    },
+    {
+      "user_id": "test-user-001",
+      "notification_preferences": {
+        "email": true,
+        "weak_topic_alerts": true,
+        "streak_reminders": true
+      },
+      "privacy_preferences": {
+        "allow_analytics": true,
+        "share_progress": false
+      },
+      "updated_at": "2026-10-16T18:13:45.647Z"
+    },
+    {
+      "user_id": "9655e787-7a5d-48b4-acce-88b049efadff",
+      "notification_preferences": {
+        "email": true,
+        "weak_topic_alerts": true,
+        "streak_reminders": true
+      },
+      "privacy_preferences": {
+        "allow_analytics": true,
+        "share_progress": false
+      },
+      "updated_at": "2026-10-16T18:27:20.804Z"
+    },
+    {
+      "user_id": "eyJhbGciOiJFUzI1NiIsImtpZCI6IjQzN2M4ODFhLTBlNTEtNGNlYy05YTE1LWM3NmMzNjFjMWI1NCIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJodHRwczovL211a2Roam50Zm11eHVmdWppem5tLnN1cGFiYXNlLmNvL2F1dGgvdjEiLCJzdWIiOiIwNzFjYThlYy0xZGQzLTRlMDktYjkyNy03YWIxODU5NTE1YTgiLCJhdWQiOiJhdXRoZW50aWNhdGVkIiwiZXhwIjoxNzkyMjI5OTAyLCJpYXQiOjE3OTIyMjYzMDIsImVtYWlsIjoic2hhcmF0aGJrMTA5QGdtYWlsLmNvbSIsInBob25lIjoiIiwiYXBwX21ldGFkYXRhIjp7InByb3ZpZGVyIjoiZ29vZ2xlIiwicHJvdmlkZXJzIjpbImdvb2dsZSJdfSwidXNlcl9tZXRhZGF0YSI6eyJhdmF0YXJfdXJsIjoiaHR0cHM6Ly9saDMuZ29vZ2xldXNlcmNvbnRlbnQuY29tL2EvQUNnOG9jTHhwQjJCaTlqYk5wVGcyamZuUjdOY2dTZ05CTGx5VHZZd1VFM0J0QURLV1g1QVpCWHM9czk2LWMiLCJlbWFpbCI6InNoYXJhdGhiazEwOUBnbWFpbC5jb20iLCJlbWFpbF92ZXJpZmllZCI6dHJ1ZSwiZnVsbF9uYW1lIjoiU2hhcmF0aCBCIEsiLCJpc3MiOiJodHRwczovL2FjY291bnRzLmdvb2dsZS5jb20iLCJuYW1lIjoiU2hhcmF0aCBCIEsiLCJwaG9uZV92ZXJpZmllZCI6ZmFsc2UsInBpY3R1cmUiOiJodHRwczovL2xoMy5nb29nbGV1c2VyY29udGVudC5jb20vYS9BQ2c4b2NMeHBCMkJpOWpiTnBUZzJqZm5SN05jZ1NnTkJMbHlUdll3VUUzQnRBREtXWDVBWkJYcz1zOTYtYyIsInByb3ZpZGVyX2lkIjoiMTA1Njc1OTM4NjIxMjI5ODA3OTU1Iiwic3ViIjoiMTA1Njc1OTM4NjIxMjI5ODA3OTU1In0sInJvbGUiOiJhdXRoZW50aWNhdGVkIiwiYWFsIjoiYWFsMSIsImFtciI6W3sibWV0aG9kIjoib2F1dGgiLCJ0aW1lc3RhbXAiOjE3OTIyMjYzMDJ9XSwic2Vzc2lvbl9pZCI6ImM0NzRlNzY2LTRhMWUtNDkwYi1iNjdjLTVmYWE0YjUyY2U5NCIsImlzX2Fub255bW91cyI6ZmFsc2V9.mHnmDuwOTLb0n-xRtvgfk0_lOAXOH8Yl8oUdWX1elOm4cMwUfTpDDAmHHswPH-A85rMR8wZCjNGXSd_3MYJA8Q",
+      "notification_preferences": {
+        "email": true,
+        "weak_topic_alerts": true,
+        "streak_reminders": true
+      },
+      "privacy_preferences": {
+        "allow_analytics": true,
+        "share_progress": false
+      },
+      "updated_at": "2026-10-17T08:53:39.906Z"
+    }
+  ],
+  "notifications": [
+    {
+      "id": "6c0ff5d3-2d9d-41de-be60-6d09951fa841",
+      "user_id": "9655e787-7a5d-48b4-acce-88b049efadff",
+      "title": "Welcome to ConceptTrace AI! 🎉",
+      "message": "Your Class 10 (CBSE) profile is ready. Ask doubts or start practicing!",
+      "created_at": "2026-10-16T18:27:20.826Z"
+    }
+  ]
+}
