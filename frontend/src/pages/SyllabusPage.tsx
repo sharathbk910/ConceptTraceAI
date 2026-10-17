@@ -242,7 +242,7 @@ export const SyllabusPage: React.FC = () => {
     <div className="space-y-6 animate-fade-in pb-12">
       {/* 1. Official Syllabus Header Banner */}
       <div className="relative overflow-hidden rounded-3xl bg-gradient-to-r from-purple-800 via-brand-700 to-indigo-800 text-white p-6 sm:p-8 shadow-card">
-        <div className="relative z-10 max-w-3xl">
+        <div className="relative z-10">
           <div className="flex flex-wrap items-center gap-2 mb-3">
             <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-white/20 backdrop-blur-md text-xs font-bold border border-white/30 text-white">
               <GraduationCap className="w-3.5 h-3.5 text-brand-200" />
@@ -491,25 +491,29 @@ export const SyllabusPage: React.FC = () => {
                           </div>
                         </div>
 
-                        {/* Concept Cards Grid: Full width for single concept, 2-column grid for multiple */}
+                        {/* Concept Cards Grid: 1-col mobile, 2-col tablet, 3-col desktop */}
                         <div
                           className={`grid gap-3 sm:gap-4 ${
-                            isSingleConcept ? 'grid-cols-1' : 'grid-cols-1 md:grid-cols-2'
+                            isSingleConcept
+                              ? 'grid-cols-1'
+                              : 'grid-cols-1 md:grid-cols-2 xl:grid-cols-3'
                           }`}
                         >
                           {chapterFilteredConcepts.map((concept, idx) => {
                             const isMastered = concept.mastery_status === 'mastered';
                             const needsPractice = concept.mastery_status === 'needs_practice';
+                            // span last odd card only on the md 2-col layout
+                            const totalConcepts = chapterFilteredConcepts.length;
                             const isLastOdd =
                               !isSingleConcept &&
-                              chapterFilteredConcepts.length % 2 === 1 &&
-                              idx === chapterFilteredConcepts.length - 1;
+                              totalConcepts % 2 === 1 &&
+                              idx === totalConcepts - 1;
 
                             return (
                               <div
                                 key={concept.id}
                                 className={`rounded-2xl p-4 sm:p-5 border transition-all duration-200 flex flex-col justify-between ${
-                                  isLastOdd ? 'md:col-span-2' : ''
+                                  isLastOdd ? 'md:col-span-2 xl:col-span-1' : ''
                                 } ${
                                   isMastered
                                     ? 'bg-emerald-50/25 border-emerald-200/80 shadow-soft'
@@ -521,7 +525,7 @@ export const SyllabusPage: React.FC = () => {
                                 <div>
                                   {/* Concept Header & Status */}
                                   <div className="flex flex-wrap items-start justify-between gap-2.5 mb-2.5">
-                                    <div className="space-y-1 flex-1 min-w-[200px]">
+                                    <div className="space-y-1 flex-1 min-w-0">
                                       <h4 className="text-sm sm:text-base font-bold text-slate-800 leading-snug">
                                         <MathText text={concept.concept_name} inline />
                                       </h4>
