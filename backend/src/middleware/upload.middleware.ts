@@ -4,10 +4,25 @@ import fs from 'fs';
 import { v4 as uuidv4 } from 'uuid';
 import { env } from '../config/env.js';
 
-const uploadDir = path.resolve(process.cwd(), 'storage/uploads');
-if (!fs.existsSync(uploadDir)) {
-  fs.mkdirSync(uploadDir, { recursive: true });
+const isServerless = Boolean(
+  process.env.VERCEL ||
+  process.env.VERCEL_ENV ||
+  process.env.AWS_LAMBDA_FUNCTION_NAME ||
+  process.env.LAMBDA_TASK_ROOT
+);
+
+const uploadDir = isServerless
+  ? path.join('/tmp', 'uploads')
+  : path.resolve(process.cwd(), 'storage/uploads');
+
+try {
+  if (!fs.existsSync(uploadDir)) {
+    fs.mkdirSync(uploadDir, { recursive: true });
+  }
+} catch {
+  // Ignore filesystem permission issues on read-only environments
 }
+
 
 const storage = multer.diskStorage({
   destination: (req, file, cb) => {

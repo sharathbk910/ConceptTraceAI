@@ -109,7 +109,7 @@ const isServerless = Boolean(
 const isMainModule = typeof require !== 'undefined' && require.main === module;
 const PORT = process.env.PORT ? parseInt(process.env.PORT, 10) : (env.PORT || 8000);
 
-if (!isServerless && (isMainModule || (!process.env.VERCEL && process.env.PORT))) {
+if (!isServerless && isMainModule) {
   const server = app.listen(PORT, () => {
     console.log(`🚀 ConceptTrace AI Backend running on port ${PORT}`);
     console.log(`📚 Tagline: Learn • Improve • Succeed`);
