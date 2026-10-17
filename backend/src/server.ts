@@ -55,8 +55,8 @@ try {
 }
 app.use('/storage/uploads', express.static(uploadsDir));
 
-// Health check endpoint
-app.get('/api/health', (req, res) => {
+// Health check endpoint (support both /api/health and /health)
+app.get(['/api/health', '/health'], (req, res) => {
   res.json({
     status: 'healthy',
     service: 'ConceptTrace AI Backend',
@@ -67,16 +67,21 @@ app.get('/api/health', (req, res) => {
   });
 });
 
-// API v1 Routes
-app.use('/api/v1/auth', authRoutes);
-app.use('/api/v1', profileRoutes);
-app.use('/api/v1', questionRoutes);
-app.use('/api/v1', practiceRoutes);
-app.use('/api/v1', analyticsRoutes);
-app.use('/api/v1', studyRoutes);
-app.use('/api/v1', settingsRoutes);
-app.use('/api/v1', syllabusRoutes);
-app.use('/api/v1', learningRoutes);
+// API v1 Routes (support both /api/v1 and /v1)
+const mountV1Routes = (prefix: string) => {
+  app.use(`${prefix}/auth`, authRoutes);
+  app.use(prefix, profileRoutes);
+  app.use(prefix, questionRoutes);
+  app.use(prefix, practiceRoutes);
+  app.use(prefix, analyticsRoutes);
+  app.use(prefix, studyRoutes);
+  app.use(prefix, settingsRoutes);
+  app.use(prefix, syllabusRoutes);
+  app.use(prefix, learningRoutes);
+};
+
+mountV1Routes('/api/v1');
+mountV1Routes('/v1');
 
 // Fallback 404 for unknown API endpoints
 app.use('/api/*', (req, res) => {

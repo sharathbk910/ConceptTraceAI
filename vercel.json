@@ -4,6 +4,7 @@
     "backend": {
       "root": "backend",
       "framework": "express",
+      "buildCommand": "npm run build",
       "bindings": [
         {
           "type": "service",
