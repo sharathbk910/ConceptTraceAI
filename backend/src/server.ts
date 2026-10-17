@@ -103,3 +103,9 @@ if (!process.env.VERCEL || process.env.PORT) {
 }
 
 export default app;
+
+// Compatibility for Vercel Express service loader
+if (typeof module !== 'undefined' && module.exports) {
+  module.exports = app;
+  (module.exports as any).default = app;
+}
