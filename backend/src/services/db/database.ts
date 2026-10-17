@@ -76,7 +76,7 @@ export interface SyllabusTopic {
   chapter?: string | null;
   topic: string;
   description?: string | null;
-  source_status: 'configured' | 'imported';
+  source_status: 'configured' | 'imported' | 'official';
   created_at: string;
 }
 

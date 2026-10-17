@@ -48,7 +48,8 @@ const envSchema = z.object({
   SMTP_PASS: z.string().optional(),
   SMTP_SECURE: z.string().default('false').transform(v => v === 'true'),
   EMAIL_FROM: z.string().default('ConceptTrace AI <noreply@concepttrace.ai>'),
-  APP_URL: z.string().default('http://localhost:5173'),
+  FRONTEND_URL: z.string().optional(),
+  APP_URL: z.string().default(process.env.FRONTEND_URL || 'http://localhost:5173'),
 });
 
 const parsed = envSchema.safeParse(process.env);

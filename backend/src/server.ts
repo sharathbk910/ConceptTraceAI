@@ -22,11 +22,17 @@ const app = express();
 app.use(
   cors({
     origin: (origin, callback) => {
-      // Allow local development ports and env.ALLOWED_ORIGINS
-      if (!origin || origin.includes('localhost') || origin.includes('127.0.0.1') || origin === env.ALLOWED_ORIGINS) {
+      // Allow local development ports, env.ALLOWED_ORIGINS, and bound FRONTEND_URL
+      if (
+        !origin ||
+        origin.includes('localhost') ||
+        origin.includes('127.0.0.1') ||
+        origin === env.ALLOWED_ORIGINS ||
+        (env.FRONTEND_URL && origin === env.FRONTEND_URL)
+      ) {
         callback(null, true);
       } else {
-        callback(null, true); // Permissive in development
+        callback(null, true); // Permissive fallback
       }
     },
     credentials: true,
@@ -79,11 +85,13 @@ app.use('/api/*', (req, res) => {
 // Centralized error handling middleware
 app.use(errorHandler);
 
-const PORT = env.PORT || 8000;
-app.listen(PORT, () => {
-  console.log(`🚀 ConceptTrace AI Backend running at http://localhost:${PORT}`);
-  console.log(`📚 Tagline: Learn • Improve • Succeed`);
-  console.log(`🤖 AI Provider: ${env.AI_PROVIDER} (${env.GEMINI_MODEL})`);
-});
+const PORT = process.env.PORT ? parseInt(process.env.PORT, 10) : (env.PORT || 8000);
+if (!process.env.VERCEL || process.env.PORT) {
+  app.listen(PORT, () => {
+    console.log(`🚀 ConceptTrace AI Backend running on port ${PORT}`);
+    console.log(`📚 Tagline: Learn • Improve • Succeed`);
+    console.log(`🤖 AI Provider: ${env.AI_PROVIDER} (${env.GEMINI_MODEL})`);
+  });
+}
 
 export default app;
