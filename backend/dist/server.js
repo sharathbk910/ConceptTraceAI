@@ -90,8 +90,13 @@ app.use('/api/*', (req, res) => {
 });
 // Centralized error handling middleware
 app.use(errorHandler_js_1.errorHandler);
-// Only listen on port in standalone/local development mode (not inside Vercel serverless runtime)
-if (!process.env.VERCEL) {
+// Only listen on port in standalone/local development mode (not inside Vercel serverless runtime or when imported)
+const isServerless = Boolean(process.env.VERCEL ||
+    process.env.VERCEL_ENV ||
+    process.env.AWS_LAMBDA_FUNCTION_NAME ||
+    process.env.LAMBDA_TASK_ROOT);
+const isMainModule = typeof require !== 'undefined' && require.main === module;
+if (!isServerless && isMainModule) {
     const PORT = process.env.PORT ? parseInt(process.env.PORT, 10) : (env_js_1.env.PORT || 8000);
     app.listen(PORT, () => {
         console.log(`🚀 ConceptTrace AI Backend running on port ${PORT}`);
