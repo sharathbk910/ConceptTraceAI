@@ -8035,9 +8035,9 @@
       "id": "16be12da-c1dc-4712-8081-6e30ef156a00",
       "user_id": "071ca8ec-1dd3-4e09-b927-7ab1859515a8",
       "started_at": "2026-10-17T08:41:44.871Z",
-      "last_active_at": "2026-10-17T08:52:28.887Z",
-      "tracked_seconds": 120,
-      "session_status": "active",
+      "last_active_at": "2026-10-17T08:53:07.672Z",
+      "tracked_seconds": 150,
+      "session_status": "paused",
       "created_at": "2026-10-17T08:41:44.871Z",
       "ended_at": "2026-10-17T08:45:02.719Z"
     },
@@ -8069,6 +8069,25 @@
       "tracked_seconds": 0,
       "session_status": "paused",
       "created_at": "2026-10-17T08:45:02.763Z"
+    },
+    {
+      "id": "1d02a3e4-58f9-4124-9f60-ec2b0d7da009",
+      "user_id": "071ca8ec-1dd3-4e09-b927-7ab1859515a8",
+      "started_at": "2026-10-17T08:53:07.808Z",
+      "last_active_at": "2026-10-17T08:53:07.808Z",
+      "tracked_seconds": 0,
+      "session_status": "completed",
+      "created_at": "2026-10-17T08:53:07.808Z",
+      "ended_at": "2026-10-17T08:53:07.829Z"
+    },
+    {
+      "id": "ec8e28ee-a79a-412b-a92d-13869d068941",
+      "user_id": "071ca8ec-1dd3-4e09-b927-7ab1859515a8",
+      "started_at": "2026-10-17T08:53:07.838Z",
+      "last_active_at": "2026-10-17T08:53:07.838Z",
+      "tracked_seconds": 0,
+      "session_status": "active",
+      "created_at": "2026-10-17T08:53:07.838Z"
     }
   ],
   "learning_activity": [
@@ -9588,6 +9607,26 @@
       },
       "id": "b6c6820b-54cb-4489-b891-2c1b96d3a5d2",
       "occurred_at": "2026-10-17T08:45:02.772Z"
+    },
+    {
+      "user_id": "071ca8ec-1dd3-4e09-b927-7ab1859515a8",
+      "activity_type": "study_session",
+      "metadata": {
+        "action": "start",
+        "session_id": "1d02a3e4-58f9-4124-9f60-ec2b0d7da009"
+      },
+      "id": "26faf18f-e1b0-4f2e-97d4-981b6db8ec83",
+      "occurred_at": "2026-10-17T08:53:07.818Z"
+    },
+    {
+      "user_id": "071ca8ec-1dd3-4e09-b927-7ab1859515a8",
+      "activity_type": "study_session",
+      "metadata": {
+        "action": "start",
+        "session_id": "ec8e28ee-a79a-412b-a92d-13869d068941"
+      },
+      "id": "aef4b025-1b4f-4a1a-8618-42ab5dec1bdc",
+      "occurred_at": "2026-10-17T08:53:07.848Z"
     }
   ],
   "user_settings": [
