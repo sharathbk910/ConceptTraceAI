@@ -98,8 +98,9 @@ app.use('/api/*', (req, res) => {
 // Centralized error handling middleware
 app.use(errorHandler);
 
-const PORT = process.env.PORT ? parseInt(process.env.PORT, 10) : (env.PORT || 8000);
-if (!process.env.VERCEL || process.env.PORT) {
+// Only listen on port in standalone/local development mode (not inside Vercel serverless runtime)
+if (!process.env.VERCEL) {
+  const PORT = process.env.PORT ? parseInt(process.env.PORT, 10) : (env.PORT || 8000);
   app.listen(PORT, () => {
     console.log(`🚀 ConceptTrace AI Backend running on port ${PORT}`);
     console.log(`📚 Tagline: Learn • Improve • Succeed`);
