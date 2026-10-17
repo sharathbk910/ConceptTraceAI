@@ -5,6 +5,24 @@ import { supabase, isSupabaseConfigured } from '../../lib/supabase.js';
 import { useAuth } from '../../hooks/useAuth.js';
 import { User } from '../../types/index.js';
 
+// Helper to decode JWT payload directly from access_token
+function parseJwtPayload(token: string): any {
+  try {
+    const base64Url = token.split('.')[1];
+    const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
+    const jsonPayload = decodeURIComponent(
+      window
+        .atob(base64)
+        .split('')
+        .map((c) => '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2))
+        .join('')
+    );
+    return JSON.parse(jsonPayload);
+  } catch {
+    return null;
+  }
+}
+
 export const AuthCallbackPage: React.FC = () => {
   const [status, setStatus] = useState<'processing' | 'success' | 'error'>('processing');
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
@@ -30,6 +48,75 @@ export const AuthCallbackPage: React.FC = () => {
         return;
       }
 
+      // 2. Direct extraction from hash parameters (OAuth implicit/PKCE flow)
+      const accessToken = hashParams.get('access_token');
+      const refreshToken = hashParams.get('refresh_token');
+
+      if (accessToken) {
+        try {
+          const payload = parseJwtPayload(accessToken);
+          const userId = payload?.sub || payload?.id || 'oauth-student';
+          const userEmail = payload?.email || '';
+          const userName =
+            payload?.user_metadata?.full_name ||
+            payload?.user_metadata?.name ||
+            payload?.name ||
+            userEmail.split('@')[0] ||
+            'Student';
+          const userAvatar =
+            payload?.user_metadata?.avatar_url ||
+            payload?.user_metadata?.picture ||
+            payload?.picture ||
+            null;
+
+          const googleUser: User = {
+            id: userId,
+            email: userEmail,
+            full_name: userName,
+            avatar_url: userAvatar,
+            role: 'student',
+          };
+
+          localStorage.setItem('concepttrace_token', accessToken);
+          localStorage.setItem('concepttrace_user', JSON.stringify(googleUser));
+
+          // Sync session with Supabase client if available
+          if (supabase && isSupabaseConfigured) {
+            try {
+              await supabase.auth.setSession({
+                access_token: accessToken,
+                refresh_token: refreshToken || '',
+              });
+            } catch (e) {
+              console.warn('Notice setting Supabase session:', e);
+            }
+          }
+
+          if (!isCancelled) {
+            setStatus('success');
+          }
+
+          await refreshProfile();
+
+          setTimeout(() => {
+            if (!isCancelled) {
+              const cachedEd = localStorage.getItem('concepttrace_education_profile');
+              let hasOnboarding = false;
+              if (cachedEd) {
+                try {
+                  const parsed = JSON.parse(cachedEd);
+                  hasOnboarding = Boolean(parsed?.onboarding_completed);
+                } catch {}
+              }
+              navigate(hasOnboarding ? '/home' : '/setup-profile', { replace: true });
+            }
+          }, 300);
+          return;
+        } catch (err: any) {
+          console.warn('Error extracting hash token:', err);
+        }
+      }
+
       if (!supabase || !isSupabaseConfigured) {
         if (!isCancelled) {
           setStatus('error');
@@ -39,7 +126,7 @@ export const AuthCallbackPage: React.FC = () => {
       }
 
       try {
-        // 2. Fetch session from Supabase (Supabase JS auto-exchanges the code/hash)
+        // 3. Fallback: Fetch session from Supabase (auto-exchanged)
         const { data: { session }, error: sessionError } = await supabase.auth.getSession();
 
         if (sessionError) {
@@ -76,11 +163,11 @@ export const AuthCallbackPage: React.FC = () => {
               }
               navigate(hasOnboarding ? '/home' : '/setup-profile', { replace: true });
             }
-          }, 400);
+          }, 300);
           return;
         }
 
-        // 3. Fallback: Wait for onAuthStateChange if session exchange is in flight
+        // 4. Fallback: Wait for onAuthStateChange if session exchange is in flight
         const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, newSession) => {
           if (newSession?.user) {
             subscription.unsubscribe();
@@ -113,11 +200,11 @@ export const AuthCallbackPage: React.FC = () => {
                 }
                 navigate(hasOnboarding ? '/home' : '/setup-profile', { replace: true });
               }
-            }, 400);
+            }, 300);
           }
         });
 
-        // 4. Timeout after 8 seconds
+        // 5. Timeout after 8 seconds
         setTimeout(() => {
           if (!isCancelled && !localStorage.getItem('concepttrace_token')) {
             subscription.unsubscribe();
