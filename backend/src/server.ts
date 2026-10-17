@@ -1,6 +1,7 @@
 import express from 'express';
 import cors from 'cors';
 import path from 'path';
+import fs from 'fs';
 import { env } from './config/env.js';
 import { rateLimiter } from './middleware/rateLimiter.js';
 import { errorHandler } from './middleware/errorHandler.js';
@@ -44,7 +45,14 @@ app.use(express.urlencoded({ extended: true, limit: '15mb' }));
 app.use(rateLimiter);
 
 // Serve uploaded private learning files with ownership check or static path
-const uploadsDir = path.resolve(process.cwd(), 'storage/uploads');
+const uploadsDir = process.env.VERCEL ? '/tmp/uploads' : path.resolve(process.cwd(), 'storage/uploads');
+try {
+  if (!fs.existsSync(uploadsDir)) {
+    fs.mkdirSync(uploadsDir, { recursive: true });
+  }
+} catch {
+  // read-only filesystem fallback
+}
 app.use('/storage/uploads', express.static(uploadsDir));
 
 // Health check endpoint

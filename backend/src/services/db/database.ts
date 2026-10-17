@@ -411,11 +411,40 @@ export class DatabaseService {
   private data: DatabaseSchema;
 
   private constructor() {
-    const dataDir = path.resolve(process.cwd(), 'data');
-    if (!fs.existsSync(dataDir)) {
-      fs.mkdirSync(dataDir, { recursive: true });
+    let dataDir = path.resolve(process.cwd(), 'data');
+    if (process.env.VERCEL) {
+      dataDir = '/tmp/data';
+    }
+    try {
+      if (!fs.existsSync(dataDir)) {
+        fs.mkdirSync(dataDir, { recursive: true });
+      }
+    } catch {
+      dataDir = '/tmp';
     }
     this.dbPath = path.join(dataDir, 'concepttrace_db.json');
+
+    // If dbPath does not exist, look for bundled seed candidates
+    if (!fs.existsSync(this.dbPath)) {
+      const seedCandidates = [
+        path.resolve(process.cwd(), 'data/concepttrace_db.json'),
+        path.resolve(process.cwd(), 'backend/data/concepttrace_db.json'),
+        path.resolve(__dirname, '../../data/concepttrace_db.json'),
+        path.resolve(__dirname, '../../../data/concepttrace_db.json'),
+        path.resolve(__dirname, '../../backend/data/concepttrace_db.json'),
+      ];
+      for (const candidate of seedCandidates) {
+        if (fs.existsSync(candidate)) {
+          try {
+            fs.copyFileSync(candidate, this.dbPath);
+            break;
+          } catch {
+            // ignore
+          }
+        }
+      }
+    }
+
     this.data = this.loadDatabase();
     this.migrateLegacyUserIds();
     this.seedSyllabusIfNeeded();
@@ -431,6 +460,24 @@ export class DatabaseService {
   }
 
   private loadDatabase(): DatabaseSchema {
+    if (!fs.existsSync(this.dbPath)) {
+      const seedCandidates = [
+        path.resolve(process.cwd(), 'data/concepttrace_db.json'),
+        path.resolve(process.cwd(), 'backend/data/concepttrace_db.json'),
+        path.resolve(__dirname, '../../data/concepttrace_db.json'),
+        path.resolve(__dirname, '../../../data/concepttrace_db.json'),
+        path.resolve(__dirname, '../../backend/data/concepttrace_db.json'),
+      ];
+      for (const candidate of seedCandidates) {
+        if (fs.existsSync(candidate)) {
+          try {
+            const fileContent = fs.readFileSync(candidate, 'utf-8');
+            return JSON.parse(fileContent);
+          } catch {}
+        }
+      }
+    }
+
     if (fs.existsSync(this.dbPath)) {
       try {
         const fileContent = fs.readFileSync(this.dbPath, 'utf-8');
