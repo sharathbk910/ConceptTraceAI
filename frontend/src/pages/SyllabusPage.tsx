@@ -44,8 +44,12 @@ export const SyllabusPage: React.FC = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [isRefreshing, setIsRefreshing] = useState(false);
   const [refreshMessage, setRefreshMessage] = useState<string | null>(null);
+  const [refreshError, setRefreshError] = useState(false);
 
-  // Collapsible state for units: key = unit_id
+  // Verification status from /syllabus/status
+  const [verificationStatus, setVerificationStatus] = useState<any>(null);
+
+
   const [collapsedUnits, setCollapsedUnits] = useState<Record<string, boolean>>({});
 
   // Search filter
@@ -91,22 +95,42 @@ export const SyllabusPage: React.FC = () => {
     }
   };
 
+  const fetchVerificationStatus = async () => {
+    try {
+      const resp = await api.get<any>('/syllabus/status');
+      setVerificationStatus(resp);
+    } catch {
+      // Non-critical — status panel will just not appear
+    }
+  };
+
   useEffect(() => {
     fetchLearningMap();
+    fetchVerificationStatus();
   }, []);
 
   const handleRefreshVerification = async () => {
     setIsRefreshing(true);
     setRefreshMessage(null);
+    setRefreshError(false);
     try {
-      const resp = await api.post('/syllabus/refresh');
-      setRefreshMessage(resp.message || 'Syllabus verified against official portal.');
+      const resp = await api.post<any>('/syllabus/refresh');
+      const msg = resp?.data?.message || resp?.message || 'Syllabus verified against official portal.';
+      setRefreshMessage(msg);
+      // Refresh the learning map and status after verification
       await fetchLearningMap();
+      await fetchVerificationStatus();
     } catch (err: any) {
-      setRefreshMessage('Source verified.');
+      const errMsg = err?.response?.data?.error?.message || err?.message || '';
+      if (errMsg.includes('REFRESH_IN_PROGRESS')) {
+        setRefreshMessage('A refresh is already in progress. Please wait.');
+      } else {
+        setRefreshError(true);
+        setRefreshMessage('Could not reach the official source. Your stored syllabus remains valid and unchanged.');
+      }
     } finally {
       setIsRefreshing(false);
-      setTimeout(() => setRefreshMessage(null), 4000);
+      setTimeout(() => { setRefreshMessage(null); setRefreshError(false); }, 6000);
     }
   };
 
@@ -250,19 +274,38 @@ export const SyllabusPage: React.FC = () => {
             </span>
 
             <a
-              href={syllabus?.official_source_url}
+              href={verificationStatus?.source?.official_url || syllabus?.official_source_url}
               target="_blank"
               rel="noopener noreferrer"
               className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-emerald-500/20 backdrop-blur-md text-xs font-semibold border border-emerald-400/40 text-emerald-200 hover:bg-emerald-500/30 transition-colors"
             >
               <CheckCircle2 className="w-3.5 h-3.5 text-emerald-300" />
-              Verified Official Source
+              {verificationStatus?.source?.supported ? 'Official Source' : 'NCF/NCERT Aligned'}
               <ExternalLink className="w-3 h-3 text-emerald-300" />
             </a>
 
             <span className="text-[11px] text-white/70 font-medium">
               Version: {syllabus?.version}
             </span>
+
+            {/* Live verification status chip */}
+            {verificationStatus && (
+              <span
+                className={`inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[10px] font-semibold border ${
+                  verificationStatus.source_reachable === true
+                    ? 'bg-emerald-500/20 border-emerald-400/40 text-emerald-200'
+                    : verificationStatus.source_reachable === false
+                    ? 'bg-amber-500/20 border-amber-400/40 text-amber-200'
+                    : 'bg-white/10 border-white/20 text-white/60'
+                }`}
+              >
+                {verificationStatus.source_reachable === true
+                  ? '✓ Source Reachable'
+                  : verificationStatus.source_reachable === false
+                  ? '⚠ Source Unavailable'
+                  : '○ Unverified'}
+              </span>
+            )}
           </div>
 
           <h1 className="text-2xl sm:text-3xl font-extrabold tracking-tight">
@@ -271,6 +314,32 @@ export const SyllabusPage: React.FC = () => {
           <p className="mt-2 text-xs sm:text-sm text-brand-100 font-medium leading-relaxed">
             Your accredited board curriculum with concept-level mastery tracking (≥ 80% benchmark), instant diagnostic quizzes, high-retention revision notes, and flashcards.
           </p>
+
+          {/* Verification metadata row */}
+          {verificationStatus && (
+            <div className="mt-3 flex flex-wrap items-center gap-x-4 gap-y-1 text-[11px] text-white/60 font-medium">
+              {verificationStatus.last_verified_at && (
+                <span>
+                  Last checked:{' '}
+                  {new Date(verificationStatus.last_verified_at).toLocaleString('en-IN', {
+                    day: '2-digit',
+                    month: 'short',
+                    year: 'numeric',
+                    hour: '2-digit',
+                    minute: '2-digit',
+                  })}
+                </span>
+              )}
+              {verificationStatus.source?.description && (
+                <span className="truncate max-w-xs" title={verificationStatus.source.description}>
+                  📚 {verificationStatus.source.description}
+                </span>
+              )}
+              {verificationStatus.fingerprint_changed && (
+                <span className="text-amber-300 font-bold">⚠ Source change detected — syllabus content under review</span>
+              )}
+            </div>
+          )}
 
           {/* Action Row */}
           <div className="mt-5 flex flex-wrap items-center gap-3">
@@ -296,8 +365,12 @@ export const SyllabusPage: React.FC = () => {
           </div>
 
           {refreshMessage && (
-            <div className="mt-3 inline-block px-3 py-1.5 rounded-lg bg-emerald-500/20 border border-emerald-400/30 text-xs text-emerald-100 font-medium animate-fade-in">
-              ✓ {refreshMessage}
+            <div className={`mt-3 inline-block px-3 py-1.5 rounded-lg border text-xs font-medium animate-fade-in ${
+              refreshError
+                ? 'bg-amber-500/20 border-amber-400/30 text-amber-100'
+                : 'bg-emerald-500/20 border-emerald-400/30 text-emerald-100'
+            }`}>
+              {refreshError ? '⚠ ' : '✓ '}{refreshMessage}
             </div>
           )}
         </div>

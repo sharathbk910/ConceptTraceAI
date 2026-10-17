@@ -1649,7 +1649,47 @@ export class DatabaseService {
     return syllabus;
   }
 
-  // --- SYLLABUS COMPARISONS ---
+  /**
+   * Update a syllabus record with real verification results from SyllabusUpdateService.
+   * Persists HTTP check metadata alongside the existing syllabus content.
+   */
+  public updateSyllabusVerification(
+    id: string,
+    verification: {
+      last_verified_at: string;
+      verified: boolean;
+      verification_source_reachable?: boolean;
+      verification_status_message?: string;
+      content_fingerprint?: string;
+      fingerprint_changed?: boolean;
+    }
+  ): OfficialSyllabusRecord | undefined {
+    let syllabus = this.data.official_syllabuses.find(s => s.id === id);
+    if (!syllabus) return undefined;
+
+    syllabus.last_verified_at = verification.last_verified_at;
+    syllabus.verified = verification.verified;
+
+    // Attach extended verification fields (cast to allow dynamic properties)
+    const ext = syllabus as any;
+    if (verification.verification_source_reachable !== undefined) {
+      ext.verification_source_reachable = verification.verification_source_reachable;
+    }
+    if (verification.verification_status_message !== undefined) {
+      ext.verification_status_message = verification.verification_status_message;
+    }
+    if (verification.content_fingerprint !== undefined) {
+      ext.content_fingerprint = verification.content_fingerprint;
+    }
+    if (verification.fingerprint_changed !== undefined) {
+      ext.fingerprint_changed = verification.fingerprint_changed;
+    }
+
+    this.saveDatabase();
+    return syllabus;
+  }
+
+
   public createSyllabusComparison(
     record: Omit<SyllabusComparisonRecord, 'id' | 'created_at'>
   ): SyllabusComparisonRecord {
