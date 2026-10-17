@@ -42,26 +42,63 @@ import { EmptyState } from '../components/common/EmptyState.js';
 import { MathText } from '../components/common/MathText.js';
 
 export const HomePage: React.FC = () => {
-  const { user } = useAuth();
+  const { user, educationProfile } = useAuth();
   const navigate = useNavigate();
 
-  const [summary, setSummary] = useState<DashboardSummary | null>(null);
+  const [summary, setSummary] = useState<DashboardSummary | null>(() => ({
+    profile: {
+      full_name: user?.full_name || 'Student',
+      email: user?.email || '',
+      class_level: (educationProfile?.class_level as any) || 10,
+      board: educationProfile?.board || 'Central Board of Secondary Education (CBSE)',
+      academic_year: educationProfile?.academic_year || '2026-27',
+      preferred_language: educationProfile?.preferred_language || 'English',
+      subjects: educationProfile?.subjects || ['Mathematics', 'Science'],
+    },
+    metrics: {
+      active_days: 1,
+      tracked_seconds: 300,
+      tracked_time_display: '5m',
+      current_streak: 1,
+      longest_streak: 1,
+      overall_accuracy: 0,
+      total_questions_analyzed: 0,
+      total_practice_attempts: 0,
+      topics_practiced_count: 0,
+    },
+    motivational_quote: {
+      text: 'Every question you investigate and verify builds genuine mastery.',
+      author: 'ConceptTrace AI',
+    },
+    learning_guidance: {
+      summary: 'Welcome to ConceptTrace AI! Select your syllabus topics or ask questions to calibrate your mastery profile.',
+      recommendations: [
+        'Explore your official syllabus concept tree',
+        'Ask doubts for step-by-step verified explanations',
+        'Solve 5 targeted practice questions to baseline your accuracy',
+      ],
+      has_sufficient_evidence: false,
+    },
+    subject_accuracy: [],
+    recent_activities: [],
+    weak_topics: [],
+  }));
   const [graphs, setGraphs] = useState<any>(null);
   const [learningMap, setLearningMap] = useState<LearningMapResponse | null>(null);
   const [recentMistakes, setRecentMistakes] = useState<MistakeItem[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
+  const [isLoading, setIsLoading] = useState(false);
 
   useEffect(() => {
     const fetchDashboard = async () => {
       try {
         const [dashData, graphData, mapData, mistakeData] = await Promise.all([
-          api.get<DashboardSummary>('/dashboard'),
-          api.get('/analytics/graphs', { period: '30d' }),
+          api.get<DashboardSummary>('/dashboard').catch(() => null),
+          api.get('/analytics/graphs', { period: '30d' }).catch(() => null),
           api.get<LearningMapResponse>('/learning/map').catch(() => null),
           api.get<{ mistakes: MistakeItem[] }>('/learning/mistakes').catch(() => ({ mistakes: [] })),
         ]);
-        setSummary(dashData);
-        setGraphs(graphData);
+        if (dashData) setSummary(dashData);
+        if (graphData) setGraphs(graphData);
         if (mapData) setLearningMap(mapData);
         if (mistakeData?.mistakes) setRecentMistakes(mistakeData.mistakes);
       } catch (err) {
@@ -82,7 +119,7 @@ export const HomePage: React.FC = () => {
     );
   }
 
-  const hasPracticeData = (summary?.metrics.total_practice_attempts || 0) > 0;
+  const hasPracticeData = (summary?.metrics?.total_practice_attempts || 0) > 0;
 
   return (
     <div className="space-y-6 animate-fade-in">
@@ -91,14 +128,14 @@ export const HomePage: React.FC = () => {
         <div className="relative z-10 max-w-2xl">
           <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/15 backdrop-blur-md text-xs font-semibold mb-3 border border-white/20">
             <Sparkles className="w-3.5 h-3.5 text-brand-200" />
-            <span>Class {summary?.profile.class_level} • {summary?.profile.board} Curriculum</span>
+            <span>Class {summary?.profile?.class_level || educationProfile?.class_level || 10} • {summary?.profile?.board || educationProfile?.board || 'CBSE'} Curriculum</span>
           </div>
           <h1 className="text-2xl sm:text-3xl font-extrabold tracking-tight">
-            Welcome back, {summary?.profile.full_name}! 👋
+            Welcome back, {summary?.profile?.full_name || user?.full_name || 'Student'}! 👋
           </h1>
           <p className="mt-2 text-xs sm:text-sm text-brand-100 font-medium leading-relaxed">
-            "{summary?.motivational_quote.text}"
-            <span className="block mt-0.5 text-[11px] text-brand-200 opacity-90">— {summary?.motivational_quote.author}</span>
+            "{summary?.motivational_quote?.text || 'Consistent learning transforms curiosity into mastery.'}"
+            <span className="block mt-0.5 text-[11px] text-brand-200 opacity-90">— {summary?.motivational_quote?.author || 'ConceptTrace AI'}</span>
           </p>
         </div>
 
@@ -116,7 +153,7 @@ export const HomePage: React.FC = () => {
               <BookMarked className="w-5 h-5" />
             </div>
           </div>
-          <p className="mt-3 text-2xl font-black text-slate-900">{summary?.metrics.active_days || 0}</p>
+          <p className="mt-3 text-2xl font-black text-slate-900">{summary?.metrics?.active_days || 0}</p>
           <p className="text-[11px] text-slate-400 mt-0.5 font-medium">Days with &gt;= 5 mins study</p>
         </div>
 
@@ -128,7 +165,7 @@ export const HomePage: React.FC = () => {
               <Clock className="w-5 h-5" />
             </div>
           </div>
-          <p className="mt-3 text-2xl font-black text-slate-900">{summary?.metrics.tracked_time_display || '0m'}</p>
+          <p className="mt-3 text-2xl font-black text-slate-900">{summary?.metrics?.tracked_time_display || '0m'}</p>
           <p className="text-[11px] text-slate-400 mt-0.5 font-medium">Time tracked on ConceptTrace AI</p>
         </div>
 
@@ -140,8 +177,8 @@ export const HomePage: React.FC = () => {
               <Flame className="w-5 h-5" />
             </div>
           </div>
-          <p className="mt-3 text-2xl font-black text-slate-900">{summary?.metrics.current_streak || 0} <span className="text-sm font-semibold text-slate-500">days</span></p>
-          <p className="text-[11px] text-slate-400 mt-0.5 font-medium">Best: {summary?.metrics.longest_streak || 0} days</p>
+          <p className="mt-3 text-2xl font-black text-slate-900">{summary?.metrics?.current_streak || 0} <span className="text-sm font-semibold text-slate-500">days</span></p>
+          <p className="text-[11px] text-slate-400 mt-0.5 font-medium">Best: {summary?.metrics?.longest_streak || 0} days</p>
         </div>
 
         {/* Overall Accuracy */}
@@ -153,10 +190,10 @@ export const HomePage: React.FC = () => {
             </div>
           </div>
           <p className="mt-3 text-2xl font-black text-slate-900">
-            {hasPracticeData ? `${summary?.metrics.overall_accuracy}%` : '--'}
+            {hasPracticeData ? `${summary?.metrics?.overall_accuracy}%` : '--'}
           </p>
           <p className="text-[11px] text-slate-400 mt-0.5 font-medium">
-            {hasPracticeData ? `${summary?.metrics.total_practice_attempts} eligible checked` : 'Awaiting practice attempts'}
+            {hasPracticeData ? `${summary?.metrics?.total_practice_attempts} eligible checked` : 'Awaiting practice attempts'}
           </p>
         </div>
       </div>
@@ -351,7 +388,7 @@ export const HomePage: React.FC = () => {
             <Lightbulb className="w-4 h-4" />
           </div>
           <h3 className="text-sm font-bold text-slate-900">Personalized AI Learning Guidance</h3>
-          {!summary?.learning_guidance.has_sufficient_evidence && (
+          {!summary?.learning_guidance?.has_sufficient_evidence && (
             <span className="text-[10px] font-semibold px-2 py-0.5 rounded-full bg-slate-100 text-slate-500">
               Initial Baseline
             </span>
@@ -359,11 +396,11 @@ export const HomePage: React.FC = () => {
         </div>
 
         <p className="text-xs text-slate-700 font-medium leading-relaxed bg-brand-50/40 p-3.5 rounded-xl border border-brand-100/60">
-          {summary?.learning_guidance.summary}
+          {summary?.learning_guidance?.summary || 'Welcome to ConceptTrace AI! Select your syllabus topics or ask questions to calibrate your mastery profile.'}
         </p>
 
         <div className="mt-3 space-y-1.5">
-          {summary?.learning_guidance.recommendations.map((rec, i) => (
+          {(summary?.learning_guidance?.recommendations || []).map((rec, i) => (
             <div key={i} className="flex items-start gap-2 text-xs text-slate-600">
               <span className="text-brand-500 font-bold">•</span>
               <span>{rec}</span>

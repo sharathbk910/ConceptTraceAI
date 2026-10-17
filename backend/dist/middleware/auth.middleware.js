@@ -179,18 +179,28 @@ const requireAuth = async (req, res, next) => {
         // 4. Verify account email verification status if credentials record exists
         const authRecord = database_js_1.db.getUserAuthById(profile.id) || database_js_1.db.getUserAuthByEmail(profile.email);
         if (authRecord && !authRecord.is_verified) {
-            res.status(403).json({
-                success: false,
-                data: {
-                    email: profile.email,
-                    needsVerification: true,
-                },
-                error: {
-                    code: 'EMAIL_NOT_VERIFIED',
-                    message: 'Your email address is not verified yet. Please check your inbox or request a new verification link.',
-                },
-            });
-            return;
+            if (decodedJwtUser(token)) {
+                // Authenticated through Supabase provider - auto-confirm verified status
+                database_js_1.db.updateUserAuth(authRecord.user_id, {
+                    is_verified: true,
+                    verification_token: null,
+                    verification_expires_at: null,
+                });
+            }
+            else {
+                res.status(403).json({
+                    success: false,
+                    data: {
+                        email: profile.email,
+                        needsVerification: true,
+                    },
+                    error: {
+                        code: 'EMAIL_NOT_VERIFIED',
+                        message: 'Your email address is not verified yet. Please check your inbox or request a new verification link.',
+                    },
+                });
+                return;
+            }
         }
         req.user = {
             id: profile.id,

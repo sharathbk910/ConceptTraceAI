@@ -22,13 +22,9 @@ export const LoginPage: React.FC = () => {
   // Redirect if already authenticated
   useEffect(() => {
     if (!isLoading && isAuthenticated) {
-      if (!educationProfile?.onboarding_completed) {
-        navigate('/setup-profile', { replace: true });
-      } else {
-        navigate('/home', { replace: true });
-      }
+      navigate('/home', { replace: true });
     }
-  }, [isAuthenticated, educationProfile, isLoading, navigate]);
+  }, [isAuthenticated, isLoading, navigate]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -49,15 +45,10 @@ export const LoginPage: React.FC = () => {
 
     setIsSubmitting(true);
     try {
-      const result = await login(emailClean, password);
+      await login(emailClean, password);
       toastSuccess('Welcome back!', 'Successfully signed in to ConceptTrace AI.');
-
-      if (!result?.onboarding_completed) {
-        navigate('/setup-profile', { replace: true });
-      } else {
-        const dest = from === '/login' || from === '/register' || from === '/setup-profile' ? '/home' : from;
-        navigate(dest, { replace: true });
-      }
+      const dest = from && from !== '/login' && from !== '/register' && from !== '/setup-profile' ? from : '/home';
+      navigate(dest, { replace: true });
     } catch (err: any) {
       const msg = err.message || '';
       if (msg.toLowerCase().includes('not verified') || msg.toLowerCase().includes('verification')) {

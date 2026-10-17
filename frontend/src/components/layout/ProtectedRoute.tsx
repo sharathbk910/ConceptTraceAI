@@ -29,12 +29,5 @@ export const ProtectedRoute: React.FC<ProtectedRouteProps> = ({
     return <Navigate to="/login" state={{ from: location }} replace />;
   }
 
-  // If first-time user and education profile not completed, redirect to /setup-profile
-  if (requiresCompletedProfile && (!educationProfile || !educationProfile.onboarding_completed)) {
-    if (location.pathname !== '/setup-profile') {
-      return <Navigate to="/setup-profile" replace />;
-    }
-  }
-
   return <>{children}</>;
 };

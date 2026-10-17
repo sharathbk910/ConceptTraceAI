@@ -20,13 +20,9 @@ export const RegisterPage: React.FC = () => {
   // Redirect if already authenticated
   useEffect(() => {
     if (!isLoading && isAuthenticated) {
-      if (!educationProfile?.onboarding_completed) {
-        navigate('/setup-profile', { replace: true });
-      } else {
-        navigate('/home', { replace: true });
-      }
+      navigate('/home', { replace: true });
     }
-  }, [isAuthenticated, educationProfile, isLoading, navigate]);
+  }, [isAuthenticated, isLoading, navigate]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -66,7 +62,7 @@ export const RegisterPage: React.FC = () => {
       const regResult = await register(nameClean, emailClean, password, confirmPassword);
       if (regResult?.requires_verification === false) {
         toastSuccess('Welcome to ConceptTrace AI! 🎉', 'Your account has been created and verified.');
-        navigate('/setup-profile', { replace: true });
+        navigate('/home', { replace: true });
       } else {
         toastSuccess(
           'Registration Successful! 📧',

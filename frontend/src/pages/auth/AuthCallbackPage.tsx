@@ -100,15 +100,7 @@ export const AuthCallbackPage: React.FC = () => {
 
           setTimeout(() => {
             if (!isCancelled) {
-              const cachedEd = localStorage.getItem('concepttrace_education_profile');
-              let hasOnboarding = false;
-              if (cachedEd) {
-                try {
-                  const parsed = JSON.parse(cachedEd);
-                  hasOnboarding = Boolean(parsed?.onboarding_completed);
-                } catch {}
-              }
-              navigate(hasOnboarding ? '/home' : '/setup-profile', { replace: true });
+              navigate('/home', { replace: true });
             }
           }, 300);
           return;
@@ -153,15 +145,7 @@ export const AuthCallbackPage: React.FC = () => {
           await refreshProfile();
           setTimeout(() => {
             if (!isCancelled) {
-              const cachedEd = localStorage.getItem('concepttrace_education_profile');
-              let hasOnboarding = false;
-              if (cachedEd) {
-                try {
-                  const parsed = JSON.parse(cachedEd);
-                  hasOnboarding = Boolean(parsed?.onboarding_completed);
-                } catch {}
-              }
-              navigate(hasOnboarding ? '/home' : '/setup-profile', { replace: true });
+              navigate('/home', { replace: true });
             }
           }, 300);
           return;
@@ -190,15 +174,7 @@ export const AuthCallbackPage: React.FC = () => {
             await refreshProfile();
             setTimeout(() => {
               if (!isCancelled) {
-                const cachedEd = localStorage.getItem('concepttrace_education_profile');
-                let hasOnboarding = false;
-                if (cachedEd) {
-                  try {
-                    const parsed = JSON.parse(cachedEd);
-                    hasOnboarding = Boolean(parsed?.onboarding_completed);
-                  } catch {}
-                }
-                navigate(hasOnboarding ? '/home' : '/setup-profile', { replace: true });
+                navigate('/home', { replace: true });
               }
             }, 300);
           }

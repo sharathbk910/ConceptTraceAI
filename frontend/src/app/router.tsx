@@ -44,10 +44,7 @@ const RootRedirect: React.FC = () => {
   // Unauthenticated visitors strictly land on /login
   if (!isAuthenticated) return <Navigate to="/login" replace />;
 
-  // Authenticated students without a complete profile must complete setup
-  if (!educationProfile?.onboarding_completed) return <Navigate to="/setup-profile" replace />;
-
-  // Returning authenticated students go directly to dashboard
+  // Authenticated students go directly to dashboard main page
   return <Navigate to="/home" replace />;
 };
 

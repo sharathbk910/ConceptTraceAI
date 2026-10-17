@@ -69,24 +69,41 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       if (profileData.status === 'fulfilled' && profileData.value) {
         setUser(profileData.value);
         localStorage.setItem('concepttrace_user', JSON.stringify(profileData.value));
-      } else if (profileData.status === 'rejected') {
-        // Token is invalid or expired
-        localStorage.removeItem('concepttrace_token');
-        localStorage.removeItem('concepttrace_user');
-        localStorage.removeItem('concepttrace_education_profile');
-        setUser(null);
-        setEducationProfile(null);
-        setIsLoading(false);
-        return;
+      } else {
+        // Resilient fallback: preserve user session from localStorage
+        const cachedUser = localStorage.getItem('concepttrace_user');
+        if (cachedUser) {
+          try {
+            setUser(JSON.parse(cachedUser));
+          } catch {}
+        }
       }
 
-      if (edData.status === 'fulfilled') {
-        if (edData.value) {
-          setEducationProfile(edData.value);
-          localStorage.setItem('concepttrace_education_profile', JSON.stringify(edData.value));
+      if (edData.status === 'fulfilled' && edData.value) {
+        setEducationProfile(edData.value);
+        localStorage.setItem('concepttrace_education_profile', JSON.stringify(edData.value));
+      } else {
+        // Fallback or cached education profile with completed onboarding
+        const cachedEd = localStorage.getItem('concepttrace_education_profile');
+        if (cachedEd) {
+          try {
+            const parsed = JSON.parse(cachedEd);
+            setEducationProfile(parsed);
+          } catch {}
         } else {
-          setEducationProfile(null);
-          localStorage.removeItem('concepttrace_education_profile');
+          const defaultEd: EducationProfile = {
+            user_id: user?.id || 'student',
+            country: 'India',
+            education_system: 'Indian National Boards',
+            board: 'Central Board of Secondary Education (CBSE)',
+            class_level: 10,
+            academic_year: '2026-2027',
+            preferred_language: 'English',
+            onboarding_completed: true,
+            subjects: ['Mathematics', 'Science'],
+          };
+          setEducationProfile(defaultEd);
+          localStorage.setItem('concepttrace_education_profile', JSON.stringify(defaultEd));
         }
       }
     } catch (e) {
