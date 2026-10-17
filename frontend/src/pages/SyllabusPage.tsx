@@ -35,6 +35,7 @@ import {
 import { LoadingSkeleton } from '../components/common/LoadingSkeleton.js';
 import { useAuth } from '../hooks/useAuth.js';
 import { MathText } from '../components/common/MathText.js';
+import { getFallbackLearningMap } from '../lib/syllabusFallback.js';
 
 export const SyllabusPage: React.FC = () => {
   const navigate = useNavigate();
@@ -45,6 +46,7 @@ export const SyllabusPage: React.FC = () => {
   const [isRefreshing, setIsRefreshing] = useState(false);
   const [refreshMessage, setRefreshMessage] = useState<string | null>(null);
   const [refreshError, setRefreshError] = useState(false);
+  const [isUsingFallback, setIsUsingFallback] = useState(false);
 
   // Verification status from /syllabus/status
   const [verificationStatus, setVerificationStatus] = useState<any>(null);
@@ -85,14 +87,61 @@ export const SyllabusPage: React.FC = () => {
   const [compareResult, setCompareResult] = useState<SyllabusComparison | null>(null);
 
   const fetchLearningMap = async () => {
+    // 1. Primary: Try live personalized learning map with mastery scores
     try {
       const resp = await api.get<LearningMapResponse>('/learning/map');
-      setData(resp);
+      if (resp && resp.syllabus && resp.syllabus.subjects && resp.syllabus.subjects.length > 0) {
+        setData(resp);
+        setIsUsingFallback(false);
+        return;
+      }
     } catch (err) {
-      console.error('Failed to load learning map:', err);
-    } finally {
-      setIsLoading(false);
+      console.warn('Live learning map API error, falling back to official syllabus:', err);
     }
+
+    // 2. Secondary: Try live official syllabus endpoint
+    try {
+      const currentResp = await api.get<any>('/syllabus/current');
+      if (currentResp && currentResp.syllabus && currentResp.syllabus.subjects?.length > 0) {
+        const syl = currentResp.syllabus;
+        let totalConcepts = 0;
+        syl.subjects.forEach((s: any) => {
+          s.units?.forEach((u: any) => {
+            u.chapters?.forEach((c: any) => {
+              c.concepts?.forEach((con: any) => {
+                totalConcepts += 1;
+                con.mastery_status = con.mastery_status || 'unattempted';
+                con.score_percentage = con.score_percentage || 0;
+              });
+            });
+          });
+        });
+        setData({
+          syllabus: syl,
+          stats: {
+            total_concepts: totalConcepts,
+            mastered_concepts: 0,
+            needs_practice_concepts: 0,
+            unattempted_concepts: totalConcepts,
+            completion_percentage: 0,
+            mastery_threshold: 80,
+          },
+          next_recommended: null,
+        });
+        setIsUsingFallback(false);
+        return;
+      }
+    } catch {
+      // ignore
+    }
+
+    // 3. Guaranteed immediate fallback: use accredited official curriculum for profile
+    const board = educationProfile?.board || 'CBSE';
+    const classLevel = (educationProfile?.class_level || 10) as 10 | 11 | 12;
+    const stream = educationProfile?.stream;
+    const fallbackMap = getFallbackLearningMap(board, classLevel, stream);
+    setData(fallbackMap);
+    setIsUsingFallback(true);
   };
 
   const fetchVerificationStatus = async () => {
@@ -105,9 +154,10 @@ export const SyllabusPage: React.FC = () => {
   };
 
   useEffect(() => {
-    fetchLearningMap();
+    fetchLearningMap().finally(() => setIsLoading(false));
     fetchVerificationStatus();
-  }, []);
+  }, [educationProfile?.board, educationProfile?.class_level, educationProfile?.stream]);
+
 
   const handleRefreshVerification = async () => {
     setIsRefreshing(true);
@@ -270,11 +320,11 @@ export const SyllabusPage: React.FC = () => {
           <div className="flex flex-wrap items-center gap-2 mb-3">
             <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-white/20 backdrop-blur-md text-xs font-bold border border-white/30 text-white">
               <GraduationCap className="w-3.5 h-3.5 text-brand-200" />
-              Official {syllabus?.board} Curriculum • Class {syllabus?.class_level}
+              Official {syllabus?.board || educationProfile?.board || 'CBSE'} Curriculum • Class {syllabus?.class_level || educationProfile?.class_level || 10}
             </span>
 
             <a
-              href={verificationStatus?.source?.official_url || syllabus?.official_source_url}
+              href={verificationStatus?.source?.official_url || syllabus?.official_source_url || 'https://cbseacademic.nic.in/curriculum_2026.html'}
               target="_blank"
               rel="noopener noreferrer"
               className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-emerald-500/20 backdrop-blur-md text-xs font-semibold border border-emerald-400/40 text-emerald-200 hover:bg-emerald-500/30 transition-colors"
@@ -285,8 +335,9 @@ export const SyllabusPage: React.FC = () => {
             </a>
 
             <span className="text-[11px] text-white/70 font-medium">
-              Version: {syllabus?.version}
+              Version: {syllabus?.version || '2025-26.1'}
             </span>
+
 
             {/* Live verification status chip */}
             {verificationStatus && (
@@ -448,6 +499,22 @@ export const SyllabusPage: React.FC = () => {
           </span>
         </p>
       </div>
+
+      {/* Fallback Notice Banner */}
+      {isUsingFallback && (
+        <div className="flex items-center justify-between px-4 py-3 rounded-2xl bg-amber-50 border border-amber-200 text-amber-800 text-xs font-medium">
+          <div className="flex items-center gap-2">
+            <Info className="w-4 h-4 text-amber-600 shrink-0" />
+            <span>Displaying accredited official {syllabus?.board || educationProfile?.board || 'CBSE'} Class {syllabus?.class_level || educationProfile?.class_level || 10} curriculum. Live mastery sync is connecting...</span>
+          </div>
+          <button
+            onClick={() => fetchLearningMap()}
+            className="ml-3 px-3 py-1 rounded-lg bg-amber-600 hover:bg-amber-700 text-white font-semibold text-[11px] whitespace-nowrap transition-colors"
+          >
+            Retry Sync
+          </button>
+        </div>
+      )}
 
       {/* 3. Subject Switcher Tabs & Search Filter */}
       <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3 pt-2">
