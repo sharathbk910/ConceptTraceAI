@@ -47,7 +47,16 @@ if (app) {
   Object.assign(expressHandler, app);
 }
 
+// If PORT is provided (Vercel Services container/runtime or direct launch), listen on that port
+const port = process.env.PORT ? parseInt(process.env.PORT, 10) : null;
+if (port && app && typeof app.listen === 'function') {
+  app.listen(port, () => {
+    console.log(`🚀 ConceptTrace AI Backend listening on port ${port}`);
+  });
+}
+
 module.exports = expressHandler;
 module.exports.default = expressHandler;
 module.exports.app = expressHandler;
+
 
