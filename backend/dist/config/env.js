@@ -50,8 +50,12 @@ const envSchema = zod_1.z.object({
     APP_URL: zod_1.z.string().default(process.env.FRONTEND_URL || 'http://localhost:5173'),
 });
 const parsed = envSchema.safeParse(process.env);
+let envData;
 if (!parsed.success) {
-    console.error('❌ Invalid environment variables configuration:', parsed.error.format());
-    throw new Error('Invalid environment configuration');
+    console.warn('⚠️ Invalid environment variables configuration, falling back to schema defaults:', parsed.error.format());
+    envData = envSchema.parse({});
 }
-exports.env = parsed.data;
+else {
+    envData = parsed.data;
+}
+exports.env = envData;

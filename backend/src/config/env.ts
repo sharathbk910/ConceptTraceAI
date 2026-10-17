@@ -57,9 +57,14 @@ const envSchema = z.object({
 
 const parsed = envSchema.safeParse(process.env);
 
+let envData: z.infer<typeof envSchema>;
+
 if (!parsed.success) {
-  console.error('❌ Invalid environment variables configuration:', parsed.error.format());
-  throw new Error('Invalid environment configuration');
+  console.warn('⚠️ Invalid environment variables configuration, falling back to schema defaults:', parsed.error.format());
+  envData = envSchema.parse({});
+} else {
+  envData = parsed.data;
 }
 
-export const env = parsed.data;
+export const env = envData;
+

@@ -78,13 +78,13 @@ const mountV1Routes = (prefix) => {
 mountV1Routes('/api/v1');
 mountV1Routes('/v1');
 // Fallback 404 for unknown API endpoints
-app.use('/api/*', (req, res) => {
+app.use(['/api/*', '/api', '/*'], (req, res) => {
     res.status(404).json({
         success: false,
         data: null,
         error: {
             code: 'ROUTE_NOT_FOUND',
-            message: `The requested endpoint ${req.method} ${req.baseUrl} does not exist.`,
+            message: `The requested endpoint ${req.method} ${req.originalUrl || req.url} does not exist.`,
         },
     });
 });
