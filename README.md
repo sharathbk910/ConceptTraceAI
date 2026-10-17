@@ -2,6 +2,8 @@
 
 **Tagline:** *Learn • Improve • Succeed*
 
+**🌐 Live Production URL:** [https://concepttraceai-nine.vercel.app](https://concepttraceai-nine.vercel.app)
+
 ConceptTrace AI is a production-oriented, responsive web application and educational SaaS platform designed for Class 10, 11, and 12 students across CBSE, CISCE (ICSE/ISC), Karnataka State Board, NIOS, and other State/UT boards.
 
 ---
@@ -151,4 +153,13 @@ npm run dev
 ```bash
 npm run build
 ```
->>>>>>> 12fad76 (feat: complete production implementation of ConceptTrace AI platform)
+
+---
+
+## 🌐 Production Deployment
+
+- **Live URL:** [https://concepttraceai-nine.vercel.app](https://concepttraceai-nine.vercel.app)
+- **Deployment Platform:** Vercel (Multi-Service Project)
+  - `backend`: Express API service mounted at `/api/*`
+  - `frontend`: React + Vite SPA mounted at `/*`
+- **Routing Configuration:** Root [vercel.json](file:///c:/HackSprint/vercel.json)
