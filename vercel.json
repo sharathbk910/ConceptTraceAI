@@ -24,29 +24,13 @@
     {
       "source": "/api/(.*)",
       "destination": {
-        "service": "backend",
-        "path": "/api/$1"
-      }
-    },
-    {
-      "source": "/assets/(.*)",
-      "destination": {
-        "service": "frontend",
-        "path": "/assets/$1"
-      }
-    },
-    {
-      "source": "/favicon.svg",
-      "destination": {
-        "service": "frontend",
-        "path": "/favicon.svg"
+        "service": "backend"
       }
     },
     {
       "source": "/(.*)",
       "destination": {
-        "service": "frontend",
-        "path": "/index.html"
+        "service": "frontend"
       }
     }
   ]
