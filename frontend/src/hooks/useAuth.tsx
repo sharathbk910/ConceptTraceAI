@@ -13,6 +13,7 @@ interface AuthContextType {
   register: (fullName: string, email: string, password: string, confirmPassword: string) => Promise<any>;
   verifyOtp: (email: string, otp: string) => Promise<any>;
   verifyEmail: (token: string, email?: string) => Promise<any>;
+  instantVerify: (email: string) => Promise<any>;
   resendVerification: (email: string) => Promise<any>;
   forgotPassword: (email: string) => Promise<any>;
   resetPassword: (token: string, password: string, confirmPassword: string) => Promise<any>;
@@ -296,12 +297,28 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
           termsAccepted: true,
         }).catch((e) => console.warn('Backend sync notice:', e));
 
+        const isAutoConfirmed = Boolean(supaData.session || supaData.user?.email_confirmed_at);
+        if (isAutoConfirmed && supaData.session) {
+          localStorage.setItem('concepttrace_token', supaData.session.access_token);
+          const studentUser: User = {
+            id: supaData.user?.id || '',
+            email: supaData.user?.email || emailNorm,
+            full_name: nameClean,
+            avatar_url: null,
+            role: 'student',
+          };
+          localStorage.setItem('concepttrace_user', JSON.stringify(studentUser));
+          setUser(studentUser);
+          await refreshProfile();
+        }
+
         return {
           success: true,
           email: emailNorm,
-          requires_verification: true,
+          requires_verification: !isAutoConfirmed,
           delivery_mode: 'supabase',
           user: supaData.user,
+          session: supaData.session,
         };
       }
 
@@ -413,6 +430,12 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     return await api.post('/auth/reset-password', { token, password, confirmPassword });
   };
 
+  const instantVerify = async (email: string) => {
+    const emailNorm = email.trim().toLowerCase();
+    const res = await api.post<{ email: string; is_verified: boolean; message: string }>('/auth/instant-verify', { email: emailNorm });
+    return res;
+  };
+
   const logout = () => {
     if (supabase) {
       supabase.auth.signOut().catch((e) => console.warn('Supabase sign-out notice:', e));
@@ -445,6 +468,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         register,
         verifyOtp,
         verifyEmail,
+        instantVerify,
         resendVerification,
         forgotPassword,
         resetPassword,

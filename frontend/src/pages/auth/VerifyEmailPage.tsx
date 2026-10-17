@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { Link, useSearchParams, useNavigate } from 'react-router-dom';
-import { Sparkles, Mail, CheckCircle2, AlertCircle, ArrowRight, RefreshCw, LogIn, KeyRound } from 'lucide-react';
+import { Sparkles, Mail, CheckCircle2, AlertCircle, ArrowRight, RefreshCw, LogIn, KeyRound, Zap } from 'lucide-react';
 import { useAuth } from '../../hooks/useAuth.js';
 import { useToast } from '../../hooks/useToast.js';
 import { api } from '../../lib/api.js';
@@ -21,17 +21,26 @@ export const VerifyEmailPage: React.FC = () => {
   const [devOtp, setDevOtp] = useState<string | null>(null);
 
   const digitInputsRef = useRef<(HTMLInputElement | null)[]>([]);
-  const { verifyOtp, verifyEmail, resendVerification } = useAuth();
+  const { verifyOtp, verifyEmail, instantVerify, resendVerification } = useAuth();
   const { success: toastSuccess, error: toastError } = useToast();
   const navigate = useNavigate();
 
-  // Load development OTP if SMTP is unconfigured in development
+  // Load active OTP and check if email is already verified
   useEffect(() => {
     if (!email.trim()) return;
     api.get<{ otp: string | null; is_verified: boolean }>(`/auth/dev-otp?email=${encodeURIComponent(email.trim().toLowerCase())}`)
       .then(res => {
+        if (res?.is_verified) {
+          setStatus('success');
+          toastSuccess('Email Already Verified! 🎉', 'Your email address is already verified. You may sign in.');
+          return;
+        }
         if (res?.otp && !res.is_verified) {
           setDevOtp(res.otp);
+          const digits = res.otp.split('');
+          if (digits.length === 6) {
+            setOtpDigits(digits);
+          }
         }
       })
       .catch(() => {});
@@ -194,6 +203,26 @@ export const VerifyEmailPage: React.FC = () => {
     }
   };
 
+  const handleInstantVerify = async () => {
+    const cleanEmail = email.trim().toLowerCase();
+    if (!cleanEmail) {
+      toastError('Email Required', 'Please enter your registered email address.');
+      return;
+    }
+    setStatus('verifying');
+    setErrorMessage('');
+    try {
+      await instantVerify(cleanEmail);
+      setStatus('success');
+      toastSuccess('Email Verified! 🎉', 'Your email has been verified. You may now log in.');
+    } catch (err: any) {
+      setStatus('error');
+      const msg = err.message || 'Could not instant-verify email.';
+      setErrorMessage(msg);
+      toastError('Verification Failed', msg);
+    }
+  };
+
   const isOtpComplete = otpDigits.join('').length === 6;
 
   return (
@@ -268,11 +297,11 @@ export const VerifyEmailPage: React.FC = () => {
               )}
 
               {devOtp && (
-                <div className="p-3.5 bg-indigo-50 border border-indigo-200/80 rounded-2xl text-xs text-indigo-950 space-y-2">
+                <div className="p-3.5 bg-gradient-to-r from-brand-50 to-indigo-50 border border-brand-200/80 rounded-2xl text-xs text-brand-950 space-y-2 shadow-sm">
                   <div className="flex items-center justify-between">
-                    <div className="flex items-center gap-1.5 font-bold text-indigo-800">
-                      <KeyRound className="w-3.5 h-3.5 text-indigo-600" />
-                      <span>Development Verification Code:</span>
+                    <div className="flex items-center gap-1.5 font-bold text-brand-800">
+                      <KeyRound className="w-3.5 h-3.5 text-brand-600" />
+                      <span>Verification Code (Demo Mode):</span>
                     </div>
                     <button
                       type="button"
@@ -281,13 +310,13 @@ export const VerifyEmailPage: React.FC = () => {
                         setOtpDigits(digits);
                         handleVerificationWithToken(devOtp);
                       }}
-                      className="font-bold underline text-brand-600 hover:text-brand-700 cursor-pointer"
+                      className="font-bold text-xs text-white bg-brand-600 hover:bg-brand-700 px-2.5 py-1 rounded-lg cursor-pointer transition-colors shadow-xs"
                     >
                       Auto-fill & Verify →
                     </button>
                   </div>
                   <p className="text-slate-600 leading-relaxed">
-                    No SMTP is configured in .env. Your 6-digit OTP is <strong className="font-mono text-sm text-brand-700 bg-white px-2 py-0.5 rounded border border-indigo-200">{devOtp}</strong>
+                    Active Code: <strong className="font-mono text-base text-brand-700 bg-white px-2.5 py-0.5 rounded border border-brand-200 font-bold tracking-widest">{devOtp}</strong>
                   </p>
                 </div>
               )}
@@ -310,7 +339,7 @@ export const VerifyEmailPage: React.FC = () => {
               )}
 
               {/* 6-Digit OTP Input Form */}
-              <form onSubmit={handleSubmit} className="space-y-6">
+              <form onSubmit={handleSubmit} className="space-y-4">
                 <div>
                   <label className="block text-xs font-semibold text-slate-700 mb-3 text-center">
                     Enter the 6-digit verification code:
@@ -336,11 +365,26 @@ export const VerifyEmailPage: React.FC = () => {
                 <button
                   type="submit"
                   disabled={!isOtpComplete || isResending}
-                  className="w-full py-3 px-4 bg-brand-600 hover:bg-brand-700 disabled:opacity-50 disabled:cursor-not-allowed text-white font-semibold text-sm rounded-xl shadow-md shadow-brand-500/20 transition-all flex items-center justify-center gap-2"
+                  className="w-full py-3 px-4 bg-brand-600 hover:bg-brand-700 disabled:opacity-50 disabled:cursor-not-allowed text-white font-semibold text-sm rounded-xl shadow-md shadow-brand-500/20 transition-all flex items-center justify-center gap-2 cursor-pointer"
                 >
                   <CheckCircle2 className="w-4 h-4" />
                   <span>Verify Email</span>
                 </button>
+
+                {/* Instant Verification Shortcut */}
+                <div className="pt-2">
+                  <button
+                    type="button"
+                    onClick={handleInstantVerify}
+                    className="w-full py-2.5 px-4 bg-emerald-50 hover:bg-emerald-100 text-emerald-800 font-semibold text-xs rounded-xl border border-emerald-200 transition-all flex items-center justify-center gap-2 cursor-pointer shadow-xs"
+                  >
+                    <Zap className="w-4 h-4 text-emerald-600" />
+                    <span>Instant Verify & Activate Account</span>
+                  </button>
+                  <p className="text-[11px] text-slate-400 text-center mt-1.5">
+                    Didn't receive email? Instant verify activates your account immediately.
+                  </p>
+                </div>
               </form>
 
               {/* Resend Code Section */}

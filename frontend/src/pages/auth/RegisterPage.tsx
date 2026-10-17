@@ -63,12 +63,17 @@ export const RegisterPage: React.FC = () => {
 
     setIsSubmitting(true);
     try {
-      await register(nameClean, emailClean, password, confirmPassword);
-      toastSuccess(
-        'Registration Successful! 📧',
-        'We sent a 6-digit verification code to your email. Please verify to continue.'
-      );
-      navigate(`/verify-email?email=${encodeURIComponent(emailClean)}`);
+      const regResult = await register(nameClean, emailClean, password, confirmPassword);
+      if (regResult?.requires_verification === false) {
+        toastSuccess('Welcome to ConceptTrace AI! 🎉', 'Your account has been created and verified.');
+        navigate('/setup-profile', { replace: true });
+      } else {
+        toastSuccess(
+          'Registration Successful! 📧',
+          'Please verify your email address to activate your account.'
+        );
+        navigate(`/verify-email?email=${encodeURIComponent(emailClean)}`);
+      }
     } catch (err: any) {
       toastError('Registration Failed', err.message || 'Could not complete registration.');
     } finally {
