@@ -254,7 +254,7 @@ export const ProfilePage: React.FC = () => {
         </p>
       </div>
 
-      <form onSubmit={handleSave} className="bg-white rounded-3xl p-6 sm:p-8 border border-slate-200/90 shadow-soft space-y-7">
+      <form onSubmit={handleSave} className="bg-white rounded-3xl p-4 sm:p-6 md:p-8 border border-slate-200/90 shadow-soft space-y-7">
         {/* Section 1: Personal Details */}
         <div className="space-y-4">
           <h3 className="text-sm font-bold text-slate-900 border-b border-slate-100 pb-2">

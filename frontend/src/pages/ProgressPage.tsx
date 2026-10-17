@@ -166,36 +166,36 @@ export const ProgressPage: React.FC = () => {
       {activeTab === 'overview' && (
         <div className="space-y-6 animate-fade-in">
           {/* Key Metric Summary Grid */}
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-            <div className="bg-white rounded-2xl p-5 border border-slate-200 shadow-soft">
+          <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
+            <div className="bg-white rounded-2xl p-3.5 sm:p-5 border border-slate-200 shadow-soft">
               <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider block">Questions Analyzed</span>
-              <p className="text-2xl font-black text-slate-900 mt-1">{summary?.metrics.total_questions_analyzed || 0}</p>
+              <p className="text-xl sm:text-2xl font-black text-slate-900 mt-1">{summary?.metrics.total_questions_analyzed || 0}</p>
               <span className="text-[10px] text-slate-400 mt-0.5 block">Doubts with verified steps</span>
             </div>
 
-            <div className="bg-white rounded-2xl p-5 border border-slate-200 shadow-soft">
+            <div className="bg-white rounded-2xl p-3.5 sm:p-5 border border-slate-200 shadow-soft">
               <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider block">Practice Attempts</span>
-              <p className="text-2xl font-black text-slate-900 mt-1">{summary?.metrics.total_practice_attempts || 0}</p>
+              <p className="text-xl sm:text-2xl font-black text-slate-900 mt-1">{summary?.metrics.total_practice_attempts || 0}</p>
               <span className="text-[10px] text-slate-400 mt-0.5 block">Checked questions scored</span>
             </div>
 
-            <div className="bg-white rounded-2xl p-5 border border-slate-200 shadow-soft">
+            <div className="bg-white rounded-2xl p-3.5 sm:p-5 border border-slate-200 shadow-soft">
               <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider block">Overall Accuracy</span>
-              <p className="text-2xl font-black text-slate-900 mt-1">
+              <p className="text-xl sm:text-2xl font-black text-slate-900 mt-1">
                 {(summary?.metrics.total_practice_attempts || 0) > 0 ? `${summary?.metrics.overall_accuracy}%` : '--'}
               </p>
               <span className="text-[10px] text-slate-400 mt-0.5 block">Eligible checked percentage</span>
             </div>
 
-            <div className="bg-white rounded-2xl p-5 border border-slate-200 shadow-soft">
+            <div className="bg-white rounded-2xl p-3.5 sm:p-5 border border-slate-200 shadow-soft">
               <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider block">Tracked Study Time</span>
-              <p className="text-2xl font-black text-slate-900 mt-1">{summary?.metrics.tracked_time_display || '0m'}</p>
+              <p className="text-xl sm:text-2xl font-black text-slate-900 mt-1">{summary?.metrics.tracked_time_display || '0m'}</p>
               <span className="text-[10px] text-slate-400 mt-0.5 block">On ConceptTrace AI platform</span>
             </div>
           </div>
 
           {/* AI Guidance Highlight */}
-          <div className="bg-white rounded-3xl p-6 border border-slate-200 shadow-soft space-y-3">
+          <div className="bg-white rounded-3xl p-4 sm:p-6 border border-slate-200 shadow-soft space-y-3">
             <h3 className="text-sm font-bold text-slate-900">Summary of Performance Changes</h3>
             <p className="text-xs text-slate-700 bg-brand-50/50 p-4 rounded-xl border border-brand-100 font-medium leading-relaxed">
               {summary?.learning_guidance.summary}
@@ -208,9 +208,9 @@ export const ProgressPage: React.FC = () => {
       {activeTab === 'graphs' && (
         <div className="space-y-6 animate-fade-in">
           {/* Period Filter Buttons */}
-          <div className="flex items-center justify-between bg-white p-4 rounded-2xl border border-slate-200 shadow-soft">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 bg-white p-3.5 sm:p-4 rounded-2xl border border-slate-200 shadow-soft">
             <span className="text-xs font-bold text-slate-700">Filter Reporting Period</span>
-            <div className="flex gap-1.5">
+            <div className="flex flex-wrap gap-1.5">
               {(['7d', '30d', '90d'] as const).map(p => (
                 <button
                   key={p}

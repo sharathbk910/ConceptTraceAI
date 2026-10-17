@@ -76,12 +76,12 @@ export const PracticeResultsPage: React.FC = () => {
   return (
     <div className="max-w-3xl mx-auto space-y-6 animate-fade-in pb-12">
       {/* Score Celebration Card */}
-      <div className="bg-gradient-to-br from-brand-700 via-indigo-600 to-purple-600 text-white rounded-3xl p-8 text-center shadow-card relative overflow-hidden">
-        <div className="w-16 h-16 rounded-2xl bg-white/20 backdrop-blur-md flex items-center justify-center mx-auto mb-4 border border-white/30 shadow-inner">
-          <Award className="w-8 h-8 text-white" />
+      <div className="bg-gradient-to-br from-brand-700 via-indigo-600 to-purple-600 text-white rounded-3xl p-5 sm:p-8 text-center shadow-card relative overflow-hidden">
+        <div className="w-14 h-14 sm:w-16 sm:h-16 rounded-2xl bg-white/20 backdrop-blur-md flex items-center justify-center mx-auto mb-4 border border-white/30 shadow-inner">
+          <Award className="w-7 h-7 sm:w-8 sm:h-8 text-white" />
         </div>
 
-        <h1 className="text-2xl sm:text-3xl font-extrabold tracking-tight">Practice Session Complete!</h1>
+        <h1 className="text-xl sm:text-2xl md:text-3xl font-extrabold tracking-tight">Practice Session Complete!</h1>
         <p className="text-xs sm:text-sm text-brand-100 mt-1 max-w-md mx-auto">
           {scorePercent >= 80
             ? 'Outstanding conceptual execution! Your topic diagnostic metrics have been updated.'
@@ -91,20 +91,20 @@ export const PracticeResultsPage: React.FC = () => {
         </p>
 
         {/* Score pill */}
-        <div className="mt-6 inline-flex items-center gap-6 px-6 py-3 rounded-2xl bg-white/10 backdrop-blur-md border border-white/20">
+        <div className="mt-6 inline-flex flex-wrap items-center justify-center gap-4 sm:gap-6 px-4 sm:px-6 py-2.5 sm:py-3 rounded-2xl bg-white/10 backdrop-blur-md border border-white/20">
           <div>
             <span className="text-[10px] uppercase font-bold text-brand-200 block">Score</span>
-            <span className="text-2xl font-black">{scorePercent}%</span>
+            <span className="text-xl sm:text-2xl font-black">{scorePercent}%</span>
           </div>
-          <div className="w-px h-8 bg-white/20" />
+          <div className="w-px h-7 sm:h-8 bg-white/20 hidden sm:block" />
           <div>
             <span className="text-[10px] uppercase font-bold text-brand-200 block">Correct</span>
-            <span className="text-2xl font-black text-emerald-300">{correctCount}/{totalCount}</span>
+            <span className="text-xl sm:text-2xl font-black text-emerald-300">{correctCount}/{totalCount}</span>
           </div>
-          <div className="w-px h-8 bg-white/20" />
+          <div className="w-px h-7 sm:h-8 bg-white/20 hidden sm:block" />
           <div>
             <span className="text-[10px] uppercase font-bold text-brand-200 block">Subject</span>
-            <span className="text-sm font-bold truncate max-w-[100px]">{session?.subject}</span>
+            <span className="text-xs sm:text-sm font-bold truncate max-w-[120px] inline-block">{session?.subject}</span>
           </div>
         </div>
       </div>
@@ -137,7 +137,7 @@ export const PracticeResultsPage: React.FC = () => {
       </div>
 
       {/* Questions Detailed Review List */}
-      <div className="bg-white rounded-3xl p-6 sm:p-8 border border-slate-200/90 shadow-soft space-y-4">
+      <div className="bg-white rounded-3xl p-4 sm:p-6 md:p-8 border border-slate-200/90 shadow-soft space-y-4">
         <h3 className="text-base font-bold text-slate-900 flex items-center gap-2">
           <BookOpen className="w-5 h-5 text-brand-600" />
           <span>Questions & Solutions Review</span>
@@ -149,7 +149,7 @@ export const PracticeResultsPage: React.FC = () => {
             return (
               <div
                 key={q.id}
-                className={`p-5 rounded-2xl border text-xs space-y-3 ${
+                className={`p-3.5 sm:p-5 rounded-2xl border text-xs space-y-3 ${
                   isCorrect ? 'bg-emerald-50/40 border-emerald-200' : 'bg-rose-50/40 border-rose-200'
                 }`}
               >

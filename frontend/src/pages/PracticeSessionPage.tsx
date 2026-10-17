@@ -155,7 +155,7 @@ export const PracticeSessionPage: React.FC = () => {
   return (
     <div className="max-w-3xl mx-auto space-y-6 animate-fade-in pb-12">
       {/* Top Header & Progress */}
-      <div className="bg-white rounded-3xl p-6 border border-slate-200/90 shadow-soft space-y-3">
+      <div className="bg-white rounded-3xl p-4 sm:p-6 border border-slate-200/90 shadow-soft space-y-3">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-2">
             <span className="text-xs font-bold px-2.5 py-1 rounded-lg bg-brand-100 text-brand-800">
@@ -181,7 +181,7 @@ export const PracticeSessionPage: React.FC = () => {
       </div>
 
       {/* Active Question Card */}
-      <div className="bg-white rounded-3xl p-6 sm:p-8 border border-slate-200/90 shadow-soft space-y-6">
+      <div className="bg-white rounded-3xl p-4 sm:p-6 md:p-8 border border-slate-200/90 shadow-soft space-y-6">
         <div className="space-y-2">
           <div className="flex items-center justify-between text-[11px] font-bold text-slate-400 uppercase tracking-wider">
             <span>{currentQuestion.topic_id ? 'Topic Practice' : 'Curriculum Question'}</span>

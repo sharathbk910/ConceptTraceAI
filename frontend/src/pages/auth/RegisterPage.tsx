@@ -90,7 +90,7 @@ export const RegisterPage: React.FC = () => {
           </p>
         </div>
 
-        <div className="bg-white rounded-3xl shadow-xl shadow-slate-200/60 border border-slate-200/80 p-8 backdrop-blur-sm">
+        <div className="bg-white rounded-3xl shadow-xl shadow-slate-200/60 border border-slate-200/80 p-6 sm:p-8 backdrop-blur-sm">
           <div className="mb-6">
             <h2 className="text-xl font-bold text-slate-800">Student Registration</h2>
             <p className="text-xs text-slate-500 mt-1">

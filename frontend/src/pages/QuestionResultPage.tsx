@@ -213,7 +213,7 @@ export const QuestionResultPage: React.FC = () => {
       </div>
 
       {/* 1. Original Question & Metadata Card */}
-      <div className="bg-white rounded-3xl p-6 sm:p-7 border border-slate-200/90 shadow-soft space-y-4">
+      <div className="bg-white rounded-3xl p-4 sm:p-6 md:p-7 border border-slate-200/90 shadow-soft space-y-4">
         <div className="flex flex-wrap items-center justify-between gap-2">
           <div className="flex items-center gap-2">
             <span className="text-xs font-bold px-2.5 py-1 rounded-lg bg-brand-100 text-brand-800">
@@ -274,7 +274,7 @@ export const QuestionResultPage: React.FC = () => {
       )}
 
       {/* 3. Step-by-Step Solution */}
-      <div className="bg-white rounded-3xl p-6 sm:p-8 border border-slate-200/90 shadow-soft space-y-6">
+      <div className="bg-white rounded-3xl p-4 sm:p-6 md:p-8 border border-slate-200/90 shadow-soft space-y-6">
         <h3 className="text-base font-bold text-slate-900 flex items-center gap-2">
           <BookOpen className="w-5 h-5 text-brand-600" />
           <span>Step-by-Step Solution Breakdown</span>

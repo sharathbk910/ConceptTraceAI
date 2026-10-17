@@ -200,14 +200,14 @@ export const HomePage: React.FC = () => {
 
       {/* 3. Official Syllabus & Adaptive Learning Master Card */}
       {learningMap && (
-        <div className="bg-gradient-to-br from-purple-50 via-white to-indigo-50/50 rounded-3xl p-6 border border-purple-200/80 shadow-soft space-y-4">
+        <div className="bg-gradient-to-br from-purple-50 via-white to-indigo-50/50 rounded-3xl p-4 sm:p-6 border border-purple-200/80 shadow-soft space-y-4">
           <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
-            <div className="flex items-center gap-2.5">
-              <div className="w-9 h-9 rounded-xl bg-brand-600 text-white flex items-center justify-center shrink-0 shadow-sm">
+            <div className="flex items-start sm:items-center gap-2.5">
+              <div className="w-9 h-9 rounded-xl bg-brand-600 text-white flex items-center justify-center shrink-0 shadow-sm mt-0.5 sm:mt-0">
                 <GraduationCap className="w-5 h-5" />
               </div>
-              <div>
-                <div className="flex items-center gap-2">
+              <div className="min-w-0 flex-1">
+                <div className="flex flex-wrap items-center gap-2">
                   <h3 className="text-sm font-extrabold text-slate-800">
                     Official {learningMap.syllabus.board} Class {learningMap.syllabus.class_level} Syllabus
                   </h3>
@@ -215,14 +215,14 @@ export const HomePage: React.FC = () => {
                     href={learningMap.syllabus.official_source_url}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-800 text-[10px] font-bold border border-emerald-300 hover:bg-emerald-200 transition-colors"
+                    className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-800 text-[10px] font-bold border border-emerald-300 hover:bg-emerald-200 transition-colors shrink-0"
                   >
                     <CheckCircle2 className="w-3 h-3 text-emerald-600" />
-                    Verified Official Source
+                    Verified Source
                     <ExternalLink className="w-2.5 h-2.5" />
                   </a>
                 </div>
-                <p className="text-[11px] text-slate-500 font-medium">
+                <p className="text-[11px] text-slate-500 font-medium mt-0.5">
                   Academic Year {learningMap.syllabus.academic_year} • {learningMap.stats.total_concepts} Total Curriculum Concepts
                 </p>
               </div>
@@ -230,7 +230,7 @@ export const HomePage: React.FC = () => {
 
             <button
               onClick={() => navigate('/syllabus')}
-              className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-brand-600 hover:bg-brand-700 text-white text-xs font-bold transition-all shadow-sm active:scale-95"
+              className="w-full sm:w-auto justify-center inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-brand-600 hover:bg-brand-700 text-white text-xs font-bold transition-all shadow-sm active:scale-95 shrink-0"
             >
               <span>Explore Full Syllabus Tree</span>
               <ArrowRight className="w-3.5 h-3.5" />
@@ -314,7 +314,7 @@ export const HomePage: React.FC = () => {
       )}
 
       {/* 5. Quick Actions */}
-      <div className="grid grid-cols-2 sm:grid-cols-5 gap-3">
+      <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-2.5 sm:gap-3">
         <Link
           to="/library"
           className="flex items-center gap-3 p-3.5 bg-indigo-50/70 hover:bg-indigo-100/70 border border-indigo-200/70 rounded-2xl text-indigo-900 transition-all card-hover"

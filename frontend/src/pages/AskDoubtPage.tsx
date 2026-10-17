@@ -221,7 +221,7 @@ export const AskDoubtPage: React.FC = () => {
         </div>
       </div>
 
-      <form onSubmit={handleSubmit} className="bg-white rounded-3xl p-6 sm:p-8 border border-slate-200/90 shadow-soft space-y-6">
+      <form onSubmit={handleSubmit} className="bg-white rounded-3xl p-4 sm:p-6 md:p-8 border border-slate-200/90 shadow-soft space-y-6">
         {/* Saved Academic Profile Context Banner */}
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 p-4 bg-gradient-to-r from-brand-50/80 via-indigo-50/40 to-slate-50 rounded-2xl border border-brand-100">
           <div className="flex items-center gap-3">

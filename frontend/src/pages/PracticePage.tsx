@@ -383,29 +383,29 @@ export const PracticePage: React.FC = () => {
       </div>
 
       {/* Mode Switcher Tabs */}
-      <div className="flex items-center justify-between gap-3 border-b border-slate-200/80 pb-3">
-        <div className="flex items-center gap-2 bg-slate-100/80 p-1 rounded-2xl border border-slate-200/80">
+      <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3 border-b border-slate-200/80 pb-3">
+        <div className="flex items-center gap-1.5 sm:gap-2 bg-slate-100/80 p-1 rounded-2xl border border-slate-200/80 overflow-x-auto">
           <button
             onClick={() => setActiveTab('mastery')}
-            className={`px-4 py-2 rounded-xl text-xs font-bold transition-all flex items-center gap-2 ${
+            className={`flex-1 sm:flex-none justify-center px-3 sm:px-4 py-2 rounded-xl text-xs font-bold transition-all flex items-center gap-1.5 whitespace-nowrap ${
               activeTab === 'mastery'
                 ? 'bg-white text-brand-700 shadow-sm'
                 : 'text-slate-600 hover:text-slate-900'
             }`}
           >
-            <Sparkles className="w-3.5 h-3.5 text-amber-500" />
-            <span>Guided Topic Mastery Workflow</span>
+            <Sparkles className="w-3.5 h-3.5 text-amber-500 shrink-0" />
+            <span>Guided Topic Mastery</span>
           </button>
 
           <button
             onClick={() => setActiveTab('drill')}
-            className={`px-4 py-2 rounded-xl text-xs font-bold transition-all flex items-center gap-2 ${
+            className={`flex-1 sm:flex-none justify-center px-3 sm:px-4 py-2 rounded-xl text-xs font-bold transition-all flex items-center gap-1.5 whitespace-nowrap ${
               activeTab === 'drill'
                 ? 'bg-white text-brand-700 shadow-sm'
                 : 'text-slate-600 hover:text-slate-900'
             }`}
           >
-            <Layers className="w-3.5 h-3.5 text-slate-500" />
+            <Layers className="w-3.5 h-3.5 text-slate-500 shrink-0" />
             <span>Quick Practice Drills</span>
           </button>
         </div>
@@ -416,7 +416,7 @@ export const PracticePage: React.FC = () => {
               setMasterySession(null);
               setAnswers({});
             }}
-            className="text-xs font-bold text-slate-500 hover:text-brand-600 flex items-center gap-1.5 transition-colors"
+            className="text-xs font-bold text-slate-500 hover:text-brand-600 flex items-center justify-center sm:justify-start gap-1.5 transition-colors py-1"
           >
             <RotateCcw className="w-3.5 h-3.5" />
             <span>Reset Workflow / Choose Another Topic</span>

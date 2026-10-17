@@ -62,7 +62,7 @@ export const SettingsPage: React.FC = () => {
         </p>
       </div>
 
-      <div className="bg-white rounded-3xl p-6 sm:p-8 border border-slate-200/90 shadow-soft space-y-6">
+      <div className="bg-white rounded-3xl p-4 sm:p-6 md:p-8 border border-slate-200/90 shadow-soft space-y-6">
         {/* Notifications Section */}
         <div className="space-y-4">
           <h3 className="text-sm font-bold text-slate-900 flex items-center gap-2">

@@ -270,7 +270,7 @@ export const ConceptLibraryPage: React.FC = () => {
   return (
     <div className="max-w-6xl mx-auto space-y-6 animate-fade-in pb-16">
       {/* 1. Header Hero Banner */}
-      <div className="relative overflow-hidden rounded-3xl bg-gradient-to-br from-brand-900 via-brand-800 to-indigo-950 text-white p-6 sm:p-8 shadow-xl border border-brand-700/50">
+      <div className="relative overflow-hidden rounded-3xl bg-gradient-to-br from-brand-900 via-brand-800 to-indigo-950 text-white p-4 sm:p-6 md:p-8 shadow-xl border border-brand-700/50">
         <div className="relative z-10 max-w-3xl space-y-3">
           <div className="flex flex-wrap items-center gap-2">
             <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold bg-white/10 backdrop-blur-md border border-white/20 text-brand-100">
@@ -291,7 +291,7 @@ export const ConceptLibraryPage: React.FC = () => {
             )}
           </div>
 
-          <h1 className="text-2xl sm:text-3xl font-black tracking-tight text-white flex items-center gap-3">
+          <h1 className="text-xl sm:text-2xl md:text-3xl font-black tracking-tight text-white flex items-center gap-3">
             <span>Concept Library & Syllabus Navigator</span>
           </h1>
 

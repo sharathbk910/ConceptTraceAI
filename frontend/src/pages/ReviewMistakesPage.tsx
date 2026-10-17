@@ -53,13 +53,13 @@ export const ReviewMistakesPage: React.FC = () => {
   return (
     <div className="space-y-6 animate-fade-in pb-12">
       {/* Header Banner */}
-      <div className="relative overflow-hidden rounded-3xl bg-gradient-to-r from-rose-700 via-amber-700 to-indigo-800 text-white p-6 sm:p-8 shadow-card">
+      <div className="relative overflow-hidden rounded-3xl bg-gradient-to-r from-rose-700 via-amber-700 to-indigo-800 text-white p-4 sm:p-6 md:p-8 shadow-card">
         <div className="relative z-10 max-w-2xl">
           <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/20 backdrop-blur-md text-xs font-bold mb-3 border border-white/20">
             <AlertTriangle className="w-3.5 h-3.5 text-amber-200" />
             <span>Targeted Gap Remediation</span>
           </div>
-          <h1 className="text-2xl sm:text-3xl font-extrabold tracking-tight">
+          <h1 className="text-xl sm:text-2xl md:text-3xl font-extrabold tracking-tight">
             Review Mistakes & Cognitive Traps
           </h1>
           <p className="mt-2 text-xs sm:text-sm text-amber-100 font-medium leading-relaxed">

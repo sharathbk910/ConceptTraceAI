@@ -315,7 +315,7 @@ export const SyllabusPage: React.FC = () => {
   return (
     <div className="space-y-6 animate-fade-in pb-12">
       {/* 1. Official Syllabus Header Banner */}
-      <div className="relative overflow-hidden rounded-3xl bg-gradient-to-r from-purple-800 via-brand-700 to-indigo-800 text-white p-6 sm:p-8 shadow-card">
+      <div className="relative overflow-hidden rounded-3xl bg-gradient-to-r from-purple-800 via-brand-700 to-indigo-800 text-white p-4 sm:p-6 md:p-8 shadow-card">
         <div className="relative z-10">
           <div className="flex flex-wrap items-center gap-2 mb-3">
             <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-white/20 backdrop-blur-md text-xs font-bold border border-white/30 text-white">
@@ -359,7 +359,7 @@ export const SyllabusPage: React.FC = () => {
             )}
           </div>
 
-          <h1 className="text-2xl sm:text-3xl font-extrabold tracking-tight">
+          <h1 className="text-xl sm:text-2xl md:text-3xl font-extrabold tracking-tight">
             Academic Syllabus & Learning Tree
           </h1>
           <p className="mt-2 text-xs sm:text-sm text-brand-100 font-medium leading-relaxed">
@@ -393,11 +393,11 @@ export const SyllabusPage: React.FC = () => {
           )}
 
           {/* Action Row */}
-          <div className="mt-5 flex flex-wrap items-center gap-3">
+          <div className="mt-5 flex flex-wrap items-center gap-2.5 sm:gap-3">
             <button
               onClick={handleRefreshVerification}
               disabled={isRefreshing}
-              className="inline-flex items-center gap-2 px-3.5 py-2 rounded-xl bg-white/10 hover:bg-white/20 text-white text-xs font-semibold backdrop-blur-sm border border-white/20 transition-all active:scale-95 disabled:opacity-50"
+              className="w-full sm:w-auto justify-center inline-flex items-center gap-2 px-3.5 py-2 rounded-xl bg-white/10 hover:bg-white/20 text-white text-xs font-semibold backdrop-blur-sm border border-white/20 transition-all active:scale-95 disabled:opacity-50"
             >
               <RefreshCw className={`w-3.5 h-3.5 ${isRefreshing ? 'animate-spin' : ''}`} />
               <span>{isRefreshing ? 'Checking Official Portal...' : 'Check for Updates'}</span>
@@ -408,7 +408,7 @@ export const SyllabusPage: React.FC = () => {
                 setShowCompareModal(true);
                 setCompareResult(null);
               }}
-              className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-white text-brand-700 hover:bg-brand-50 text-xs font-bold shadow-md transition-all active:scale-95"
+              className="w-full sm:w-auto justify-center inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-white text-brand-700 hover:bg-brand-50 text-xs font-bold shadow-md transition-all active:scale-95"
             >
               <Upload className="w-3.5 h-3.5 text-brand-600" />
               <span>Compare School Syllabus</span>
@@ -431,9 +431,9 @@ export const SyllabusPage: React.FC = () => {
       </div>
 
       {/* 2. Mastery Benchmark & Progress Ribbon */}
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-3 sm:gap-4">
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-2.5 sm:gap-4">
         {/* Total Concepts */}
-        <div className="bg-white rounded-2xl p-4 sm:p-5 border border-slate-200/80 shadow-soft">
+        <div className="bg-white rounded-2xl p-3.5 sm:p-5 border border-slate-200/80 shadow-soft">
           <span className="text-[11px] font-bold text-slate-400 uppercase tracking-wider">Total Concepts</span>
           <div className="mt-1 flex items-baseline gap-2">
             <span className="text-2xl font-black text-slate-800">{data?.stats.total_concepts || 0}</span>
@@ -442,7 +442,7 @@ export const SyllabusPage: React.FC = () => {
         </div>
 
         {/* Mastered Concepts */}
-        <div className="bg-white rounded-2xl p-4 sm:p-5 border border-emerald-100 shadow-soft bg-gradient-to-br from-emerald-50/40 to-white">
+        <div className="bg-white rounded-2xl p-3.5 sm:p-5 border border-emerald-100 shadow-soft bg-gradient-to-br from-emerald-50/40 to-white">
           <span className="text-[11px] font-bold text-emerald-600 uppercase tracking-wider flex items-center gap-1.5">
             <Award className="w-3.5 h-3.5" />
             Mastered (≥ 80%)
@@ -456,7 +456,7 @@ export const SyllabusPage: React.FC = () => {
         </div>
 
         {/* Needs Practice */}
-        <div className="bg-white rounded-2xl p-4 sm:p-5 border border-amber-100 shadow-soft bg-gradient-to-br from-amber-50/40 to-white">
+        <div className="bg-white rounded-2xl p-3.5 sm:p-5 border border-amber-100 shadow-soft bg-gradient-to-br from-amber-50/40 to-white">
           <span className="text-[11px] font-bold text-amber-600 uppercase tracking-wider flex items-center gap-1.5">
             <AlertTriangle className="w-3.5 h-3.5" />
             Needs Practice (&lt; 80%)
@@ -468,7 +468,7 @@ export const SyllabusPage: React.FC = () => {
         </div>
 
         {/* Unattempted */}
-        <div className="bg-white rounded-2xl p-4 sm:p-5 border border-slate-200/80 shadow-soft">
+        <div className="bg-white rounded-2xl p-3.5 sm:p-5 border border-slate-200/80 shadow-soft">
           <span className="text-[11px] font-bold text-slate-400 uppercase tracking-wider">Unattempted</span>
           <div className="mt-1 flex items-baseline gap-2">
             <span className="text-2xl font-black text-slate-600">{data?.stats.unattempted_concepts || 0}</span>
