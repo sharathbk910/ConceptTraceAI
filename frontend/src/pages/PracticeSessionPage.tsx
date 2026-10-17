@@ -17,6 +17,7 @@ import { useToast } from '../hooks/useToast.js';
 import { PracticeSession, PracticeQuestion } from '../types/index.js';
 import { LoadingSkeleton } from '../components/common/LoadingSkeleton.js';
 import { ErrorState } from '../components/common/ErrorState.js';
+import { MathText } from '../components/common/MathText.js';
 
 export const PracticeSessionPage: React.FC = () => {
   const { sessionId } = useParams<{ sessionId: string }>();
@@ -188,9 +189,9 @@ export const PracticeSessionPage: React.FC = () => {
               <span className="capitalize text-slate-500">{currentQuestion.difficulty} Difficulty</span>
             )}
           </div>
-          <h2 className="text-base sm:text-lg font-bold text-slate-900 leading-snug">
-            {currentQuestion.question_text}
-          </h2>
+          <div className="text-base sm:text-lg font-bold text-slate-900 leading-snug">
+            <MathText text={currentQuestion.question_text} />
+          </div>
         </div>
 
         {/* Answer Input: MCQ Options or Short Answer */}
@@ -225,7 +226,7 @@ export const PracticeSessionPage: React.FC = () => {
                   onClick={() => setSelectedOption(opt)}
                   className={`w-full text-left p-4 rounded-2xl border text-xs sm:text-sm transition-all flex items-center justify-between ${optionStyle}`}
                 >
-                  <span>{opt}</span>
+                  <span><MathText text={opt} inline /></span>
                   {isCurrentAttempted && currentQuestion.correct_answer === opt && (
                     <CheckCircle2 className="w-5 h-5 text-emerald-600 shrink-0" />
                   )}
@@ -289,16 +290,16 @@ export const PracticeSessionPage: React.FC = () => {
               ) : (
                 <>
                   <XCircle className="w-4 h-4 text-rose-600" />
-                  <span>Incorrect. Correct Answer: {currentQuestion.correct_answer}</span>
+                  <span>Incorrect. Correct Answer: <MathText text={currentQuestion.correct_answer} inline /></span>
                 </>
               )}
             </div>
 
             {currentQuestion.explanation && (
-              <p className="text-[11px] leading-relaxed text-slate-700 pt-1 border-t border-slate-200/60">
+              <div className="text-[11px] leading-relaxed text-slate-700 pt-1 border-t border-slate-200/60">
                 <strong>Explanation: </strong>
-                {currentQuestion.explanation}
-              </p>
+                <MathText text={currentQuestion.explanation} />
+              </div>
             )}
           </div>
         )}

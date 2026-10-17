@@ -18,6 +18,7 @@ import { VerificationBadge } from '../components/common/VerificationBadge.js';
 import { LoadingSkeleton } from '../components/common/LoadingSkeleton.js';
 import { EmptyState } from '../components/common/EmptyState.js';
 import { ConfirmDialog } from '../components/common/ConfirmDialog.js';
+import { MathText } from '../components/common/MathText.js';
 
 export const HistoryPage: React.FC = () => {
   const { educationProfile } = useAuth();
@@ -181,12 +182,12 @@ export const HistoryPage: React.FC = () => {
                 </div>
 
                 <h3 className="text-sm font-bold text-slate-900 line-clamp-2">
-                  {q.extracted_text || q.question_text}
+                  <MathText text={q.extracted_text || q.question_text} inline />
                 </h3>
 
                 {q.solution_summary && (
                   <p className="text-xs text-slate-500 font-medium line-clamp-1">
-                    Final Answer: <span className="font-bold text-slate-700">{q.solution_summary.final_answer || 'Derived in steps'}</span> • {q.solution_summary.steps_count} steps
+                    Final Answer: <span className="font-bold text-slate-700"><MathText text={q.solution_summary.final_answer || 'Derived in steps'} inline /></span> • {q.solution_summary.steps_count} steps
                   </p>
                 )}
               </div>

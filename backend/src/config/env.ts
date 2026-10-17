@@ -20,7 +20,7 @@ const envSchema = z.object({
   // AI Provider (Gemini)
   AI_PROVIDER: z.string().default('gemini'),
   GEMINI_API_KEY: z.string().optional(),
-  GEMINI_MODEL: z.string().default('gemini-2.5-flash'),
+  GEMINI_MODEL: z.string().default('gemini-3.5-flash-lite'),
   
   // Storage & Uploads
   MAX_UPLOAD_SIZE_MB: z.string().default('10').transform(Number),
@@ -40,6 +40,15 @@ const envSchema = z.object({
   // Reporting
   PDF_REPORT_MAX_DAYS: z.string().default('365').transform(Number),
   DEFAULT_TIMEZONE: z.string().default('Asia/Kolkata'),
+
+  // Email & Verification
+  SMTP_HOST: z.string().optional(),
+  SMTP_PORT: z.string().default('587').transform(Number),
+  SMTP_USER: z.string().optional(),
+  SMTP_PASS: z.string().optional(),
+  SMTP_SECURE: z.string().default('false').transform(v => v === 'true'),
+  EMAIL_FROM: z.string().default('ConceptTrace AI <noreply@concepttrace.ai>'),
+  APP_URL: z.string().default('http://localhost:5173'),
 });
 
 const parsed = envSchema.safeParse(process.env);

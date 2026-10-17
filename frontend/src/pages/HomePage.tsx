@@ -11,9 +11,17 @@ import {
   Award,
   TrendingUp,
   AlertCircle,
+  AlertTriangle,
   ArrowRight,
   BookMarked,
   Lightbulb,
+  GraduationCap,
+  CheckCircle2,
+  ExternalLink,
+  Target,
+  Play,
+  RotateCcw,
+  Library,
 } from 'lucide-react';
 import {
   ResponsiveContainer,
@@ -28,9 +36,10 @@ import {
 } from 'recharts';
 import { useAuth } from '../hooks/useAuth.js';
 import { api } from '../lib/api.js';
-import { DashboardSummary } from '../types/index.js';
+import { DashboardSummary, LearningMapResponse, MistakeItem } from '../types/index.js';
 import { LoadingSkeleton } from '../components/common/LoadingSkeleton.js';
 import { EmptyState } from '../components/common/EmptyState.js';
+import { MathText } from '../components/common/MathText.js';
 
 export const HomePage: React.FC = () => {
   const { user } = useAuth();
@@ -38,17 +47,23 @@ export const HomePage: React.FC = () => {
 
   const [summary, setSummary] = useState<DashboardSummary | null>(null);
   const [graphs, setGraphs] = useState<any>(null);
+  const [learningMap, setLearningMap] = useState<LearningMapResponse | null>(null);
+  const [recentMistakes, setRecentMistakes] = useState<MistakeItem[]>([]);
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
     const fetchDashboard = async () => {
       try {
-        const [dashData, graphData] = await Promise.all([
+        const [dashData, graphData, mapData, mistakeData] = await Promise.all([
           api.get<DashboardSummary>('/dashboard'),
           api.get('/analytics/graphs', { period: '30d' }),
+          api.get<LearningMapResponse>('/learning/map').catch(() => null),
+          api.get<{ mistakes: MistakeItem[] }>('/learning/mistakes').catch(() => ({ mistakes: [] })),
         ]);
         setSummary(dashData);
         setGraphs(graphData);
+        if (mapData) setLearningMap(mapData);
+        if (mistakeData?.mistakes) setRecentMistakes(mistakeData.mistakes);
       } catch (err) {
         console.warn('Dashboard fetch error:', err);
       } finally {
@@ -146,8 +161,149 @@ export const HomePage: React.FC = () => {
         </div>
       </div>
 
-      {/* 3. Quick Actions */}
-      <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+      {/* 3. Official Syllabus & Adaptive Learning Master Card */}
+      {learningMap && (
+        <div className="bg-gradient-to-br from-purple-50 via-white to-indigo-50/50 rounded-3xl p-6 border border-purple-200/80 shadow-soft space-y-4">
+          <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
+            <div className="flex items-center gap-2.5">
+              <div className="w-9 h-9 rounded-xl bg-brand-600 text-white flex items-center justify-center shrink-0 shadow-sm">
+                <GraduationCap className="w-5 h-5" />
+              </div>
+              <div>
+                <div className="flex items-center gap-2">
+                  <h3 className="text-sm font-extrabold text-slate-800">
+                    Official {learningMap.syllabus.board} Class {learningMap.syllabus.class_level} Syllabus
+                  </h3>
+                  <a
+                    href={learningMap.syllabus.official_source_url}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-800 text-[10px] font-bold border border-emerald-300 hover:bg-emerald-200 transition-colors"
+                  >
+                    <CheckCircle2 className="w-3 h-3 text-emerald-600" />
+                    Verified Official Source
+                    <ExternalLink className="w-2.5 h-2.5" />
+                  </a>
+                </div>
+                <p className="text-[11px] text-slate-500 font-medium">
+                  Academic Year {learningMap.syllabus.academic_year} • {learningMap.stats.total_concepts} Total Curriculum Concepts
+                </p>
+              </div>
+            </div>
+
+            <button
+              onClick={() => navigate('/syllabus')}
+              className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-brand-600 hover:bg-brand-700 text-white text-xs font-bold transition-all shadow-sm active:scale-95"
+            >
+              <span>Explore Full Syllabus Tree</span>
+              <ArrowRight className="w-3.5 h-3.5" />
+            </button>
+          </div>
+
+          {/* Mastery Progress Bar */}
+          <div className="space-y-1.5 pt-1">
+            <div className="flex items-center justify-between text-xs font-semibold text-slate-700">
+              <span className="flex items-center gap-1.5">
+                <Target className="w-4 h-4 text-brand-600" />
+                Concept Mastery: {learningMap.stats.mastered_concepts} of {learningMap.stats.total_concepts} Concepts Mastered (≥ 80% Benchmark)
+              </span>
+              <span className="text-brand-600 font-bold">{learningMap.stats.completion_percentage}%</span>
+            </div>
+            <div className="w-full bg-purple-100/70 h-2.5 rounded-full overflow-hidden">
+              <div
+                className="bg-gradient-to-r from-brand-600 to-emerald-500 h-full rounded-full transition-all duration-500"
+                style={{ width: `${learningMap.stats.completion_percentage}%` }}
+              />
+            </div>
+          </div>
+
+          {/* Next Recommended Concept Banner */}
+          {learningMap.next_recommended && (
+            <div className="p-4 rounded-2xl bg-white border border-brand-200/90 shadow-xs flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
+              <div className="space-y-1">
+                <div className="flex items-center gap-1.5">
+                  <span className="px-2 py-0.5 rounded-md bg-amber-100 text-amber-800 text-[10px] font-bold">
+                    Next Recommended Concept
+                  </span>
+                  <span className="text-[11px] font-semibold text-slate-400">
+                    {learningMap.next_recommended.subject} • {learningMap.next_recommended.chapter}
+                  </span>
+                </div>
+                <h4 className="text-sm font-bold text-slate-800">
+                  <MathText text={learningMap.next_recommended.concept_name} inline />
+                </h4>
+                <div className="text-[11px] text-slate-500 font-medium">
+                  <MathText text={learningMap.next_recommended.reason} />
+                </div>
+              </div>
+
+              <button
+                onClick={() => navigate('/syllabus')}
+                className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-amber-600 hover:bg-amber-700 text-white text-xs font-bold transition-all shadow-sm shrink-0 active:scale-95"
+              >
+                <Play className="w-3.5 h-3.5 fill-current" />
+                <span>Start 5-Min Concept Quiz</span>
+              </button>
+            </div>
+          )}
+        </div>
+      )}
+
+      {/* 4. Recent Misconception Traps Warning (if student has recent mistakes) */}
+      {recentMistakes.length > 0 && (
+        <div className="bg-rose-50/70 rounded-3xl p-5 border border-rose-200/80 shadow-soft flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
+          <div className="flex items-center gap-3">
+            <div className="w-9 h-9 rounded-xl bg-rose-600 text-white flex items-center justify-center shrink-0 shadow-xs">
+              <AlertTriangle className="w-5 h-5" />
+            </div>
+            <div>
+              <h4 className="text-xs font-bold text-slate-800">
+                <span className="text-rose-700 font-bold">{recentMistakes.length} Diagnosed Misconception Traps</span> Ready for Review
+              </h4>
+              <p className="text-[11px] text-slate-600 font-medium">
+                Latest: "<MathText text={recentMistakes[0].trap} inline />" in <span className="font-semibold text-slate-800"><MathText text={recentMistakes[0].concept_name} inline /></span>
+              </p>
+            </div>
+          </div>
+
+          <button
+            onClick={() => navigate('/mistakes')}
+            className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-rose-600 hover:bg-rose-700 text-white text-xs font-bold transition-all shadow-sm shrink-0"
+          >
+            <RotateCcw className="w-3.5 h-3.5" />
+            <span>Review Mistakes & Retake</span>
+          </button>
+        </div>
+      )}
+
+      {/* 5. Quick Actions */}
+      <div className="grid grid-cols-2 sm:grid-cols-5 gap-3">
+        <Link
+          to="/library"
+          className="flex items-center gap-3 p-3.5 bg-indigo-50/70 hover:bg-indigo-100/70 border border-indigo-200/70 rounded-2xl text-indigo-900 transition-all card-hover"
+        >
+          <div className="w-9 h-9 rounded-xl bg-indigo-600 text-white flex items-center justify-center shrink-0 shadow-xs">
+            <Library className="w-5 h-5" />
+          </div>
+          <div className="overflow-hidden">
+            <h4 className="text-xs font-bold truncate">Concept Library</h4>
+            <p className="text-[10px] text-indigo-700 truncate">Browse & Practice</p>
+          </div>
+        </Link>
+
+        <Link
+          to="/syllabus"
+          className="flex items-center gap-3 p-3.5 bg-purple-50/70 hover:bg-purple-100/70 border border-purple-200/70 rounded-2xl text-purple-900 transition-all card-hover"
+        >
+          <div className="w-9 h-9 rounded-xl bg-purple-600 text-white flex items-center justify-center shrink-0 shadow-xs">
+            <GraduationCap className="w-5 h-5" />
+          </div>
+          <div className="overflow-hidden">
+            <h4 className="text-xs font-bold truncate">Official Syllabus</h4>
+            <p className="text-[10px] text-purple-700 truncate">Concept Trees & Quizzes</p>
+          </div>
+        </Link>
+
         <Link
           to="/ask"
           className="flex items-center gap-3 p-3.5 bg-brand-50/70 hover:bg-brand-100/70 border border-brand-200/70 rounded-2xl text-brand-900 transition-all card-hover"
@@ -175,33 +331,20 @@ export const HomePage: React.FC = () => {
         </Link>
 
         <Link
-          to="/progress"
-          className="flex items-center gap-3 p-3.5 bg-sky-50/70 hover:bg-sky-100/70 border border-sky-200/70 rounded-2xl text-sky-900 transition-all card-hover"
+          to="/mistakes"
+          className="flex items-center gap-3 p-3.5 bg-rose-50/70 hover:bg-rose-100/70 border border-rose-200/70 rounded-2xl text-rose-900 transition-all card-hover"
         >
-          <div className="w-9 h-9 rounded-xl bg-sky-600 text-white flex items-center justify-center shrink-0 shadow-xs">
-            <BarChart3 className="w-5 h-5" />
+          <div className="w-9 h-9 rounded-xl bg-rose-600 text-white flex items-center justify-center shrink-0 shadow-xs">
+            <AlertTriangle className="w-5 h-5" />
           </div>
           <div className="overflow-hidden">
-            <h4 className="text-xs font-bold truncate">Progress Report</h4>
-            <p className="text-[10px] text-sky-700 truncate">Analytics & PDF</p>
-          </div>
-        </Link>
-
-        <Link
-          to="/profile"
-          className="flex items-center gap-3 p-3.5 bg-purple-50/70 hover:bg-purple-100/70 border border-purple-200/70 rounded-2xl text-purple-900 transition-all card-hover"
-        >
-          <div className="w-9 h-9 rounded-xl bg-purple-600 text-white flex items-center justify-center shrink-0 shadow-xs">
-            <User className="w-5 h-5" />
-          </div>
-          <div className="overflow-hidden">
-            <h4 className="text-xs font-bold truncate">My Profile</h4>
-            <p className="text-[10px] text-purple-700 truncate">Syllabus Settings</p>
+            <h4 className="text-xs font-bold truncate">Review Mistakes</h4>
+            <p className="text-[10px] text-rose-700 truncate">Gaps & Tips</p>
           </div>
         </Link>
       </div>
 
-      {/* 4. AI Learning Guidance Card */}
+      {/* 6. AI Learning Guidance Card */}
       <div className="bg-white rounded-3xl p-6 border border-slate-200/80 shadow-soft">
         <div className="flex items-center gap-2.5 mb-3">
           <div className="w-7 h-7 rounded-lg bg-brand-100 text-brand-600 flex items-center justify-center">

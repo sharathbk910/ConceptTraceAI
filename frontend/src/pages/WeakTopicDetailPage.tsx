@@ -14,6 +14,7 @@ import { api } from '../lib/api.js';
 import { TopicMetric } from '../types/index.js';
 import { LoadingSkeleton } from '../components/common/LoadingSkeleton.js';
 import { ErrorState } from '../components/common/ErrorState.js';
+import { MathText } from '../components/common/MathText.js';
 
 export const WeakTopicDetailPage: React.FC = () => {
   const { topicId } = useParams<{ topicId: string }>();
@@ -64,7 +65,7 @@ export const WeakTopicDetailPage: React.FC = () => {
         <ChevronRight className="w-3.5 h-3.5" />
         <Link to="/weak-topics" className="hover:text-slate-800">Weak Topics</Link>
         <ChevronRight className="w-3.5 h-3.5" />
-        <span className="font-semibold text-slate-800">{topic.topic_name}</span>
+        <span className="font-semibold text-slate-800"><MathText text={topic.topic_name} inline /></span>
       </div>
 
       {/* Main Topic Header Card */}
@@ -98,7 +99,7 @@ export const WeakTopicDetailPage: React.FC = () => {
 
         <div>
           <h1 className="text-xl sm:text-2xl font-black text-slate-900 tracking-tight">
-            {topic.topic_name}
+            <MathText text={topic.topic_name} inline />
           </h1>
           <p className="mt-2 text-xs sm:text-sm text-slate-600 leading-relaxed font-medium">
             Diagnostic performance profile evaluated against student attempts.
@@ -132,9 +133,9 @@ export const WeakTopicDetailPage: React.FC = () => {
           <Target className="w-4 h-4 text-brand-600" />
           <span>Diagnostic Prescription & Recommended Action</span>
         </h3>
-        <p className="text-xs sm:text-sm text-slate-700 leading-relaxed bg-brand-50/50 p-4 rounded-2xl border border-brand-100 font-medium">
-          {topic.recommendation}
-        </p>
+        <div className="text-xs sm:text-sm text-slate-700 leading-relaxed bg-brand-50/50 p-4 rounded-2xl border border-brand-100 font-medium">
+          <MathText text={topic.recommendation} />
+        </div>
       </div>
 
       {/* Prerequisite Concepts */}
@@ -148,7 +149,7 @@ export const WeakTopicDetailPage: React.FC = () => {
             {topic.prerequisites.map(p => (
               <div key={p.id} className="p-4 bg-slate-50 rounded-2xl border border-slate-200 flex items-center justify-between">
                 <div>
-                  <h5 className="text-xs font-bold text-slate-800">{p.topic}</h5>
+                  <h5 className="text-xs font-bold text-slate-800"><MathText text={p.topic} inline /></h5>
                   <p className="text-[10px] text-slate-400">{p.chapter || 'Prerequisite'}</p>
                 </div>
                 <Link

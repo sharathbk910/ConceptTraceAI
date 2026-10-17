@@ -1,36 +1,71 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { Sparkles, Eye, EyeOff, ArrowRight, Lock, Mail } from 'lucide-react';
 import { useAuth } from '../../hooks/useAuth.js';
 import { useToast } from '../../hooks/useToast.js';
+import { GoogleSignInButton } from '../../components/auth/GoogleSignInButton.js';
 
 export const LoginPage: React.FC = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [verificationEmailNeeded, setVerificationEmailNeeded] = useState<string | null>(null);
 
-  const { login } = useAuth();
+  const { login, isAuthenticated, educationProfile, isLoading } = useAuth();
   const { error: toastError, success: toastSuccess } = useToast();
   const navigate = useNavigate();
   const location = useLocation();
 
   const from = (location.state as any)?.from?.pathname || '/home';
 
+  // Redirect if already authenticated
+  useEffect(() => {
+    if (!isLoading && isAuthenticated) {
+      if (!educationProfile?.onboarding_completed) {
+        navigate('/setup-profile', { replace: true });
+      } else {
+        navigate('/home', { replace: true });
+      }
+    }
+  }, [isAuthenticated, educationProfile, isLoading, navigate]);
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!email.trim() || !password.trim()) {
+    if (isSubmitting) return; // Prevent duplicate submissions
+    setVerificationEmailNeeded(null);
+
+    const emailClean = email.trim();
+    if (!emailClean || !password.trim()) {
       toastError('Validation Error', 'Please enter both your email address and password.');
+      return;
+    }
+
+    const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+    if (!emailRegex.test(emailClean)) {
+      toastError('Invalid Email Format', 'Please enter a valid email address with a domain extension (e.g., student@example.com).');
       return;
     }
 
     setIsSubmitting(true);
     try {
-      await login(email, password);
+      const result = await login(emailClean, password);
       toastSuccess('Welcome back!', 'Successfully signed in to ConceptTrace AI.');
-      navigate(from, { replace: true });
+
+      if (!result?.onboarding_completed) {
+        navigate('/setup-profile', { replace: true });
+      } else {
+        const dest = from === '/login' || from === '/register' || from === '/setup-profile' ? '/home' : from;
+        navigate(dest, { replace: true });
+      }
     } catch (err: any) {
-      toastError('Login Failed', err.message || 'Invalid email or password.');
+      const msg = err.message || '';
+      if (msg.toLowerCase().includes('not verified') || msg.toLowerCase().includes('verification')) {
+        setVerificationEmailNeeded(emailClean);
+        toastError('Verification Required', 'Please verify your email address before signing in.');
+      } else {
+        toastError('Login Failed', msg || 'Invalid email or password.');
+      }
     } finally {
       setIsSubmitting(false);
     }
@@ -58,6 +93,22 @@ export const LoginPage: React.FC = () => {
               Sign in to continue your personalized academic journey.
             </p>
           </div>
+
+          {verificationEmailNeeded && (
+            <div className="mb-5 p-3.5 bg-amber-50 border border-amber-200 rounded-2xl flex items-start gap-2.5 text-xs text-amber-800">
+              <Mail className="w-4 h-4 text-amber-600 shrink-0 mt-0.5" />
+              <div>
+                <p className="font-semibold">Email Verification Required</p>
+                <p className="mt-0.5 text-amber-700">Your account needs to be verified before login.</p>
+                <Link
+                  to={`/verify-email?email=${encodeURIComponent(verificationEmailNeeded)}`}
+                  className="font-bold underline text-amber-900 mt-1 inline-block"
+                >
+                  Enter Verification Code →
+                </Link>
+              </div>
+            </div>
+          )}
 
           <form onSubmit={handleSubmit} className="space-y-4">
             <div>
@@ -122,6 +173,21 @@ export const LoginPage: React.FC = () => {
               )}
             </button>
           </form>
+
+          {/* Social Sign-In Divider */}
+          <div className="relative my-6">
+            <div className="absolute inset-0 flex items-center">
+              <div className="w-full border-t border-slate-200" />
+            </div>
+            <div className="relative flex justify-center text-xs uppercase">
+              <span className="bg-white px-3 text-slate-400 font-semibold tracking-wider">
+                Or continue with
+              </span>
+            </div>
+          </div>
+
+          {/* Google Sign In */}
+          <GoogleSignInButton label="Sign in with Google" />
 
           <div className="mt-6 pt-6 border-t border-slate-100 text-center text-xs text-slate-500">
             Don't have an account yet?{' '}

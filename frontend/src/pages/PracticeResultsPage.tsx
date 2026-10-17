@@ -14,6 +14,7 @@ import confetti from 'canvas-confetti';
 import { api } from '../lib/api.js';
 import { PracticeSession, PracticeQuestion } from '../types/index.js';
 import { LoadingSkeleton } from '../components/common/LoadingSkeleton.js';
+import { MathText } from '../components/common/MathText.js';
 
 export const PracticeResultsPage: React.FC = () => {
   const { sessionId } = useParams<{ sessionId: string }>();
@@ -157,7 +158,7 @@ export const PracticeResultsPage: React.FC = () => {
                     <span className="w-5 h-5 rounded-full bg-slate-200 text-slate-700 flex items-center justify-center text-[10px]">
                       {idx + 1}
                     </span>
-                    <span>{q.question_text}</span>
+                    <span><MathText text={q.question_text} /></span>
                   </div>
                   {isCorrect ? (
                     <span className="inline-flex items-center gap-1 text-emerald-700 font-bold shrink-0">
@@ -173,18 +174,18 @@ export const PracticeResultsPage: React.FC = () => {
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 text-[11px] pt-1 border-t border-slate-200/60">
                   <div>
                     <span className="text-slate-400 font-medium">Your Submitted Answer: </span>
-                    <span className="font-bold text-slate-800">{q.attempt?.submitted_answer || 'None'}</span>
+                    <span className="font-bold text-slate-800"><MathText text={q.attempt?.submitted_answer || 'None'} inline /></span>
                   </div>
                   <div>
                     <span className="text-slate-400 font-medium">Correct Answer: </span>
-                    <span className="font-bold text-emerald-800">{q.correct_answer}</span>
+                    <span className="font-bold text-emerald-800"><MathText text={q.correct_answer} inline /></span>
                   </div>
                 </div>
 
                 {q.explanation && (
                   <div className="p-3 bg-white/80 rounded-xl border border-slate-200/60 text-slate-700 leading-relaxed text-[11px]">
                     <strong>Explanation: </strong>
-                    {q.explanation}
+                    <MathText text={q.explanation} />
                   </div>
                 )}
               </div>

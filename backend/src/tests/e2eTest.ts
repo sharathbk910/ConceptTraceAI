@@ -1,4 +1,5 @@
 import assert from 'assert';
+import { db } from '../services/db/database.js';
 
 async function runEndToEndApiFlow() {
   console.log('🚀 Running ConceptTrace AI End-to-End API Workflow Verification...\n');
@@ -14,7 +15,6 @@ async function runEndToEndApiFlow() {
     const headers: Record<string, string> = {
       'Content-Type': 'application/json',
       ...(token ? { Authorization: `Bearer ${token}` } : {}),
-      ...(userId ? { 'x-user-id': userId } : {}),
       ...(options.headers || {}),
     };
 
@@ -33,7 +33,7 @@ async function runEndToEndApiFlow() {
       return res.arrayBuffer();
     }
 
-    const json = await res.json();
+    const json = (await res.json()) as any;
     if (!json.success && json.error) {
       throw new Error(json.error.message || 'API error');
     }
@@ -53,10 +53,41 @@ async function runEndToEndApiFlow() {
       termsAccepted: true,
     }),
   });
-  assert.ok(regRes.token, 'Token must be returned');
-  token = regRes.token;
-  userId = regRes.user.id;
-  console.log(`   ✅ Registered student: ${regRes.user.full_name} (${userId})`);
+  assert.strictEqual(regRes.requires_verification, true);
+  console.log(`   ✅ Registration submitted for: ${regEmail} (requires_verification: true)`);
+
+  // Retrieve 6-digit OTP securely from written database file
+  const fs = await import('fs');
+  const path = await import('path');
+  const dbPath = path.resolve(process.cwd(), 'data/concepttrace_db.json');
+  const dbData = JSON.parse(fs.readFileSync(dbPath, 'utf8'));
+  const authRecord = dbData.user_auth.find((u: any) => u.email === regEmail);
+  const verifyOtp = authRecord?.verification_token || '';
+  assert.match(verifyOtp, /^\d{6}$/, 'Generated verification code must be exactly 6 digits');
+  console.log(`   ✅ 6-digit OTP generated for registration: ${verifyOtp}`);
+
+  // 1b. Verify Email OTP
+  console.log('1b. Verifying email address with 6-digit OTP...');
+  const verifyRes = await api('/auth/verify-otp', {
+    method: 'POST',
+    body: JSON.stringify({ email: regEmail, otp: verifyOtp }),
+  });
+  console.log(`   ✅ Email verified: ${verifyRes.message}`);
+
+  // 1c. Login to obtain session token
+  console.log('1c. Logging in with verified account...');
+  const loginRes = await api('/auth/login', {
+    method: 'POST',
+    body: JSON.stringify({
+      email: regEmail,
+      password: 'password123',
+    }),
+  });
+  assert.ok(loginRes.token, 'Session token must be returned');
+  token = loginRes.token;
+  userId = loginRes.user.id;
+  assert.strictEqual(loginRes.onboarding_completed, false, 'New student must require onboarding');
+  console.log(`   ✅ Logged in successfully: ${loginRes.user.full_name} (${userId})`);
 
   // 2. Setup Education Profile
   console.log('2. Setting up education profile...');

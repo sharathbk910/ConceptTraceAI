@@ -62,8 +62,12 @@ router.put('/education-profile', async (req: Request, res: Response, next: NextF
 
     const savedEdProfile = db.upsertEducationProfile({
       user_id: userId,
+      country: validated.country,
+      education_system: validated.education_system || undefined,
+      state_or_ut: validated.state_or_ut || undefined,
       board: validated.board,
       class_level: validated.class_level as 10 | 11 | 12,
+      stream: validated.stream || undefined,
       academic_year: validated.academic_year,
       preferred_language: validated.preferred_language,
       syllabus_file_path: validated.syllabus_file_path,

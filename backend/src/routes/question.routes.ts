@@ -17,27 +17,70 @@ router.post(
       const userId = req.user!.id;
       const file = req.file;
 
+      const edProfile = db.getEducationProfile(userId);
+      const userSubjects = db.getStudentSubjects(userId).map(s => s.subject_name);
+
+      const subject = req.body.subject || (userSubjects.length > 0 ? userSubjects[0] : 'Mathematics');
+      const classLevel = (req.body.class_level ? Number(req.body.class_level) : edProfile?.class_level || 10) as 10 | 11 | 12;
+      const board = req.body.board || edProfile?.board || 'CBSE';
+      const preferredLanguage = req.body.language || edProfile?.preferred_language || 'English';
+
       const bodyData = {
         question_text: req.body.question_text || null,
-        subject: req.body.subject,
+        subject,
         topic_id: req.body.topic_id || null,
         chapter: req.body.chapter || null,
-        language: req.body.language || 'English',
+        language: preferredLanguage,
+        class_level: classLevel,
+        board,
         file_path: file ? file.path : (req.body.file_path || null),
         input_type: file ? (req.body.question_text ? 'mixed' : file.mimetype === 'application/pdf' ? 'document' : 'image') : 'text',
       };
 
       const validated = CreateQuestionSchema.parse(bodyData);
-      const edProfile = db.getEducationProfile(userId);
-      const classLevel = edProfile?.class_level || 10;
-      const board = edProfile?.board || 'CBSE';
-      const preferredLanguage = edProfile?.preferred_language || validated.language || 'English';
+
+      // Persist newly provided or missing academic information to the student's profile
+      const hasMissingEdDetails = !edProfile || !edProfile.class_level || !edProfile.board || !edProfile.preferred_language;
+      const hasUpdatedEdDetails = (req.body.class_level && Number(req.body.class_level) !== edProfile?.class_level) ||
+                                  (req.body.board && req.body.board !== edProfile?.board) ||
+                                  (req.body.language && req.body.language !== edProfile?.preferred_language);
+
+      if (hasMissingEdDetails || hasUpdatedEdDetails) {
+        db.upsertEducationProfile({
+          user_id: userId,
+          country: edProfile?.country || 'India',
+          education_system: edProfile?.education_system || undefined,
+          state_or_ut: edProfile?.state_or_ut || undefined,
+          board,
+          class_level: classLevel,
+          stream: classLevel !== 10 ? (edProfile?.stream || undefined) : undefined,
+          academic_year: edProfile?.academic_year || '2026-27',
+          preferred_language: preferredLanguage,
+          syllabus_file_path: edProfile?.syllabus_file_path || null,
+          onboarding_completed: true,
+        });
+      }
+
+      if (subject && !userSubjects.includes(subject)) {
+        db.setStudentSubjects(userId, [...userSubjects, subject]);
+      }
 
       // Step 1: Input Extraction
-      const extraction = await AIPipelineService.extractQuestion(
-        validated.question_text,
-        validated.file_path
-      );
+      let extraction: any;
+      try {
+        extraction = await AIPipelineService.extractQuestion(
+          validated.question_text,
+          validated.file_path
+        );
+      } catch (extractErr: any) {
+        extraction = {
+          extracted_question: validated.question_text?.trim() || 'Uploaded academic question',
+          questions: [{ text: validated.question_text?.trim() || 'Uploaded academic question', question_index: 1 }],
+          extraction_confidence: 0.8,
+          ambiguous_regions: [],
+          needs_clarification: false,
+        };
+      }
 
       // Create Query record in database with status 'processing'
       const queryRecord = db.createQuery({
@@ -53,17 +96,43 @@ router.post(
         extraction_confidence: extraction.extraction_confidence,
       });
 
+      console.log(`[AskDoubt] Processing question_id=${queryRecord.id} subject=${validated.subject} class=${classLevel} board=${board}`);
+
       // Step 2-6: Run Full AI Pipeline
-      const analysisResult = await AIPipelineService.analyzeDoubt({
-        questionText: validated.question_text,
-        extractedText: extraction.extracted_question,
-        filePath: validated.file_path,
-        subject: validated.subject,
-        topicId: validated.topic_id,
-        classLevel,
-        board,
-        preferredLanguage,
-      });
+      let analysisResult: any;
+      try {
+        analysisResult = await AIPipelineService.analyzeDoubt({
+          questionText: validated.question_text,
+          extractedText: extraction.extracted_question,
+          filePath: validated.file_path,
+          subject: validated.subject,
+          topicId: validated.topic_id,
+          classLevel,
+          board,
+          preferredLanguage,
+        });
+      } catch (aiErr: any) {
+        console.error(`[AskDoubt] Analysis failed for question_id=${queryRecord.id}:`, aiErr.message || aiErr);
+        db.updateQuery(queryRecord.id, {
+          status: 'failed',
+          error_code: aiErr.code || 'AI_ANALYSIS_FAILED',
+          error_message: aiErr.message || 'AI processing encountered an error. Please retry.',
+        });
+        res.status(aiErr.statusCode || 502).json({
+          success: false,
+          data: {
+            question_id: queryRecord.id,
+            status: 'failed',
+            query: db.getQueryById(queryRecord.id, userId),
+            solution: null,
+          },
+          error: {
+            code: aiErr.code || 'AI_ANALYSIS_FAILED',
+            message: aiErr.message || 'Could not analyze question. Please retry.',
+          },
+        });
+        return;
+      }
 
       // Persist Solution Record
       const solutionRecord = db.createSolution({
@@ -86,6 +155,8 @@ router.post(
       db.updateQuery(queryRecord.id, {
         status: 'completed',
         topic_id: queryRecord.topic_id || (analysisResult.topic ? queryRecord.topic_id : null),
+        error_code: null,
+        error_message: null,
       });
 
       // Record activity event
@@ -95,6 +166,8 @@ router.post(
         query_id: queryRecord.id,
         metadata: { subject: validated.subject, topic: analysisResult.topic },
       });
+
+      console.log(`[AskDoubt] Successfully completed analysis for question_id=${queryRecord.id}`);
 
       res.status(201).json({
         success: true,
@@ -220,16 +293,38 @@ router.post('/questions/:id/analyze', async (req: Request, res: Response, next: 
     const board = edProfile?.board || 'CBSE';
     const preferredLanguage = edProfile?.preferred_language || 'English';
 
-    const analysisResult = await AIPipelineService.analyzeDoubt({
-      questionText: query.question_text,
-      extractedText: query.extracted_text,
-      filePath: query.file_path,
-      subject: query.subject || 'General',
-      topicId: query.topic_id,
-      classLevel,
-      board,
-      preferredLanguage,
-    });
+    let analysisResult: any;
+    try {
+      analysisResult = await AIPipelineService.analyzeDoubt({
+        questionText: query.question_text,
+        extractedText: query.extracted_text,
+        filePath: query.file_path,
+        subject: query.subject || 'General',
+        topicId: query.topic_id,
+        classLevel,
+        board,
+        preferredLanguage,
+      });
+    } catch (aiErr: any) {
+      console.error(`[AskDoubt] Retry failed for question_id=${query.id}:`, aiErr.message || aiErr);
+      db.updateQuery(query.id, {
+        status: 'failed',
+        error_code: aiErr.code || 'AI_RETRY_FAILED',
+        error_message: aiErr.message || 'Retry analysis could not be completed. Please retry.',
+      });
+      res.status(aiErr.statusCode || 502).json({
+        success: false,
+        data: {
+          query: db.getQueryById(query.id, userId),
+          solution: db.getSolutionByQueryId(query.id),
+        },
+        error: {
+          code: aiErr.code || 'AI_RETRY_FAILED',
+          message: aiErr.message || 'Could not re-analyze doubt. Please retry.',
+        },
+      });
+      return;
+    }
 
     // Replace solution
     const existingSol = db.getSolutionByQueryId(query.id);
@@ -264,12 +359,16 @@ router.post('/questions/:id/analyze', async (req: Request, res: Response, next: 
       });
     }
 
-    db.updateQuery(query.id, { status: 'completed' });
+    const updatedQuery = db.updateQuery(query.id, {
+      status: 'completed',
+      error_code: null,
+      error_message: null,
+    });
 
     res.json({
       success: true,
       data: {
-        query,
+        query: updatedQuery || query,
         solution: solutionRecord,
       },
       error: null,

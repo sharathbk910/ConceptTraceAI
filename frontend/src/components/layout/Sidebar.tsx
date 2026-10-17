@@ -15,6 +15,9 @@ import {
   PieChart,
   CalendarDays,
   Target,
+  GraduationCap,
+  AlertTriangle,
+  Library,
 } from 'lucide-react';
 import { useAuth } from '../../hooks/useAuth.js';
 import { ConfirmDialog } from '../common/ConfirmDialog.js';
@@ -52,6 +55,21 @@ export const Sidebar: React.FC = () => {
           <span>Home Dashboard</span>
         </NavLink>
 
+        <NavLink to="/syllabus" className={navItemClass}>
+          <GraduationCap className="w-4 h-4 shrink-0" />
+          <span>Official Syllabus</span>
+        </NavLink>
+
+        <NavLink to="/library" className={navItemClass}>
+          <Library className="w-4 h-4 shrink-0" />
+          <span>Concept Library</span>
+        </NavLink>
+
+        <NavLink to="/mistakes" className={navItemClass}>
+          <AlertTriangle className="w-4 h-4 shrink-0" />
+          <span>Review Mistakes</span>
+        </NavLink>
+
         <NavLink to="/ask" className={navItemClass}>
           <HelpCircle className="w-4 h-4 shrink-0" />
           <span>Ask a Doubt</span>
@@ -59,7 +77,7 @@ export const Sidebar: React.FC = () => {
 
         <NavLink to="/practice" className={navItemClass}>
           <BookOpenCheck className="w-4 h-4 shrink-0" />
-          <span>Practice Questions</span>
+          <span>Topic Practice & Mastery</span>
         </NavLink>
 
         <NavLink to="/weak-topics" className={navItemClass}>

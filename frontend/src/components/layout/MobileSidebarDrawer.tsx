@@ -12,6 +12,9 @@ import {
   Settings,
   LogOut,
   ChevronDown,
+  GraduationCap,
+  AlertTriangle,
+  Library,
 } from 'lucide-react';
 import { useAuth } from '../../hooks/useAuth.js';
 
@@ -69,6 +72,21 @@ export const MobileSidebarDrawer: React.FC<MobileSidebarDrawerProps> = ({ isOpen
               <span>Home Dashboard</span>
             </NavLink>
 
+            <NavLink to="/syllabus" onClick={onClose} className={itemClass}>
+              <GraduationCap className="w-4 h-4" />
+              <span>Official Syllabus</span>
+            </NavLink>
+
+            <NavLink to="/library" onClick={onClose} className={itemClass}>
+              <Library className="w-4 h-4" />
+              <span>Concept Library</span>
+            </NavLink>
+
+            <NavLink to="/mistakes" onClick={onClose} className={itemClass}>
+              <AlertTriangle className="w-4 h-4" />
+              <span>Review Mistakes</span>
+            </NavLink>
+
             <NavLink to="/ask" onClick={onClose} className={itemClass}>
               <HelpCircle className="w-4 h-4" />
               <span>Ask a Doubt</span>
@@ -76,7 +94,7 @@ export const MobileSidebarDrawer: React.FC<MobileSidebarDrawerProps> = ({ isOpen
 
             <NavLink to="/practice" onClick={onClose} className={itemClass}>
               <BookOpenCheck className="w-4 h-4" />
-              <span>Practice Questions</span>
+              <span>Topic Practice & Mastery</span>
             </NavLink>
 
             <NavLink to="/weak-topics" onClick={onClose} className={itemClass}>

@@ -8,8 +8,12 @@ export interface User {
 
 export interface EducationProfile {
   user_id: string;
+  country?: string;
+  education_system?: string;
+  state_or_ut?: string | null;
   board: string;
   class_level: 10 | 11 | 12;
+  stream?: string | null;
   academic_year: string;
   preferred_language: string;
   syllabus_file_path?: string | null;
@@ -72,6 +76,8 @@ export interface QueryItem {
   chapter?: string | null;
   status: 'pending' | 'processing' | 'completed' | 'needs_review' | 'failed';
   extraction_confidence?: number | null;
+  error_code?: string | null;
+  error_message?: string | null;
   created_at: string;
   solution_summary?: {
     verification_status: 'verified' | 'partially_verified' | 'needs_review';
@@ -184,3 +190,237 @@ export interface NotificationItem {
   read_at?: string | null;
   created_at: string;
 }
+
+// --- OFFICIAL SYLLABUS & ADAPTIVE LEARNING TYPES ---
+export interface SyllabusConcept {
+  id: string;
+  concept_name: string;
+  subtopics: string[];
+  difficulty: 'easy' | 'medium' | 'hard';
+  exam_importance: 'core' | 'high_yield' | 'standard';
+  prerequisites: string[];
+  learning_objectives: string[];
+  common_misconceptions: string[];
+  mastery_status?: 'unattempted' | 'needs_practice' | 'mastered';
+  score_percentage?: number;
+  quizzes_attempted?: number;
+  identified_gaps_count?: number;
+  last_attempted_at?: string | null;
+}
+
+export interface SyllabusChapter {
+  chapter_id: string;
+  chapter_number: number;
+  chapter_name: string;
+  concepts: SyllabusConcept[];
+}
+
+export interface SyllabusUnit {
+  unit_id: string;
+  unit_number: number;
+  unit_name: string;
+  weightage?: number;
+  chapters: SyllabusChapter[];
+}
+
+export interface SyllabusSubject {
+  subject_name: string;
+  code?: string;
+  total_marks?: number;
+  units: SyllabusUnit[];
+}
+
+export interface OfficialSyllabus {
+  id: string;
+  board: string;
+  class_level: 10 | 11 | 12;
+  stream?: string | null;
+  academic_year: string;
+  version: string;
+  official_source_url: string;
+  verified: boolean;
+  last_verified_at: string;
+  subjects: SyllabusSubject[];
+}
+
+export interface LearningMapResponse {
+  syllabus: OfficialSyllabus;
+  stats: {
+    total_concepts: number;
+    mastered_concepts: number;
+    needs_practice_concepts: number;
+    unattempted_concepts: number;
+    completion_percentage: number;
+    mastery_threshold: number;
+  };
+  next_recommended: {
+    concept_id: string;
+    concept_name: string;
+    subject: string;
+    chapter: string;
+    reason: string;
+  } | null;
+}
+
+export interface SyllabusComparison {
+  id: string;
+  user_id: string;
+  uploaded_filename: string;
+  board: string;
+  class_level: number;
+  subject: string;
+  total_official_concepts: number;
+  matched_concepts_count: number;
+  extra_topics_count: number;
+  omitted_topics_count: number;
+  coverage_percentage: number;
+  similarity_score: number;
+  matched_topics: Array<{ official_concept: string; extracted_topic: string; match_confidence: number }>;
+  extra_topics: Array<{ topic_name: string; note: string }>;
+  omitted_topics: Array<{ official_concept: string; chapter: string }>;
+  summary_notes: string;
+  created_at: string;
+}
+
+export interface ConceptRevisionNote {
+  id: string;
+  concept_id: string;
+  concept_name: string;
+  subject: string;
+  chapter: string;
+  class_level: number;
+  definitions: Array<{ term: string; explanation: string }>;
+  key_principles: string[];
+  formulas_and_laws: Array<{ title: string; latex: string; explanation: string }>;
+  common_pitfalls: Array<{ mistake: string; correction: string; why: string }>;
+  worked_examples: Array<{ problem: string; solution_steps: string[]; key_takeaway: string }>;
+  quick_summary: string;
+  memory_mnemonics?: string[];
+  created_at: string;
+}
+
+export interface ConceptFlashcard {
+  id: string;
+  concept_id: string;
+  subject: string;
+  cards: Array<{
+    card_id: string;
+    front: string;
+    back: string;
+    category: 'definition' | 'formula' | 'concept' | 'pitfall';
+    hint?: string;
+  }>;
+  created_at: string;
+}
+
+export interface MistakeItem {
+  id: string;
+  concept_id: string;
+  concept_name: string;
+  subject: string;
+  chapter: string;
+  trap: string;
+  snippet: string;
+  remediation: string;
+  date: string;
+}
+
+export interface TopicMasteryWeakArea {
+  concept: string;
+  classification: 'demonstrated_understanding' | 'possible_weakness' | 'recurring_weakness' | 'insufficient_evidence';
+  trap?: string;
+  evidence: string;
+}
+
+export interface TopicMasteryPersonalizedNotes {
+  quick_summary: string;
+  definitions: Array<{ term: string; explanation: string }>;
+  formulas_and_principles: Array<{ title: string; latex: string; explanation: string }>;
+  common_pitfalls: Array<{ mistake: string; correction: string; why: string }>;
+  worked_examples: Array<{ problem: string; solution_steps: string[]; key_takeaway: string }>;
+  memory_aids?: string[];
+}
+
+export interface TopicMasteryWorkflowSession {
+  id: string;
+  user_id: string;
+  subject: string;
+  chapter: string;
+  concept_id: string;
+  concept_name: string;
+  stage:
+    | 'diagnostic'
+    | 'diagnostic_review'
+    | 'notes'
+    | 'targeted_practice'
+    | 'readiness_check'
+    | 'final_assessment'
+    | 'mastery_result';
+  diagnostic_session_id?: string;
+  diagnostic_score?: number;
+  diagnostic_total?: number;
+  diagnostic_percentage?: number;
+  diagnostic_questions?: any[];
+  diagnostic_review?: any[];
+  identified_weak_areas: TopicMasteryWeakArea[];
+  personalized_notes?: TopicMasteryPersonalizedNotes;
+  targeted_practice_session_id?: string;
+  targeted_practice_questions?: any[];
+  targeted_practice_review?: any[];
+  targeted_practice_score?: number;
+  targeted_practice_total?: number;
+  readiness_confirmed: boolean;
+  final_session_id?: string;
+  final_questions?: any[];
+  final_score?: number;
+  final_total?: number;
+  final_percentage?: number;
+  final_review?: any[];
+  is_mastered?: boolean;
+  mastery_threshold: number;
+  improvement_percentage?: number;
+  next_recommended_concept?: {
+    concept_id: string;
+    concept_name: string;
+    chapter: string;
+    reason: string;
+  } | null;
+  created_at: string;
+  updated_at: string;
+}
+
+export interface MasteryCurriculumHierarchy {
+  board: string;
+  class_level: number;
+  academic_year: string;
+  stream?: string | null;
+  version?: string;
+  official_source_url?: string;
+  verified?: boolean;
+  last_verified_at?: string;
+  is_complete?: boolean;
+  subjects: Array<{
+    subject_name: string;
+    code?: string;
+    units: Array<{
+      unit_id: string;
+      unit_number?: number;
+      unit_name: string;
+      chapters: Array<{
+        chapter_id: string;
+        chapter_number?: number;
+        chapter_name: string;
+        concepts: Array<{
+          id: string;
+          concept_name: string;
+          subtopics: string[];
+          difficulty: string;
+          exam_importance: string;
+          mastery_status: 'unattempted' | 'needs_practice' | 'mastered';
+          score_percentage: number;
+        }>;
+      }>;
+    }>;
+  }>;
+}
+

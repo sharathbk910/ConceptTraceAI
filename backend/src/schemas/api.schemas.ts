@@ -1,9 +1,21 @@
 import { z } from 'zod';
 
+export const StrictEmailSchema = z
+  .string({ required_error: 'Email is required' })
+  .trim()
+  .min(1, 'Email address cannot be empty')
+  .max(254, 'Email must be under 254 characters')
+  .email('Invalid email address format')
+  .regex(
+    /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/,
+    'Email address must contain a valid domain extension (e.g. .com, .edu, .org, .in)'
+  )
+  .toLowerCase();
+
 // Registration
 export const RegisterSchema = z.object({
   fullName: z.string().trim().min(1, 'Full name is required').max(120, 'Name must be under 120 characters'),
-  email: z.string().trim().email('Invalid email address').toLowerCase(),
+  email: StrictEmailSchema,
   password: z.string().min(6, 'Password must be at least 6 characters'),
   confirmPassword: z.string().min(6),
   termsAccepted: z.boolean().refine(val => val === true, 'You must accept the terms and conditions'),
@@ -14,8 +26,37 @@ export const RegisterSchema = z.object({
 
 // Login
 export const LoginSchema = z.object({
-  email: z.string().trim().email('Invalid email address').toLowerCase(),
+  email: StrictEmailSchema,
   password: z.string().min(1, 'Password is required'),
+});
+
+// Email Verification
+export const VerifyEmailSchema = z.object({
+  token: z.string().min(1, 'Verification code or token is required'),
+  email: StrictEmailSchema.optional(),
+});
+
+export const VerifyOtpSchema = z.object({
+  email: StrictEmailSchema,
+  otp: z.string().trim().regex(/^\d{6}$/, 'Verification code must be exactly 6 digits'),
+});
+
+export const ResendVerificationSchema = z.object({
+  email: StrictEmailSchema,
+});
+
+// Password Reset
+export const ForgotPasswordSchema = z.object({
+  email: StrictEmailSchema,
+});
+
+export const ResetPasswordSchema = z.object({
+  token: z.string().min(1, 'Reset token is required'),
+  password: z.string().min(6, 'Password must be at least 6 characters'),
+  confirmPassword: z.string().min(6, 'Please confirm your password'),
+}).refine(data => data.password === data.confirmPassword, {
+  message: "Passwords don't match",
+  path: ['confirmPassword'],
 });
 
 // Profile Update
@@ -26,10 +67,14 @@ export const ProfileUpdateSchema = z.object({
 
 // Education Profile Setup & Update
 export const EducationProfileSchema = z.object({
+  country: z.string().default('India'),
+  education_system: z.string().optional().nullable(),
+  state_or_ut: z.string().optional().nullable(),
   board: z.string().min(1, 'Education board is required'),
   class_level: z.union([z.literal(10), z.literal(11), z.literal(12), z.string().transform(Number)]).pipe(
     z.number().refine(n => [10, 11, 12].includes(n), { message: 'Class must be 10, 11, or 12' })
   ),
+  stream: z.string().optional().nullable(),
   academic_year: z.string().min(4, 'Academic year is required'),
   preferred_language: z.string().default('English'),
   subjects: z.array(z.string()).min(1, 'Please select at least one subject'),
@@ -39,10 +84,14 @@ export const EducationProfileSchema = z.object({
 // Question Creation
 export const CreateQuestionSchema = z.object({
   question_text: z.string().optional().nullable(),
-  subject: z.string().min(1, 'Subject is required'),
+  subject: z.string().default('Mathematics'),
   topic_id: z.string().uuid().optional().nullable(),
   chapter: z.string().optional().nullable(),
   language: z.string().default('English'),
+  class_level: z.union([z.literal(10), z.literal(11), z.literal(12), z.string().transform(Number)]).pipe(
+    z.number().refine(n => [10, 11, 12].includes(n), { message: 'Class must be 10, 11, or 12' })
+  ).optional().nullable(),
+  board: z.string().optional().nullable(),
   file_path: z.string().optional().nullable(),
   input_type: z.enum(['text', 'image', 'document', 'mixed']).default('text'),
 }).refine(data => Boolean(data.question_text?.trim() || data.file_path), {

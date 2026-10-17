@@ -24,6 +24,7 @@ import { VerificationBadge } from '../components/common/VerificationBadge.js';
 import { LoadingSkeleton } from '../components/common/LoadingSkeleton.js';
 import { ErrorState } from '../components/common/ErrorState.js';
 import { ConfirmDialog } from '../components/common/ConfirmDialog.js';
+import { MathText } from '../components/common/MathText.js';
 
 export const QuestionResultPage: React.FC = () => {
   const { id } = useParams<{ id: string }>();
@@ -59,6 +60,10 @@ export const QuestionResultPage: React.FC = () => {
   };
 
   useEffect(() => {
+    setQuery(null);
+    setSolution(null);
+    setIsLoading(true);
+    setFollowUpAnswers([]);
     fetchQuestionDetails();
   }, [id]);
 
@@ -115,13 +120,64 @@ export const QuestionResultPage: React.FC = () => {
     );
   }
 
-  if (!query || !solution) {
+  if (!query) {
     return (
       <ErrorState
         title="Question Not Found"
         message="The requested question could not be loaded or was removed."
         onRetry={fetchQuestionDetails}
       />
+    );
+  }
+
+  if (query.status === 'failed' || !solution) {
+    return (
+      <div className="max-w-4xl mx-auto space-y-6 animate-fade-in pb-12">
+        {/* Top Breadcrumb */}
+        <div className="flex items-center gap-2 text-xs text-slate-500 pb-3 border-b border-slate-200">
+          <Link to="/home" className="hover:text-slate-800">Home</Link>
+          <ChevronRight className="w-3.5 h-3.5" />
+          <Link to="/history" className="hover:text-slate-800">Learning History</Link>
+          <ChevronRight className="w-3.5 h-3.5" />
+          <span className="font-semibold text-slate-800">Doubt Analysis</span>
+        </div>
+
+        <div className="bg-white rounded-3xl p-8 border border-rose-200 shadow-soft text-center space-y-4">
+          <div className="w-14 h-14 bg-rose-50 text-rose-600 rounded-2xl flex items-center justify-center mx-auto">
+            <AlertTriangle className="w-7 h-7" />
+          </div>
+          <h2 className="text-xl font-bold text-slate-900">Analysis Could Not Be Completed</h2>
+          <p className="text-sm text-slate-600 max-w-md mx-auto">
+            {query.error_message || 'The AI service encountered an issue while analyzing this doubt. Your question has been safely preserved.'}
+          </p>
+
+          <div className="p-4 bg-slate-50 rounded-2xl border border-slate-200 text-left max-w-xl mx-auto">
+            <span className="text-[11px] font-bold text-slate-500 uppercase tracking-wider block mb-1">
+              Your Question ({query.subject}):
+            </span>
+            <div className="text-sm text-slate-800 font-medium whitespace-pre-wrap">
+              <MathText text={query.question_text || query.extracted_text || 'Uploaded question document'} />
+            </div>
+          </div>
+
+          <div className="flex items-center justify-center gap-3 pt-2">
+            <button
+              onClick={handleRetryAnalysis}
+              disabled={isRetrying}
+              className="inline-flex items-center gap-2 px-5 py-2.5 bg-brand-600 hover:bg-brand-700 text-white text-sm font-bold rounded-xl transition-all shadow-sm disabled:opacity-60"
+            >
+              <RotateCw className={`w-4 h-4 ${isRetrying ? 'animate-spin' : ''}`} />
+              <span>{isRetrying ? 'Retrying Analysis...' : 'Retry Analysis'}</span>
+            </button>
+            <Link
+              to="/ask"
+              className="inline-flex items-center gap-2 px-5 py-2.5 bg-slate-100 hover:bg-slate-200 text-slate-700 text-sm font-semibold rounded-xl transition-colors"
+            >
+              Ask Another Doubt
+            </Link>
+          </div>
+        </div>
+      </div>
     );
   }
 
@@ -181,9 +237,9 @@ export const QuestionResultPage: React.FC = () => {
           <h2 className="text-xs font-bold text-slate-400 uppercase tracking-wider mb-1">
             Original Question
           </h2>
-          <p className="text-base sm:text-lg font-bold text-slate-900 leading-snug">
-            {query.extracted_text || query.question_text}
-          </p>
+          <div className="text-base sm:text-lg font-bold text-slate-900 leading-snug">
+            <MathText text={query.extracted_text || query.question_text} />
+          </div>
         </div>
 
         {query.file_path && (
@@ -211,9 +267,9 @@ export const QuestionResultPage: React.FC = () => {
             <CheckCircle2 className="w-4 h-4 text-emerald-600" />
             <span>Final Answer</span>
           </div>
-          <p className="text-xl sm:text-2xl font-black text-slate-900 font-mono tracking-tight">
-            {solution.final_answer}
-          </p>
+          <div className="text-xl sm:text-2xl font-black text-slate-900 tracking-tight overflow-x-auto">
+            <MathText text={solution.final_answer} inline />
+          </div>
         </div>
       )}
 
@@ -236,14 +292,14 @@ export const QuestionResultPage: React.FC = () => {
               </div>
 
               <div className="bg-slate-50/70 p-4 rounded-2xl border border-slate-200/80 space-y-2">
-                <h4 className="text-sm font-bold text-slate-900">{step.title}</h4>
-                <p className="text-xs sm:text-sm text-slate-700 leading-relaxed font-sans font-medium">
-                  {step.content}
-                </p>
+                <h4 className="text-sm font-bold text-slate-900"><MathText text={step.title} inline /></h4>
+                <div className="text-xs sm:text-sm text-slate-700 leading-relaxed font-sans font-medium">
+                  <MathText text={step.content} />
+                </div>
                 {step.reason && (
                   <div className="p-2.5 bg-brand-50/60 rounded-xl border border-brand-100 text-xs text-brand-900">
                     <span className="font-bold text-brand-700">Why this step is taken: </span>
-                    <span>{step.reason}</span>
+                    <MathText text={step.reason} />
                   </div>
                 )}
               </div>
@@ -264,12 +320,12 @@ export const QuestionResultPage: React.FC = () => {
             {(solution.concept_analysis as any[])?.map((c, i) => (
               <div key={i} className="p-3 bg-purple-50/60 border border-purple-100 rounded-xl">
                 <div className="flex items-center justify-between">
-                  <span className="text-xs font-bold text-purple-900">{c.concept}</span>
+                  <span className="text-xs font-bold text-purple-900"><MathText text={c.concept} inline /></span>
                   <span className="text-[10px] font-semibold px-2 py-0.5 rounded bg-purple-100 text-purple-700">
                     {Math.round(c.confidence * 100)}% match
                   </span>
                 </div>
-                {c.evidence && <p className="text-[11px] text-purple-700 mt-1">{c.evidence}</p>}
+                {c.evidence && <div className="text-[11px] text-purple-700 mt-1"><MathText text={c.evidence} /></div>}
               </div>
             ))}
           </div>
@@ -285,12 +341,12 @@ export const QuestionResultPage: React.FC = () => {
             {(solution.possible_mistakes as any[])?.length > 0 ? (
               (solution.possible_mistakes as any[]).map((m, i) => (
                 <div key={i} className="p-3 bg-amber-50/60 border border-amber-200/70 rounded-xl text-xs space-y-1">
-                  <span className="font-bold text-amber-900 block">{m.mistake}</span>
-                  <p className="text-[11px] text-amber-800">{m.evidence}</p>
+                  <span className="font-bold text-amber-900 block"><MathText text={m.mistake} inline /></span>
+                  <div className="text-[11px] text-amber-800"><MathText text={m.evidence} /></div>
                   {m.suggested_correction && (
                     <div className="mt-1 pt-1 border-t border-amber-200 text-slate-700">
                       <span className="font-semibold text-emerald-700">Correction: </span>
-                      <span>{m.suggested_correction}</span>
+                      <MathText text={m.suggested_correction} />
                     </div>
                   )}
                 </div>
@@ -312,8 +368,8 @@ export const QuestionResultPage: React.FC = () => {
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
             {(solution.prerequisite_concepts as any[]).map((p, i) => (
               <div key={i} className="p-3.5 bg-slate-50 border border-slate-200 rounded-xl">
-                <h5 className="text-xs font-bold text-slate-800">{p.concept}</h5>
-                <p className="text-[11px] text-slate-500 mt-1">{p.reason}</p>
+                <h5 className="text-xs font-bold text-slate-800"><MathText text={p.concept} inline /></h5>
+                <div className="text-[11px] text-slate-500 mt-1"><MathText text={p.reason} /></div>
               </div>
             ))}
           </div>
@@ -333,10 +389,10 @@ export const QuestionResultPage: React.FC = () => {
               <div key={idx} className="p-4 bg-brand-50/50 rounded-2xl border border-brand-100 space-y-2 text-xs">
                 <div className="flex items-center gap-2 text-brand-900 font-bold">
                   <span className="w-5 h-5 rounded-full bg-brand-600 text-white flex items-center justify-center text-[10px]">Q</span>
-                  <span>{item.q}</span>
+                  <span><MathText text={item.q} inline /></span>
                 </div>
                 <div className="pl-7 text-slate-700 whitespace-pre-wrap leading-relaxed">
-                  {item.a}
+                  <MathText text={item.a} />
                 </div>
               </div>
             ))}

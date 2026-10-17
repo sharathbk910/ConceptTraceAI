@@ -16,6 +16,7 @@ import { useAuth } from '../hooks/useAuth.js';
 import { TopicMetric } from '../types/index.js';
 import { LoadingSkeleton } from '../components/common/LoadingSkeleton.js';
 import { EmptyState } from '../components/common/EmptyState.js';
+import { MathText } from '../components/common/MathText.js';
 
 export const WeakTopicsPage: React.FC = () => {
   const { educationProfile } = useAuth();
@@ -184,7 +185,7 @@ export const WeakTopicsPage: React.FC = () => {
 
                 <div>
                   <h3 className="text-sm sm:text-base font-bold text-slate-900 leading-snug">
-                    {topic.topic_name}
+                    <MathText text={topic.topic_name} inline />
                   </h3>
                   <div className="flex items-center gap-3 mt-1.5 text-xs text-slate-500">
                     <span>
@@ -205,7 +206,7 @@ export const WeakTopicsPage: React.FC = () => {
                 {/* Recommendation */}
                 <div className="p-3 bg-slate-50 rounded-xl border border-slate-100 text-xs text-slate-700">
                   <span className="font-bold text-slate-800">Prescription: </span>
-                  <span>{topic.recommendation}</span>
+                  <MathText text={topic.recommendation} />
                 </div>
 
                 {/* Prerequisite concepts if available */}

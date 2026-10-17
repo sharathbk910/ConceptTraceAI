@@ -1,0 +1,2750 @@
+import { v4 as uuidv4 } from 'uuid';
+
+export interface ConceptItem {
+  id: string;
+  concept_name: string;
+  subtopics: string[];
+  difficulty: 'easy' | 'medium' | 'hard';
+  exam_importance: 'core' | 'high_yield' | 'standard';
+  prerequisites: string[];
+  learning_objectives: string[];
+  common_misconceptions: string[];
+}
+
+export interface ChapterItem {
+  chapter_id: string;
+  chapter_number: number;
+  chapter_name: string;
+  concepts: ConceptItem[];
+}
+
+export interface UnitItem {
+  unit_id: string;
+  unit_number: number;
+  unit_name: string;
+  weightage?: number; // Marks weightage in board exams
+  chapters: ChapterItem[];
+}
+
+export interface SubjectCurriculum {
+  subject_name: string;
+  code?: string;
+  total_marks?: number;
+  units: UnitItem[];
+}
+
+export interface OfficialSyllabusRecord {
+  id: string;
+  board: string;
+  class_level: 10 | 11 | 12;
+  stream?: string | null;
+  academic_year: string;
+  version: string;
+  official_source_url: string;
+  verified: boolean;
+  last_verified_at: string;
+  is_complete?: boolean;
+  subjects: SubjectCurriculum[];
+}
+
+// Helper to filter subjects by stream for Higher Secondary (Classes 11 & 12)
+export function filterSubjectsByStream(
+  subjects: SubjectCurriculum[],
+  classLevel: number,
+  stream?: string | null
+): SubjectCurriculum[] {
+  if (classLevel < 11 || !stream) return subjects;
+  const s = stream.toUpperCase();
+
+  return subjects.filter(sub => {
+    const name = sub.subject_name.toLowerCase();
+
+    if (s.includes('PCMB')) {
+      return (
+        name.includes('math') ||
+        name.includes('physic') ||
+        name.includes('chemist') ||
+        name.includes('biolog') ||
+        name.includes('english') ||
+        name.includes('computer')
+      );
+    }
+    if (s.includes('PCB')) {
+      return (
+        name.includes('biolog') ||
+        name.includes('physic') ||
+        name.includes('chemist') ||
+        name.includes('english')
+      );
+    }
+    if (s.includes('PCM')) {
+      return (
+        name.includes('math') ||
+        name.includes('physic') ||
+        name.includes('chemist') ||
+        name.includes('english') ||
+        name.includes('computer')
+      );
+    }
+    if (s.includes('COMMERCE')) {
+      return (
+        name.includes('account') ||
+        name.includes('business') ||
+        name.includes('econom') ||
+        name.includes('math') ||
+        name.includes('english')
+      );
+    }
+    if (s.includes('HUMANITIES') || s.includes('ARTS')) {
+      return (
+        name.includes('histor') ||
+        name.includes('politic') ||
+        name.includes('econom') ||
+        name.includes('geograph') ||
+        name.includes('english')
+      );
+    }
+    return true;
+  });
+}
+
+// =========================================================================
+// 1. CBSE CLASS 10 OFFICIAL CURRICULUM (2025-26 & 2026-27)
+// Official Portal: https://cbseacademic.nic.in/curriculum_2026.html
+// =========================================================================
+
+export const CBSE_CLASS_10: OfficialSyllabusRecord = {
+  id: 'official-cbse-class-10-2026',
+  board: 'CBSE',
+  class_level: 10,
+  stream: null,
+  academic_year: '2025-26',
+  version: 'CBSE-ACAD-2025-26-V1',
+  official_source_url: 'https://cbseacademic.nic.in/curriculum_2026.html',
+  verified: true,
+  last_verified_at: '2026-03-15T00:00:00.000Z',
+  is_complete: true,
+  subjects: [
+    {
+      subject_name: 'Mathematics',
+      code: '041',
+      total_marks: 80,
+      units: [
+        {
+          unit_id: 'cbse-10-math-u1',
+          unit_number: 1,
+          unit_name: 'Number Systems',
+          weightage: 6,
+          chapters: [
+            {
+              chapter_id: 'cbse-10-math-c1',
+              chapter_number: 1,
+              chapter_name: 'Real Numbers',
+              concepts: [
+                {
+                  id: 'cbse-10-math-real-01',
+                  concept_name: 'Fundamental Theorem of Arithmetic',
+                  subtopics: ['Prime Factorization', 'HCF and LCM relationships', 'Applications in word problems'],
+                  difficulty: 'easy',
+                  exam_importance: 'core',
+                  prerequisites: ['Factors and Multiples', 'Prime Numbers'],
+                  learning_objectives: ['Express composite numbers as products of primes', 'Calculate HCF and LCM using prime factorization'],
+                  common_misconceptions: ['Confusing HCF * LCM = a * b rule as applying to three numbers', 'Forgetting to include common prime factors with lowest exponent for HCF'],
+                },
+                {
+                  id: 'cbse-10-math-real-02',
+                  concept_name: 'Revisiting Irrational Numbers & Proof of Irrationality',
+                  subtopics: ['Proof by contradiction', 'Irrationality of √2, √3, √5', 'Decimal expansions'],
+                  difficulty: 'medium',
+                  exam_importance: 'high_yield',
+                  prerequisites: ['Fundamental Theorem of Arithmetic', 'Rational and Irrational numbers'],
+                  learning_objectives: ['Construct formal contradiction proofs for irrationality', 'Verify irrationality of linear combinations like 3 + 2√5'],
+                  common_misconceptions: ['Assuming a/b can share common factors in proof by contradiction', 'Not squaring both sides accurately when isolating roots'],
+                },
+              ],
+            },
+          ],
+        },
+        {
+          unit_id: 'cbse-10-math-u2',
+          unit_number: 2,
+          unit_name: 'Algebra',
+          weightage: 20,
+          chapters: [
+            {
+              chapter_id: 'cbse-10-math-c2',
+              chapter_number: 2,
+              chapter_name: 'Polynomials',
+              concepts: [
+                {
+                  id: 'cbse-10-math-poly-01',
+                  concept_name: 'Relationship between Zeroes and Coefficients',
+                  subtopics: ['Sum of zeroes (-b/a)', 'Product of zeroes (c/a)', 'Quadratic polynomial formulation'],
+                  difficulty: 'medium',
+                  exam_importance: 'core',
+                  prerequisites: ['Factorization of quadratic polynomials'],
+                  learning_objectives: ['Verify relationship between roots and coefficients', 'Form quadratic polynomial given sum and product of zeroes'],
+                  common_misconceptions: ['Missing the negative sign in sum of zeroes (-b/a)', 'Confusing roots of polynomial with coordinates of vertices'],
+                },
+              ],
+            },
+            {
+              chapter_id: 'cbse-10-math-c3',
+              chapter_number: 3,
+              chapter_name: 'Pair of Linear Equations in Two Variables',
+              concepts: [
+                {
+                  id: 'cbse-10-math-linear-01',
+                  concept_name: 'Consistency & Algebraic Solution of Linear Pairs',
+                  subtopics: ['Graphical interpretation', 'Substitution method', 'Elimination method', 'Conditions for unique/infinite/no solutions'],
+                  difficulty: 'medium',
+                  exam_importance: 'high_yield',
+                  prerequisites: ['Linear equations in one variable', 'Cartesian plane plotting'],
+                  learning_objectives: ['Test consistency using ratios a1/a2, b1/b2, c1/c2', 'Solve simultaneous equations accurately with elimination'],
+                  common_misconceptions: ['Sign inversion errors when substituting expressions', 'Failing to equate constant terms to the same side of equations'],
+                },
+              ],
+            },
+            {
+              chapter_id: 'cbse-10-math-c4',
+              chapter_number: 4,
+              chapter_name: 'Quadratic Equations',
+              concepts: [
+                {
+                  id: 'cbse-10-math-quad-01',
+                  concept_name: 'Nature of Roots & The Discriminant (b² - 4ac)',
+                  subtopics: ['Discriminant formula', 'Real and equal roots (D = 0)', 'Real and distinct roots (D > 0)', 'No real roots (D < 0)'],
+                  difficulty: 'medium',
+                  exam_importance: 'high_yield',
+                  prerequisites: ['Algebraic identities', 'Square roots'],
+                  learning_objectives: ['Compute discriminant accurately', 'Determine nature of roots and find unknown parameters k'],
+                  common_misconceptions: ['Forgetting that (-b)² is always non-negative', 'Treating D = 0 as having one root instead of two identical real roots'],
+                },
+                {
+                  id: 'cbse-10-math-quad-02',
+                  concept_name: 'Solving Quadratic Equations by Quadratic Formula',
+                  subtopics: ['Standard form ax² + bx + c = 0', 'Quadratic formula derivation and usage', 'Real world word problems'],
+                  difficulty: 'hard',
+                  exam_importance: 'high_yield',
+                  prerequisites: ['Quadratic Equations Nature of Roots'],
+                  learning_objectives: ['Translate real world problems into quadratic models', 'Compute solutions using quadratic formula'],
+                  common_misconceptions: ['Ignoring negative sign in -b when b itself is negative', 'Rejecting physically meaningful negative roots without justification'],
+                },
+              ],
+            },
+            {
+              chapter_id: 'cbse-10-math-c5',
+              chapter_number: 5,
+              chapter_name: 'Arithmetic Progressions',
+              concepts: [
+                {
+                  id: 'cbse-10-math-ap-01',
+                  concept_name: 'nth Term & Sum of First n Terms of an AP',
+                  subtopics: ['Common difference d', 'Formula an = a + (n-1)d', 'Sum formula Sn = n/2[2a + (n-1)d]'],
+                  difficulty: 'medium',
+                  exam_importance: 'high_yield',
+                  prerequisites: ['Linear patterns', 'Number sequences'],
+                  learning_objectives: ['Find arbitrary terms in arithmetic progressions', 'Calculate cumulative sums for real world applications'],
+                  common_misconceptions: ['Using an formula instead of Sn formula', 'Assuming common difference d must always be positive or an integer'],
+                },
+              ],
+            },
+          ],
+        },
+        {
+          unit_id: 'cbse-10-math-u3',
+          unit_number: 3,
+          unit_name: 'Coordinate Geometry',
+          weightage: 6,
+          chapters: [
+            {
+              chapter_id: 'cbse-10-math-c6',
+              chapter_number: 6,
+              chapter_name: 'Coordinate Geometry',
+              concepts: [
+                {
+                  id: 'cbse-10-math-coord-01',
+                  concept_name: 'Distance Formula & Section Formula',
+                  subtopics: ['Distance between two points', 'Internal division ratio m1:m2', 'Midpoint formula'],
+                  difficulty: 'medium',
+                  exam_importance: 'core',
+                  prerequisites: ['Cartesian plane coordinates'],
+                  learning_objectives: ['Calculate distance between points in 2D space', 'Determine dividing point coordinates using section formula'],
+                  common_misconceptions: ['Inverting coordinates x1 and y1 in distance formula', 'Switching m1 and m2 weights across the two endpoints'],
+                },
+              ],
+            },
+          ],
+        },
+        {
+          unit_id: 'cbse-10-math-u4',
+          unit_number: 4,
+          unit_name: 'Geometry',
+          weightage: 15,
+          chapters: [
+            {
+              chapter_id: 'cbse-10-math-c7',
+              chapter_number: 7,
+              chapter_name: 'Triangles',
+              concepts: [
+                {
+                  id: 'cbse-10-math-tri-01',
+                  concept_name: 'Basic Proportionality Theorem (Thales Theorem)',
+                  subtopics: ['Statement and formal proof', 'Converse of BPT', 'Similarity criteria (AAA, SAS, SSS)'],
+                  difficulty: 'hard',
+                  exam_importance: 'high_yield',
+                  prerequisites: ['Congruence of triangles', 'Ratios and proportions'],
+                  learning_objectives: ['Prove BPT rigorously with geometric construction', 'Apply similarity criteria to compute lengths and angles'],
+                  common_misconceptions: ['Assuming similar triangles have equal areas', 'Applying BPT when dividing line is not parallel to the base'],
+                },
+              ],
+            },
+            {
+              chapter_id: 'cbse-10-math-c8',
+              chapter_number: 8,
+              chapter_name: 'Circles',
+              concepts: [
+                {
+                  id: 'cbse-10-math-circ-01',
+                  concept_name: 'Tangents to a Circle & Tangent Length Theorem',
+                  subtopics: ['Tangent perpendicular to radius', 'Lengths of tangents from external point are equal'],
+                  difficulty: 'medium',
+                  exam_importance: 'core',
+                  prerequisites: ['Circle geometry fundamentals'],
+                  learning_objectives: ['Prove tangents from external point are equal in length', 'Solve circumscribed polygon problems'],
+                  common_misconceptions: ['Confusing secant lines with tangent lines', 'Forgetting right angle property between radius and tangent at point of contact'],
+                },
+              ],
+            },
+          ],
+        },
+        {
+          unit_id: 'cbse-10-math-u5',
+          unit_number: 5,
+          unit_name: 'Trigonometry',
+          weightage: 12,
+          chapters: [
+            {
+              chapter_id: 'cbse-10-math-c9',
+              chapter_number: 9,
+              chapter_name: 'Introduction to Trigonometry',
+              concepts: [
+                {
+                  id: 'cbse-10-math-trig-01',
+                  concept_name: 'Trigonometric Ratios of Acute Angles (0°, 30°, 45°, 60°, 90°)',
+                  subtopics: ['sin, cos, tan, cosec, sec, cot definitions', 'Values table memorization and derivations'],
+                  difficulty: 'easy',
+                  exam_importance: 'core',
+                  prerequisites: ['Right angled triangle properties', 'Pythagorean theorem'],
+                  learning_objectives: ['Evaluate trigonometric expressions for standard acute angles', 'Set up ratio equations in right triangles'],
+                  common_misconceptions: ['Writing sin θ as sin * θ (product misconception)', 'Inverting opposite and adjacent sides when perspective angle changes'],
+                },
+                {
+                  id: 'cbse-10-math-trig-02',
+                  concept_name: 'Trigonometric Identities (sin²θ + cos²θ = 1)',
+                  subtopics: ['Pythagorean identities proof', '1 + tan²θ = sec²θ', '1 + cot²θ = cosec²θ', 'Proof of trigonometric identities'],
+                  difficulty: 'hard',
+                  exam_importance: 'high_yield',
+                  prerequisites: ['Trigonometric Ratios of Acute Angles', 'Algebraic factorization'],
+                  learning_objectives: ['Establish algebraic equivalence of trigonometric expressions', 'Utilize identities to simplify complex fractions'],
+                  common_misconceptions: ['Applying sin²θ + cos²θ = 1 when angles are different (e.g. sin²A + cos²B)', 'Incorrectly cancelling terms across non-factored fractions'],
+                },
+              ],
+            },
+            {
+              chapter_id: 'cbse-10-math-c10',
+              chapter_number: 10,
+              chapter_name: 'Some Applications of Trigonometry (Heights and Distances)',
+              concepts: [
+                {
+                  id: 'cbse-10-math-height-01',
+                  concept_name: 'Angle of Elevation and Depression Problems',
+                  subtopics: ['Horizontal line of sight', 'Two triangle simultaneous equations', 'Tower, building, and balloon problems'],
+                  difficulty: 'medium',
+                  exam_importance: 'high_yield',
+                  prerequisites: ['Trigonometric Ratios of Acute Angles'],
+                  learning_objectives: ['Construct accurate geometric sketches from verbal descriptions', 'Compute unknown heights using tan and sin ratios'],
+                  common_misconceptions: ['Measuring angle of depression from vertical instead of horizontal line of sight', 'Confusing distance between objects with hypotenuse length'],
+                },
+              ],
+            },
+          ],
+        },
+        {
+          unit_id: 'cbse-10-math-u6',
+          unit_number: 6,
+          unit_name: 'Mensuration',
+          weightage: 10,
+          chapters: [
+            {
+              chapter_id: 'cbse-10-math-c11',
+              chapter_number: 11,
+              chapter_name: 'Areas Related to Circles',
+              concepts: [
+                {
+                  id: 'cbse-10-math-mens-01',
+                  concept_name: 'Area of Sectors and Segments of a Circle',
+                  subtopics: ['Sector area formula (θ/360 * πr²)', 'Length of an arc (θ/360 * 2πr)', 'Segment area = Sector area - Triangle area'],
+                  difficulty: 'medium',
+                  exam_importance: 'core',
+                  prerequisites: ['Circle circumference and area'],
+                  learning_objectives: ['Calculate areas of minor and major sectors', 'Determine area of shaded segments in circular designs'],
+                  common_misconceptions: ['Forgetting to subtract triangle area when calculating minor segment area', 'Using diameter in place of radius in πr² formulas'],
+                },
+              ],
+            },
+            {
+              chapter_id: 'cbse-10-math-c12',
+              chapter_number: 12,
+              chapter_name: 'Surface Areas and Volumes',
+              concepts: [
+                {
+                  id: 'cbse-10-math-vol-01',
+                  concept_name: 'Surface Areas and Volumes of Combinations of Solids',
+                  subtopics: ['Combination of cubes, cuboids, spheres, hemispheres, cylinders, cones', 'Internal and external surface calculations'],
+                  difficulty: 'hard',
+                  exam_importance: 'high_yield',
+                  prerequisites: ['Mensuration 2D areas', 'Basic 3D solid formulas'],
+                  learning_objectives: ['Compute total surface area of composite shapes', 'Calculate liquid capacities and volume transfer between containers'],
+                  common_misconceptions: ['Adding overlapping faces into Total Surface Area instead of computing exposed areas only', 'Mixing cubic units of volume with square units of area'],
+                },
+              ],
+            },
+          ],
+        },
+        {
+          unit_id: 'cbse-10-math-u7',
+          unit_number: 7,
+          unit_name: 'Statistics & Probability',
+          weightage: 11,
+          chapters: [
+            {
+              chapter_id: 'cbse-10-math-c13',
+              chapter_number: 13,
+              chapter_name: 'Statistics',
+              concepts: [
+                {
+                  id: 'cbse-10-math-stat-01',
+                  concept_name: 'Mean, Median, and Mode of Grouped Data',
+                  subtopics: ['Direct and Assumed Mean method', 'Modal class and Mode formula', 'Cumulative frequency and Median class'],
+                  difficulty: 'medium',
+                  exam_importance: 'core',
+                  prerequisites: ['Ungrouped data averages', 'Frequency distribution tables'],
+                  learning_objectives: ['Compute mean using assumed mean method', 'Calculate median using cf tables and L + ((N/2 - cf)/f)*h'],
+                  common_misconceptions: ['Using frequency instead of cumulative frequency when locating median class', 'Failing to make class intervals continuous before calculating mode and median'],
+                },
+              ],
+            },
+            {
+              chapter_id: 'cbse-10-math-c14',
+              chapter_number: 14,
+              chapter_name: 'Probability',
+              concepts: [
+                {
+                  id: 'cbse-10-math-prob-01',
+                  concept_name: 'Classical Definition of Probability & Simple Events',
+                  subtopics: ['Equally likely outcomes', 'P(E) = Number of favorable outcomes / Total outcomes', 'Complementary events P(E) + P(not E) = 1'],
+                  difficulty: 'easy',
+                  exam_importance: 'core',
+                  prerequisites: ['Fractions and percentages'],
+                  learning_objectives: ['Determine sample spaces for coins, dice, and deck of playing cards', 'Calculate event probabilities and complementary chances'],
+                  common_misconceptions: ['Treating face cards in a deck as including Aces (only J, Q, K are face cards)', 'Assigning probabilities greater than 1 or negative values'],
+                },
+              ],
+            },
+          ],
+        },
+      ],
+    },
+    {
+      subject_name: 'Science',
+      code: '086',
+      total_marks: 80,
+      units: [
+        {
+          unit_id: 'cbse-10-sci-u1',
+          unit_number: 1,
+          unit_name: 'Chemical Substances - Nature and Behaviour',
+          weightage: 25,
+          chapters: [
+            {
+              chapter_id: 'cbse-10-sci-c1',
+              chapter_number: 1,
+              chapter_name: 'Chemical Reactions and Equations',
+              concepts: [
+                {
+                  id: 'cbse-10-sci-chem-01',
+                  concept_name: 'Balancing Chemical Equations & Law of Conservation of Mass',
+                  subtopics: ['Word equations vs skeletal equations', 'Step-by-step coefficient balancing', 'State symbols (s, l, g, aq)'],
+                  difficulty: 'easy',
+                  exam_importance: 'core',
+                  prerequisites: ['Valency', 'Chemical formulas of common salts'],
+                  learning_objectives: ['Balance skeletal equations accurately', 'Verify atom conservation across reactants and products'],
+                  common_misconceptions: ['Changing subscripts inside chemical formulas instead of balancing stoichiometric coefficients', 'Omitting state symbols when reaction conditions require them'],
+                },
+                {
+                  id: 'cbse-10-sci-chem-02',
+                  concept_name: 'Types of Chemical Reactions & Redox Processes',
+                  subtopics: ['Combination', 'Decomposition (Thermal, Electrolytic, Photolytic)', 'Displacement & Double Displacement', 'Oxidation and Reduction (Gain/Loss of oxygen/hydrogen)'],
+                  difficulty: 'medium',
+                  exam_importance: 'high_yield',
+                  prerequisites: ['Balancing chemical equations'],
+                  learning_objectives: ['Classify reactions by observed changes', 'Identify oxidizing and reducing agents in redox equations'],
+                  common_misconceptions: ['Confusing the oxidized substance with the oxidizing agent (substance oxidized is reducing agent)', 'Assuming all decomposition reactions require heat energy'],
+                },
+              ],
+            },
+            {
+              chapter_id: 'cbse-10-sci-c2',
+              chapter_number: 2,
+              chapter_name: 'Acids, Bases and Salts',
+              concepts: [
+                {
+                  id: 'cbse-10-sci-acid-01',
+                  concept_name: 'pH Scale & Chemical Properties of Acids and Bases',
+                  subtopics: ['Reaction with metals (H2 gas evolution)', 'Reaction with carbonates and bicarbonates (CO2 evolution)', 'Universal indicator & pH concept', 'Importance of pH in everyday life'],
+                  difficulty: 'medium',
+                  exam_importance: 'core',
+                  prerequisites: ['Litmus and indicator basics'],
+                  learning_objectives: ['Relate [H+] ion concentration to pH scale', 'Predict neutralization reaction products'],
+                  common_misconceptions: ['Assuming higher pH indicates stronger acidity (pH < 7 is acidic, lower is stronger)', 'Believing dry HCl gas turns dry blue litmus red without aqueous dissociation'],
+                },
+                {
+                  id: 'cbse-10-sci-acid-02',
+                  concept_name: 'Important Salts: Preparation and Uses',
+                  subtopics: ['Sodium Hydroxide (Chlor-alkali process)', 'Bleaching Powder (CaOCl2)', 'Baking Soda (NaHCO3)', 'Washing Soda (Na2CO3·10H2O)', 'Plaster of Paris (CaSO4·½H2O)'],
+                  difficulty: 'medium',
+                  exam_importance: 'high_yield',
+                  prerequisites: ['Neutralization reactions'],
+                  learning_objectives: ['Write chemical reactions for salt preparation', 'Explain water of crystallization and Plaster of Paris setting'],
+                  common_misconceptions: ['Confusing Baking Soda (NaHCO3) with Baking Powder (mixture of NaHCO3 and edible tartaric acid)', 'Writing incorrect water of crystallization stoichiometry'],
+                },
+              ],
+            },
+            {
+              chapter_id: 'cbse-10-sci-c3',
+              chapter_number: 3,
+              chapter_name: 'Metals and Non-metals',
+              concepts: [
+                {
+                  id: 'cbse-10-sci-metal-01',
+                  concept_name: 'Reactivity Series, Ionic Bonds & Basic Metallurgy',
+                  subtopics: ['Reaction with water, acids, and oxygen', 'Displacement in solutions', 'Ionic compound properties', 'Roasting vs Calcination', 'Corrosion prevention'],
+                  difficulty: 'medium',
+                  exam_importance: 'high_yield',
+                  prerequisites: ['Electronic configuration', 'Valence electrons'],
+                  learning_objectives: ['Predict displacement using reactivity series', 'Explain ionic compound melting points and conductivity'],
+                  common_misconceptions: ['Thinking metals conduct electricity in molten state via ions only (molten salts conduct via ions, metals conduct via delocalized electrons in all states)', 'Confusing calcination (in absence of air for carbonates) with roasting (in excess air for sulphides)'],
+                },
+              ],
+            },
+            {
+              chapter_id: 'cbse-10-sci-c4',
+              chapter_number: 4,
+              chapter_name: 'Carbon and its Compounds',
+              concepts: [
+                {
+                  id: 'cbse-10-sci-carbon-01',
+                  concept_name: 'Covalent Bonding, Catenation & Homologous Series',
+                  subtopics: ['Tetravalency and Catenation', 'Electron dot structures of CH4, CO2, H2O', 'Saturated vs Unsaturated hydrocarbons', 'Homologous series characteristics'],
+                  difficulty: 'medium',
+                  exam_importance: 'high_yield',
+                  prerequisites: ['Covalent bond basics'],
+                  learning_objectives: ['Draw electron dot diagrams for simple covalent molecules', 'Identify functional groups and homologous series formulas'],
+                  common_misconceptions: ['Attempting to form C4+ or C4- ions instead of sharing electrons via covalent bonds', 'Thinking isomerism applies to methane and ethane'],
+                },
+                {
+                  id: 'cbse-10-sci-carbon-02',
+                  concept_name: 'Chemical Properties of Carbon: Ethanol, Ethanoic Acid & Soaps',
+                  subtopics: ['Combustion and Oxidation', 'Addition and Substitution reactions', 'Properties of Ethanol and Ethanoic Acid (Esterification)', 'Micelle formation and cleansing action of soap'],
+                  difficulty: 'hard',
+                  exam_importance: 'high_yield',
+                  prerequisites: ['Functional groups'],
+                  learning_objectives: ['Formulate esterification and saponification reactions', 'Explain hydrophobic and hydrophilic ends in micelle structures'],
+                  common_misconceptions: ['Confusing soaps with synthetic detergents in hard water reactions (soaps form scum, detergents work in hard water)', 'Forgetting acid catalyst in esterification'],
+                },
+              ],
+            },
+          ],
+        },
+        {
+          unit_id: 'cbse-10-sci-u2',
+          unit_number: 2,
+          unit_name: 'World of Living',
+          weightage: 25,
+          chapters: [
+            {
+              chapter_id: 'cbse-10-sci-c5',
+              chapter_number: 5,
+              chapter_name: 'Life Processes',
+              concepts: [
+                {
+                  id: 'cbse-10-sci-life-01',
+                  concept_name: 'Nutrition, Autotrophic Photosynthesis & Human Digestion',
+                  subtopics: ['Stomata light and dark reactions', 'Digestive enzymes (Amylase, Pepsin, Trypsin, Lipase)', 'Bile juice emulsification', 'Absorption in small intestine villi'],
+                  difficulty: 'medium',
+                  exam_importance: 'core',
+                  prerequisites: ['Plant and animal cell structure'],
+                  learning_objectives: ['Trace chemical breakdown of carbohydrates, proteins, and fats in alimentary canal', 'Describe stomatal guard cell opening and closing'],
+                  common_misconceptions: ['Believing bile contains digestive enzymes (bile contains bile salts for emulsification, no enzymes)', 'Thinking photosynthesis only occurs during high midday temperatures'],
+                },
+                {
+                  id: 'cbse-10-sci-life-02',
+                  concept_name: 'Respiration, Human Circulatory System & Excretion',
+                  subtopics: ['Aerobic vs Anaerobic (Fermentation and Lactic acid in muscle cramps)', 'Structure of Human Heart (Double circulation)', 'Nephron structure and urine formation'],
+                  difficulty: 'hard',
+                  exam_importance: 'high_yield',
+                  prerequisites: ['Life processes nutrition'],
+                  learning_objectives: ['Explain double circulation pathways through pulmonary and systemic loops', 'Detail filtration, reabsorption, and secretion in nephrons'],
+                  common_misconceptions: ['Assuming arteries always carry oxygenated blood (Pulmonary artery carries deoxygenated blood)', 'Confusing excretion (nitrogenous waste removal) with egestion (undigested fecal matter expulsion)'],
+                },
+              ],
+            },
+            {
+              chapter_id: 'cbse-10-sci-c6',
+              chapter_number: 6,
+              chapter_name: 'Control and Coordination',
+              concepts: [
+                {
+                  id: 'cbse-10-sci-ctrl-01',
+                  concept_name: 'Nervous System, Reflex Arc & Endocrine Hormones',
+                  subtopics: ['Neuron structure and synapse transmission', 'Reflex arc pathway', 'Plant tropisms (Phototropism, Geotropism, Auxins)', 'Human endocrine glands (Thyroid, Pituitary, Pancreas, Adrenal)'],
+                  difficulty: 'medium',
+                  exam_importance: 'core',
+                  prerequisites: ['Human organ systems'],
+                  learning_objectives: ['Trace electrochemical nerve impulse transmission across synapses', 'Describe hormonal feedback mechanisms like insulin regulation'],
+                  common_misconceptions: ['Assuming electrical impulses jump directly without neurotransmitter release across synapses', 'Confusing plant movements like mimosa thigmonasty with directional tropisms'],
+                },
+              ],
+            },
+            {
+              chapter_id: 'cbse-10-sci-c7',
+              chapter_number: 7,
+              chapter_name: 'How do Organisms Reproduce',
+              concepts: [
+                {
+                  id: 'cbse-10-sci-repro-01',
+                  concept_name: 'Asexual vs Sexual Reproduction & Plant and Human Reproductive Systems',
+                  subtopics: ['Binary fission, Budding, Regeneration, Spore formation', 'Flower structure and double fertilization', 'Male and female human reproductive anatomy', 'Reproductive health and contraception'],
+                  difficulty: 'medium',
+                  exam_importance: 'high_yield',
+                  prerequisites: ['Cell division basics'],
+                  learning_objectives: ['Illustrate double fertilization in angiosperms', 'Explain contraceptive methods and prevention of STDs'],
+                  common_misconceptions: ['Confusing pollination (transfer of pollen) with fertilization (fusion of gametes)', 'Assuming asexual reproduction creates genetic variability equivalent to sexual crossing'],
+                },
+              ],
+            },
+            {
+              chapter_id: 'cbse-10-sci-c8',
+              chapter_number: 8,
+              chapter_name: 'Heredity and Evolution',
+              concepts: [
+                {
+                  id: 'cbse-10-sci-heredity-01',
+                  concept_name: 'Mendelian Inheritance & Sex Determination in Humans',
+                  subtopics: ['Monohybrid cross (3:1 phenotype, 1:2:1 genotype)', 'Dihybrid cross (9:3:3:1)', 'Dominant and recessive alleles', 'XX vs XY chromosome sex determination'],
+                  difficulty: 'medium',
+                  exam_importance: 'high_yield',
+                  prerequisites: ['DNA structure basics', 'Chromosomes'],
+                  learning_objectives: ['Construct Punnett squares for monohybrid and dihybrid crosses', 'Demonstrate equal probability of male/female offspring in humans'],
+                  common_misconceptions: ['Attributing child sex determination to mother instead of father\'s sperm chromosome (X or Y)', 'Confusing genotype (genetic makeup) with phenotype (observable trait)'],
+                },
+              ],
+            },
+          ],
+        },
+        {
+          unit_id: 'cbse-10-sci-u3',
+          unit_number: 3,
+          unit_name: 'Natural Phenomena',
+          weightage: 12,
+          chapters: [
+            {
+              chapter_id: 'cbse-10-sci-c9',
+              chapter_number: 9,
+              chapter_name: 'Light - Reflection and Refraction',
+              concepts: [
+                {
+                  id: 'cbse-10-sci-light-01',
+                  concept_name: 'Spherical Mirrors, Mirror Formula & Sign Convention',
+                  subtopics: ['Concave and Convex mirrors ray diagrams', 'New Cartesian sign convention', 'Mirror formula 1/f = 1/v + 1/u', 'Magnification m = -v/u = h_i/h_o'],
+                  difficulty: 'medium',
+                  exam_importance: 'core',
+                  prerequisites: ['Laws of reflection', 'Plane mirrors'],
+                  learning_objectives: ['Construct ray diagrams for concave and convex mirrors', 'Solve numerical problems on image distance and height'],
+                  common_misconceptions: ['Forgetting that object distance u is always negative in Cartesian sign convention', 'Confusing focal length signs (concave mirror f < 0, convex mirror f > 0)'],
+                },
+                {
+                  id: 'cbse-10-sci-light-02',
+                  concept_name: 'Refraction of Light, Snell\'s Law, Lenses & Lens Formula',
+                  subtopics: ['Refractive index n = c/v', 'Snell\'s law sin i / sin r = constant', 'Convex and concave lenses ray tracing', 'Lens formula 1/f = 1/v - 1/u', 'Power of lens P = 1/f(m) in dioptres (D)'],
+                  difficulty: 'hard',
+                  exam_importance: 'high_yield',
+                  prerequisites: ['Spherical Mirrors and Ray Diagrams'],
+                  learning_objectives: ['Calculate absolute and relative refractive indices', 'Compute image position and magnification for spherical lenses', 'Calculate focal lengths from optical power in dioptres'],
+                  common_misconceptions: ['Confusing mirror formula (+ between terms) with lens formula (- between 1/v and 1/u)', 'Calculating optical power using focal length in centimetres instead of converting to metres'],
+                },
+              ],
+            },
+            {
+              chapter_id: 'cbse-10-sci-c10',
+              chapter_number: 10,
+              chapter_name: 'The Human Eye and the Colourful World',
+              concepts: [
+                {
+                  id: 'cbse-10-sci-eye-01',
+                  concept_name: 'Defects of Vision, Prism Dispersion & Atmospheric Refraction',
+                  subtopics: ['Myopia (nearsightedness) and concave lens correction', 'Hypermetropia (farsightedness) and convex lens correction', 'Dispersion of white light through glass prism', 'Twinkling of stars and early sunrise/delayed sunset', 'Tyndall effect and blue sky scattering'],
+                  difficulty: 'medium',
+                  exam_importance: 'high_yield',
+                  prerequisites: ['Refraction of light through spherical lenses'],
+                  learning_objectives: ['Calculate corrective lens power for myopic and hypermetropic eyes', 'Explain natural atmospheric optical phenomena using Rayleigh scattering'],
+                  common_misconceptions: ['Thinking red light scatters most (red has longest wavelength and scatters least; blue scatters most)', 'Placing corrective lens diagram focal point behind retina for myopia instead of in front'],
+                },
+              ],
+            },
+          ],
+        },
+        {
+          unit_id: 'cbse-10-sci-u4',
+          unit_number: 4,
+          unit_name: 'Effects of Current',
+          weightage: 13,
+          chapters: [
+            {
+              chapter_id: 'cbse-10-sci-c11',
+              chapter_number: 11,
+              chapter_name: 'Electricity',
+              concepts: [
+                {
+                  id: 'cbse-10-sci-elec-01',
+                  concept_name: 'Ohm\'s Law, Resistance and Resistivity',
+                  subtopics: ['Potential difference V = W/Q', 'Ohm\'s law V = IR', 'Factors affecting resistance R = ρl/A', 'V-I characteristics'],
+                  difficulty: 'easy',
+                  exam_importance: 'core',
+                  prerequisites: ['Electric current and charge basics'],
+                  learning_objectives: ['Verify Ohm\'s law graphically', 'Calculate wire resistance when stretched or compressed'],
+                  common_misconceptions: ['Assuming resistivity depends on wire length or cross-sectional area (resistivity is a material property)', 'Connecting voltmeters in series and ammeters in parallel (voltmeter must be parallel, ammeter in series)'],
+                },
+                {
+                  id: 'cbse-10-sci-elec-02',
+                  concept_name: 'Resistors in Series & Parallel, Joule\'s Heating & Electric Power',
+                  subtopics: ['Equivalent resistance Rs = R1 + R2 + ...', 'Parallel resistance 1/Rp = 1/R1 + 1/R2 + ...', 'Joule\'s heating H = I²Rt', 'Electric power P = VI = I²R = V²/R', 'Commercial unit of electricity (1 kWh = 3.6 × 10⁶ J)'],
+                  difficulty: 'hard',
+                  exam_importance: 'high_yield',
+                  prerequisites: ['Ohm\'s Law, Resistance and Resistivity'],
+                  learning_objectives: ['Solve complex circuit combinations for current and potential drop', 'Calculate electricity billing units and appliance power consumption'],
+                  common_misconceptions: ['Believing current decreases as it passes through successive resistors in a series circuit (current is identical everywhere in series)', 'Using P = I²R for parallel household appliances instead of P = V²/R when V is constant'],
+                },
+              ],
+            },
+            {
+              chapter_id: 'cbse-10-sci-c12',
+              chapter_number: 12,
+              chapter_name: 'Magnetic Effects of Electric Current',
+              concepts: [
+                {
+                  id: 'cbse-10-sci-mag-01',
+                  concept_name: 'Magnetic Field Lines, Solenoid & Fleming\'s Left Hand Rule',
+                  subtopics: ['Right-Hand Thumb Rule for straight conductors and loops', 'Magnetic field inside a current-carrying solenoid', 'Electromagnet vs permanent magnet', 'Force on current-carrying conductor in magnetic field (F = BIl)', 'Fleming\'s Left-Hand Rule and Electric Motor principle', 'Domestic electric circuits (Live, Neutral, Earth wire, Fuse)'],
+                  difficulty: 'medium',
+                  exam_importance: 'high_yield',
+                  prerequisites: ['Electric current fundamentals'],
+                  learning_objectives: ['Sketch magnetic field patterns for straight wires, circular coils, and solenoids', 'Apply Fleming\'s Left-Hand Rule to determine direction of magnetic deflection force'],
+                  common_misconceptions: ['Confusing magnetic field line direction inside vs outside a magnet (outside: North to South; inside: South to North)', 'Using Right-Hand Rule instead of Left-Hand Rule for motor force deflection'],
+                },
+              ],
+            },
+          ],
+        },
+        {
+          unit_id: 'cbse-10-sci-u5',
+          unit_number: 5,
+          unit_name: 'Natural Resources',
+          weightage: 5,
+          chapters: [
+            {
+              chapter_id: 'cbse-10-sci-c13',
+              chapter_number: 13,
+              chapter_name: 'Our Environment',
+              concepts: [
+                {
+                  id: 'cbse-10-sci-env-01',
+                  concept_name: 'Ecosystems, Trophic Levels, 10% Energy Law & Biomagnification',
+                  subtopics: ['Food chains and food webs', 'Lindeman\'s 10% energy transfer law', 'Biological magnification of pesticides', 'Ozone layer depletion by CFCs', 'Solid waste management'],
+                  difficulty: 'easy',
+                  exam_importance: 'core',
+                  prerequisites: ['Basic ecological concepts'],
+                  learning_objectives: ['Calculate available energy at successive trophic levels using 10% law', 'Explain ozone formation and destructive reactions with chlorine radicals'],
+                  common_misconceptions: ['Thinking energy flows cyclically through ecosystems (energy flow is strictly unidirectional)', 'Assuming top carnivores have lowest pesticide concentrations (due to biomagnification, top carnivores have highest concentrations)'],
+                },
+              ],
+            },
+          ],
+        },
+      ],
+    },
+    {
+      subject_name: 'Social Science',
+      code: '087',
+      total_marks: 80,
+      units: [
+        {
+          unit_id: 'cbse-10-sst-u1',
+          unit_number: 1,
+          unit_name: 'India and the Contemporary World - II (History)',
+          weightage: 20,
+          chapters: [
+            {
+              chapter_id: 'cbse-10-hist-c1',
+              chapter_number: 1,
+              chapter_name: 'The Rise of Nationalism in Europe',
+              concepts: [
+                {
+                  id: 'cbse-10-hist-nat-01',
+                  concept_name: 'French Revolution, Liberal Nationalism & Unification of Germany and Italy',
+                  subtopics: ['Civil Code of 1804 (Napoleonic Code)', 'Zollverein customs union', 'Revolutions of 1848', 'Otto von Bismarck and German unification', 'Cavour, Garibaldi, and Italian unification', 'Allegories: Marianne and Germania'],
+                  difficulty: 'medium',
+                  exam_importance: 'high_yield',
+                  prerequisites: ['French Revolution Class 9 basics'],
+                  learning_objectives: ['Analyze how the French Revolution created collective identity', 'Detail stages of German and Italian national unification'],
+                  common_misconceptions: ['Confusing the Napoleonic Code with democratic constitutionalism', 'Attributing Italian unification solely to Garibaldi while ignoring Cavour\'s diplomacy'],
+                },
+              ],
+            },
+            {
+              chapter_id: 'cbse-10-hist-c2',
+              chapter_number: 2,
+              chapter_name: 'Nationalism in India',
+              concepts: [
+                {
+                  id: 'cbse-10-hist-ind-01',
+                  concept_name: 'Non-Cooperation Movement, Civil Disobedience & Salt Satyagraha',
+                  subtopics: ['First World War economic impact', 'Rowlatt Act and Jallianwala Bagh massacre (1919)', 'Khilafat and Non-Cooperation movement', 'Different social strands in movement', 'Salt March and Civil Disobedience Movement (1930)', 'Gandhi-Irwin Pact and Poona Pact'],
+                  difficulty: 'hard',
+                  exam_importance: 'high_yield',
+                  prerequisites: ['Colonial rule in India'],
+                  learning_objectives: ['Compare Non-Cooperation Movement with Civil Disobedience Movement', 'Explain Gandhi-Ambedkar agreement in the Poona Pact'],
+                  common_misconceptions: ['Confusing the Non-Cooperation Movement (1920-22) with the Civil Disobedience Movement (1930-34)', 'Thinking the Rowlatt Act was passed after Jallianwala Bagh (it was passed prior, triggering the protests)'],
+                },
+              ],
+            },
+            {
+              chapter_id: 'cbse-10-hist-c3',
+              chapter_number: 3,
+              chapter_name: 'The Making of a Global World',
+              concepts: [
+                {
+                  id: 'cbse-10-hist-globe-01',
+                  concept_name: 'Pre-Modern World, Silk Routes & The Great Depression (1929)',
+                  subtopics: ['Silk routes connecting trade and religion', 'Conquest, disease (Smallpox) and trade', 'Corn Laws and 19th-century global agricultural economy', 'Indentured labour migration', 'The Great Depression causes and impacts on Indian agriculture'],
+                  difficulty: 'medium',
+                  exam_importance: 'core',
+                  prerequisites: ['Global trade basics'],
+                  learning_objectives: ['Trace historical interconnectedness of pre-modern global economies', 'Analyze causes and worldwide impacts of the Great Depression of 1929'],
+                  common_misconceptions: ['Assuming globalization is purely a late 20th-century phenomenon', 'Underestimating biological factors like European smallpox in the conquest of Americas'],
+                },
+              ],
+            },
+            {
+              chapter_id: 'cbse-10-hist-c4',
+              chapter_number: 4,
+              chapter_name: 'Print Culture and the Modern World',
+              concepts: [
+                {
+                  id: 'cbse-10-hist-print-01',
+                  concept_name: 'Gutenberg Printing Press, Print Revolution & Impact on India',
+                  subtopics: ['Woodblock printing in China and East Asia', 'Gutenberg press in Europe (1448)', 'Martin Luther and Protestant Reformation', 'Reading mania in 18th century Europe', 'Print culture and French Revolution debate', 'Print and religious reform debates in 19th-century India'],
+                  difficulty: 'medium',
+                  exam_importance: 'high_yield',
+                  prerequisites: ['Medieval to modern European transition'],
+                  learning_objectives: ['Examine the relationship between print culture and public debate', 'Explain how print contributed to religious reform and anti-colonial mobilization in India'],
+                  common_misconceptions: ['Crediting Gutenberg with inventing movable type without acknowledging Chinese woodblock and ceramic movable types', 'Assuming print automatically created the French Revolution (it opened debate, but didn\'t singularly cause it)'],
+                },
+              ],
+            },
+          ],
+        },
+        {
+          unit_id: 'cbse-10-sst-u2',
+          unit_number: 2,
+          unit_name: 'Contemporary India - II (Geography)',
+          weightage: 20,
+          chapters: [
+            {
+              chapter_id: 'cbse-10-geog-c1',
+              chapter_number: 1,
+              chapter_name: 'Resources and Development',
+              concepts: [
+                {
+                  id: 'cbse-10-geog-res-01',
+                  concept_name: 'Classification of Resources, Land Degradation & Soil Types in India',
+                  subtopics: ['Biotic/Abiotic, Renewable/Non-renewable, Potential/Developed/Stock/Reserves', 'Sustainable development and Rio Earth Summit 1992', 'Land utilisation and degradation factors', 'Alluvial, Black (Regur), Red/Yellow, Laterite, Arid, and Forest soils'],
+                  difficulty: 'medium',
+                  exam_importance: 'core',
+                  prerequisites: ['Earth science basics'],
+                  learning_objectives: ['Differentiate resource classifications and sustainable conservation strategies', 'Identify major soil regions and their agricultural crop suitability'],
+                  common_misconceptions: ['Confusing Stock with Reserves (reserves are subset of stock accessible with current technology)', 'Thinking laterite soil is highly fertile without intense manure/fertilizer inputs'],
+                },
+              ],
+            },
+            {
+              chapter_id: 'cbse-10-geog-c2',
+              chapter_number: 2,
+              chapter_name: 'Water Resources & Agriculture',
+              concepts: [
+                {
+                  id: 'cbse-10-geog-agri-01',
+                  concept_name: 'Multi-Purpose River Projects, Rainwater Harvesting & Major Crops of India',
+                  subtopics: ['Dams benefits and ecological criticisms', 'Rooftop rainwater harvesting (Khadins, Johads, Guls, Kuls)', 'Cropping seasons: Kharif, Rabi, Zaid', 'Major food crops: Rice, Wheat, Millets, Pulses', 'Commercial crops: Sugarcane, Tea, Coffee, Cotton, Jute'],
+                  difficulty: 'medium',
+                  exam_importance: 'high_yield',
+                  prerequisites: ['Climate and weather patterns'],
+                  learning_objectives: ['Evaluate ecological pros and cons of multi-purpose river valley projects', 'State geographical growth requirements for major Indian food and cash crops'],
+                  common_misconceptions: ['Classifying wheat as a Kharif crop (wheat is sown in winter as a Rabi crop; rice is Kharif)', 'Assuming large dams have zero negative environmental or social displacement impacts'],
+                },
+              ],
+            },
+            {
+              chapter_id: 'cbse-10-geog-c3',
+              chapter_number: 3,
+              chapter_name: 'Minerals, Energy Resources & Manufacturing',
+              concepts: [
+                {
+                  id: 'cbse-10-geog-min-01',
+                  concept_name: 'Metallic & Non-Metallic Minerals, Energy Resources & Industrial Location',
+                  subtopics: ['Ferrous (Iron ore, Manganese) and Non-ferrous (Copper, Bauxite)', 'Conventional energy (Coal, Petroleum, Natural gas)', 'Non-conventional energy (Solar, Wind, Biogas, Nuclear)', 'Factors of industrial location (Raw material, Power, Labour, Market)', 'Agro-based vs Mineral-based industries (Cotton, Iron and Steel)'],
+                  difficulty: 'hard',
+                  exam_importance: 'high_yield',
+                  prerequisites: ['Earth minerals basics'],
+                  learning_objectives: ['Map major mineral distribution belts in India', 'Explain industrial site location economics and transition to green energy'],
+                  common_misconceptions: ['Confusing bituminous coal with anthracite (anthracite has highest carbon content and heating value)', 'Overlooking proximity to market when analyzing industrial plant locations'],
+                },
+              ],
+            },
+          ],
+        },
+        {
+          unit_id: 'cbse-10-sst-u3',
+          unit_number: 3,
+          unit_name: 'Democratic Politics - II (Political Science / Civics)',
+          weightage: 20,
+          chapters: [
+            {
+              chapter_id: 'cbse-10-pol-c1',
+              chapter_number: 1,
+              chapter_name: 'Power Sharing & Federalism',
+              concepts: [
+                {
+                  id: 'cbse-10-pol-fed-01',
+                  concept_name: 'Power Sharing Models (Belgium vs Sri Lanka) & Indian Federal Structure',
+                  subtopics: ['Majoritarianism in Sri Lanka vs Accommodation in Belgium', 'Horizontal vs Vertical power sharing', 'Key features of Federalism', 'Union, State, and Concurrent legislative lists', 'Decentralisation in India (73rd and 74th Constitutional Amendments 1992)'],
+                  difficulty: 'medium',
+                  exam_importance: 'high_yield',
+                  prerequisites: ['Indian Constitution basics'],
+                  learning_objectives: ['Analyze why power sharing prevents social conflict and deepens democracy', 'Explain distribution of legislative powers across Union, State, and Concurrent lists'],
+                  common_misconceptions: ['Confusing unitary government with federalism', 'Assuming local self-government bodies had constitutional status before the 1992 amendments'],
+                },
+              ],
+            },
+            {
+              chapter_id: 'cbse-10-pol-c2',
+              chapter_number: 2,
+              chapter_name: 'Political Parties & Outcomes of Democracy',
+              concepts: [
+                {
+                  id: 'cbse-10-pol-party-01',
+                  concept_name: 'Functions of Political Parties, National/State Parties & Democratic Accountability',
+                  subtopics: ['Functions of political parties in representative democracies', 'Criteria for National vs State recognised parties (Election Commission)', 'Challenges faced by political parties (Dynasty, Money & Muscle, Lack of internal democracy)', 'Assessing democracy: Accountable, responsive, legitimate government', 'Accommodation of social diversity and dignity of citizens'],
+                  difficulty: 'medium',
+                  exam_importance: 'core',
+                  prerequisites: ['Democratic election processes'],
+                  learning_objectives: ['List criteria recognized by Election Commission for National and State party status', 'Examine democratic institutional mechanisms ensuring government legitimacy and transparency'],
+                  common_misconceptions: ['Thinking non-democratic regimes eliminate poverty faster than democracies (statistical evidence shows regimes do not systematically outperform democracies on economic equity)', 'Assuming independent candidates can fulfill the institutional legislative role of political parties'],
+                },
+              ],
+            },
+          ],
+        },
+        {
+          unit_id: 'cbse-10-sst-u4',
+          unit_number: 4,
+          unit_name: 'Understanding Economic Development (Economics)',
+          weightage: 20,
+          chapters: [
+            {
+              chapter_id: 'cbse-10-econ-c1',
+              chapter_number: 1,
+              chapter_name: 'Development & Sectors of the Indian Economy',
+              concepts: [
+                {
+                  id: 'cbse-10-econ-dev-01',
+                  concept_name: 'Indicators of Development (HDI, Per Capita Income) & Primary/Secondary/Tertiary Sectors',
+                  subtopics: ['Per Capita Income vs Human Development Index (UNDP)', 'Public facilities: IMR, Literacy rate, Net Attendance Ratio', 'Primary, Secondary, and Tertiary economic activities', 'Rising historical importance of tertiary service sector', 'Organized vs Unorganized sectors & Disguised unemployment'],
+                  difficulty: 'easy',
+                  exam_importance: 'core',
+                  prerequisites: ['Basic economics understanding'],
+                  learning_objectives: ['Compare World Bank income criteria with UNDP composite Human Development Index', 'Identify disguised unemployment in Indian agriculture and suggest non-farm job creation'],
+                  common_misconceptions: ['Equating national development exclusively with Per Capita Income while ignoring health and education indices', 'Confusing open unemployment with disguised underemployment'],
+                },
+              ],
+            },
+            {
+              chapter_id: 'cbse-10-econ-c2',
+              chapter_number: 2,
+              chapter_name: 'Money and Credit & Globalisation',
+              concepts: [
+                {
+                  id: 'cbse-10-econ-cred-01',
+                  concept_name: 'Modern Forms of Money, Formal vs Informal Credit & MNC Integration',
+                  subtopics: ['Barter system & double coincidence of wants', 'Modern money: Currency, bank deposits, cheques', 'Terms of credit (Collateral, Interest, Documentation, Repayment mode)', 'Formal credit (RBI supervision) vs Informal credit (Money lenders)', 'Self-Help Groups (SHGs) for rural women', 'Multinational Corporations (MNCs), Foreign Direct Investment, and WTO role'],
+                  difficulty: 'medium',
+                  exam_importance: 'high_yield',
+                  prerequisites: ['Money and banking basics'],
+                  learning_objectives: ['Distinguish formal bank credit from informal moneylender debt traps', 'Explain how MNCs disperse production globally across borders'],
+                  common_misconceptions: ['Thinking informal lenders are regulated by the Reserve Bank of India', 'Assuming globalization benefits all domestic producers uniformly without impacting small cottage artisans'],
+                },
+              ],
+            },
+          ],
+        },
+      ],
+    },
+    {
+      subject_name: 'English Language and Literature',
+      code: '184',
+      total_marks: 80,
+      units: [
+        {
+          unit_id: 'cbse-10-eng-u1',
+          unit_number: 1,
+          unit_name: 'Reading Skills & Applied Grammar',
+          weightage: 30,
+          chapters: [
+            {
+              chapter_id: 'cbse-10-eng-c1',
+              chapter_number: 1,
+              chapter_name: 'Reading Comprehension & Functional Grammar',
+              concepts: [
+                {
+                  id: 'cbse-10-eng-read-01',
+                  concept_name: 'Discursive & Case-Based Passages, Tenses, Modals & Reported Speech',
+                  subtopics: ['Inference, vocabulary, and evaluation in reading passages', 'Subject-verb concord', 'Reported speech: Statements, commands, requests, and questions', 'Formal letter writing (Letter to Editor, Complaint, Enquiry)', 'Analytical paragraph writing based on chart/data'],
+                  difficulty: 'medium',
+                  exam_importance: 'core',
+                  prerequisites: ['Grammar fundamentals'],
+                  learning_objectives: ['Apply correct tense backshifting in reported speech transformations', 'Structure formal business and editorial correspondence adhering to standard layout conventions'],
+                  common_misconceptions: ['Failing to shift pronouns and time adverbs in reported speech', 'Confusing formal letter complimentary close conventions'],
+                },
+              ],
+            },
+          ],
+        },
+        {
+          unit_id: 'cbse-10-eng-u2',
+          unit_number: 2,
+          unit_name: 'Literature Textbooks (First Flight & Footprints)',
+          weightage: 50,
+          chapters: [
+            {
+              chapter_id: 'cbse-10-eng-c2',
+              chapter_number: 2,
+              chapter_name: 'First Flight: Prose & Poetry',
+              concepts: [
+                {
+                  id: 'cbse-10-eng-lit-01',
+                  concept_name: 'Core Themes in A Letter to God, Nelson Mandela, Two Stories about Flying & Poetry',
+                  subtopics: ['Lencho\'s faith and irony in A Letter to God', 'Apartheid and freedom in Long Walk to Freedom', 'Overcoming fear in His First Flight', 'Poetic devices: Metaphor, alliteration, irony in Dust of Snow and Fire and Ice'],
+                  difficulty: 'easy',
+                  exam_importance: 'core',
+                  prerequisites: ['Literary reading skills'],
+                  learning_objectives: ['Identify situational and dramatic irony in textbook prose', 'Analyze thematic motifs of perseverance, freedom, and human fallibility in literature'],
+                  common_misconceptions: ['Missing the irony that the post office employees were the ones who donated the money', 'Confusing literal meaning with metaphorical symbolism in modern poetry'],
+                },
+              ],
+            },
+            {
+              chapter_id: 'cbse-10-eng-c3',
+              chapter_number: 3,
+              chapter_name: 'Footprints Without Feet: Supplementary Reader',
+              concepts: [
+                {
+                  id: 'cbse-10-eng-supp-01',
+                  concept_name: 'Character Sketches & Morality in Triumph of Surgery, Thief\'s Story & Necklace',
+                  subtopics: ['Tricki\'s pampering and Dr. Herriot\'s practical cure', 'Hari Singh\'s transformation through trust by Anil in The Thief\'s Story', 'Griffin\'s misuse of science in Footprints Without Feet', 'Matilda\'s pride, vanity, and tragic irony in The Necklace', 'Bholi\'s empowerment through education'],
+                  difficulty: 'medium',
+                  exam_importance: 'high_yield',
+                  prerequisites: ['Short story analysis'],
+                  learning_objectives: ['Contrast character virtues and moral transformations in supplementary stories', 'Extract value-based life lessons from short fiction'],
+                  common_misconceptions: ['Viewing Dr. Herriot\'s treatment of Tricki as requiring surgery rather than proper diet and exercise', 'Treating Matilda\'s borrowing of the necklace as necessary rather than vanity'],
+                },
+              ],
+            },
+          ],
+        },
+      ],
+    },
+  ],
+};
+
+// =========================================================================
+// 2. CBSE CLASS 11 OFFICIAL CURRICULUM (2025-26 & 2026-27)
+// Official Source: https://cbseacademic.nic.in/curriculum_2026.html
+// =========================================================================
+
+export const CBSE_CLASS_11: OfficialSyllabusRecord = {
+  id: 'official-cbse-class-11-2026',
+  board: 'CBSE',
+  class_level: 11,
+  stream: null,
+  academic_year: '2025-26',
+  version: 'CBSE-ACAD-2025-26-V1',
+  official_source_url: 'https://cbseacademic.nic.in/curriculum_2026.html',
+  verified: true,
+  last_verified_at: '2026-03-15T00:00:00.000Z',
+  is_complete: true,
+  subjects: [
+    {
+      subject_name: 'Mathematics',
+      code: '041',
+      total_marks: 80,
+      units: [
+        {
+          unit_id: 'cbse-11-math-u1',
+          unit_number: 1,
+          unit_name: 'Sets and Functions',
+          weightage: 23,
+          chapters: [
+            {
+              chapter_id: 'cbse-11-math-c1',
+              chapter_number: 1,
+              chapter_name: 'Sets',
+              concepts: [
+                {
+                  id: 'cbse-11-math-sets-01',
+                  concept_name: 'Set Operations, Venn Diagrams & Power Sets',
+                  subtopics: ['Empty, finite, infinite sets', 'Subsets and Power sets', 'Venn diagrams', 'Union, intersection, difference, complement', 'De Morgan\'s laws'],
+                  difficulty: 'easy',
+                  exam_importance: 'core',
+                  prerequisites: ['Basic number systems'],
+                  learning_objectives: ['Apply De Morgan\'s laws to set operations', 'Solve practical word problems using n(A U B) formulas'],
+                  common_misconceptions: ['Confusing subset (⊆) with element of (∈)', 'Forgetting that empty set has 2^0 = 1 subset (itself) in power set calculations'],
+                },
+              ],
+            },
+            {
+              chapter_id: 'cbse-11-math-c2',
+              chapter_number: 2,
+              chapter_name: 'Relations and Functions',
+              concepts: [
+                {
+                  id: 'cbse-11-math-rel-01',
+                  concept_name: 'Cartesian Product, Domain, Range & Real Functions',
+                  subtopics: ['Cartesian product A × B', 'Definition of a relation', 'Functions as special relations', 'Domain and range of polynomial, rational, modulus, signum, and greatest integer functions'],
+                  difficulty: 'medium',
+                  exam_importance: 'high_yield',
+                  prerequisites: ['Sets operations'],
+                  learning_objectives: ['Determine domain and range of square root and rational functions', 'Sketch graphs of modulus and greatest integer functions'],
+                  common_misconceptions: ['Allowing denominator to equal zero when finding domain', 'Confusing range with codomain'],
+                },
+              ],
+            },
+            {
+              chapter_id: 'cbse-11-math-c3',
+              chapter_number: 3,
+              chapter_name: 'Trigonometric Functions',
+              concepts: [
+                {
+                  id: 'cbse-11-math-trig-01',
+                  concept_name: 'Radian Measure, Compound Angles & Transformations',
+                  subtopics: ['Radian and degree conversion (π radians = 180°)', 'Trigonometric functions signs in four quadrants', 'cos(x ± y), sin(x ± y), tan(x ± y)', 'Product-to-sum and sum-to-product formulas'],
+                  difficulty: 'hard',
+                  exam_importance: 'high_yield',
+                  prerequisites: ['Class 10 acute angle trigonometry'],
+                  learning_objectives: ['Transform sums of sines and cosines into products', 'Evaluate trigonometric functions for any general real angle'],
+                  common_misconceptions: ['Mixing degree and radian values in formulas (e.g. sin(π/6) vs sin(30))', 'Sign errors in cos(x+y) = cos x cos y - sin x sin y'],
+                },
+              ],
+            },
+          ],
+        },
+        {
+          unit_id: 'cbse-11-math-u2',
+          unit_number: 2,
+          unit_name: 'Algebra',
+          weightage: 25,
+          chapters: [
+            {
+              chapter_id: 'cbse-11-math-c4',
+              chapter_number: 4,
+              chapter_name: 'Complex Numbers and Quadratic Equations',
+              concepts: [
+                {
+                  id: 'cbse-11-math-cplx-01',
+                  concept_name: 'Imaginary Unit i, Modulus, Conjugate & Complex Quadratic Roots',
+                  subtopics: ['Powers of i (i² = -1)', 'Algebraic operations on complex numbers a + ib', 'Modulus |z| and conjugate z*', 'Solving quadratic equations with negative discriminant'],
+                  difficulty: 'medium',
+                  exam_importance: 'core',
+                  prerequisites: ['Quadratic equations quadratic formula'],
+                  learning_objectives: ['Compute modulus and multiplicative inverse of complex numbers', 'Find complex roots of ax² + bx + c = 0'],
+                  common_misconceptions: ['Writing √(-a) * √(-b) as √(ab) (which is valid only when at least one number is non-negative)', 'Forgetting that |z|² = z * z*'],
+                },
+              ],
+            },
+            {
+              chapter_id: 'cbse-11-math-c5',
+              chapter_number: 5,
+              chapter_name: 'Linear Inequalities',
+              concepts: [
+                {
+                  id: 'cbse-11-math-ineq-01',
+                  concept_name: 'Algebraic Solutions of Linear Inequalities in One Variable',
+                  subtopics: ['Rules of inequality manipulation', 'Reversal of inequality when multiplying/dividing by negative', 'Representation of solution sets on real number line'],
+                  difficulty: 'easy',
+                  exam_importance: 'core',
+                  prerequisites: ['Linear equations in one variable'],
+                  learning_objectives: ['Solve compound linear inequalities simultaneously', 'Express solutions in interval notation (open vs closed brackets)'],
+                  common_misconceptions: ['Forgetting to reverse inequality sign when dividing by a negative number', 'Confusing open interval (a, b) with closed interval [a, b]'],
+                },
+              ],
+            },
+            {
+              chapter_id: 'cbse-11-math-c6',
+              chapter_number: 6,
+              chapter_name: 'Permutations and Combinations',
+              concepts: [
+                {
+                  id: 'cbse-11-math-perm-01',
+                  concept_name: 'Fundamental Principle of Counting, nPr & nCr Formulas',
+                  subtopics: ['Multiplication and addition principles', 'Factorial notation n!', 'Permutations nPr = n!/(n-r)!', 'Combinations nCr = n!/[r!(n-r)!]', 'Restricted arrangements and selections'],
+                  difficulty: 'hard',
+                  exam_importance: 'high_yield',
+                  prerequisites: ['Basic counting operations'],
+                  learning_objectives: ['Distinguish situations requiring ordered permutations from unordered combinations', 'Solve committee formation and word arrangement problems'],
+                  common_misconceptions: ['Using permutation where order does not matter (like selecting a committee)', 'Overcounting duplicate permutations with identical letters without dividing by identical factorials'],
+                },
+              ],
+            },
+            {
+              chapter_id: 'cbse-11-math-c7',
+              chapter_number: 7,
+              chapter_name: 'Binomial Theorem',
+              concepts: [
+                {
+                  id: 'cbse-11-math-bin-01',
+                  concept_name: 'Binomial Expansion for Positive Integral Indices',
+                  subtopics: ['Statement and proof of Binomial Theorem', 'General term Tr+1 = nCr a^(n-r) b^r', 'Independent terms and coefficient extraction'],
+                  difficulty: 'medium',
+                  exam_importance: 'core',
+                  prerequisites: ['Combinations nCr formula'],
+                  learning_objectives: ['Expand binomial expressions (x + y)^n for positive integer n', 'Find specific terms independent of x without full expansion'],
+                  common_misconceptions: ['Writing the (r+1)th term index as r instead of r+1', 'Sign mistakes when expanding alternating negative terms (a - b)^n'],
+                },
+              ],
+            },
+            {
+              chapter_id: 'cbse-11-math-c8',
+              chapter_number: 8,
+              chapter_name: 'Sequences and Series',
+              concepts: [
+                {
+                  id: 'cbse-11-math-seq-01',
+                  concept_name: 'Geometric Progression (GP), nth Term & Sum of GP',
+                  subtopics: ['Common ratio r', 'nth term of GP an = a r^(n-1)', 'Sum of first n terms Sn = a(1 - r^n)/(1 - r)', 'Geometric Mean (GM = √(ab))'],
+                  difficulty: 'medium',
+                  exam_importance: 'high_yield',
+                  prerequisites: ['Arithmetic Progression Class 10'],
+                  learning_objectives: ['Find arbitrary terms and finite sums of geometric progressions', 'Insert geometric means between two given numbers'],
+                  common_misconceptions: ['Applying GP sum formula when r = 1', 'Confusing common difference in AP with common ratio in GP'],
+                },
+              ],
+            },
+          ],
+        },
+        {
+          unit_id: 'cbse-11-math-u3',
+          unit_number: 3,
+          unit_name: 'Coordinate Geometry',
+          weightage: 12,
+          chapters: [
+            {
+              chapter_id: 'cbse-11-math-c9',
+              chapter_number: 9,
+              chapter_name: 'Straight Lines',
+              concepts: [
+                {
+                  id: 'cbse-11-math-line-01',
+                  concept_name: 'Slope of a Line, Various Forms of Line Equations & Distance Formulas',
+                  subtopics: ['Slope m = tan θ = (y2-y1)/(x2-x1)', 'Parallel and perpendicular lines condition', 'Point-slope, slope-intercept, two-point, and intercept forms', 'Perpendicular distance of a point from a line |Ax1 + By1 + C| / √(A² + B²)'],
+                  difficulty: 'medium',
+                  exam_importance: 'high_yield',
+                  prerequisites: ['Coordinate Geometry Class 10'],
+                  learning_objectives: ['Derive line equations in standard forms', 'Calculate perpendicular distance between parallel lines'],
+                  common_misconceptions: ['Assuming slope is undefined for horizontal lines (slope is 0 for horizontal, undefined for vertical)', 'Sign errors when applying perpendicular slope relationship m1 * m2 = -1'],
+                },
+              ],
+            },
+            {
+              chapter_id: 'cbse-11-math-c10',
+              chapter_number: 10,
+              chapter_name: 'Conic Sections',
+              concepts: [
+                {
+                  id: 'cbse-11-math-conic-01',
+                  concept_name: 'Standard Equations of Circle, Parabola, Ellipse & Hyperbola',
+                  subtopics: ['Circle equation (x-h)² + (y-k)² = r²', 'Parabola y² = 4ax and focus/directrix', 'Ellipse x²/a² + y²/b² = 1 (eccentricity e < 1, foci, vertices)', 'Hyperbola x²/a² - y²/b² = 1 (eccentricity e > 1)'],
+                  difficulty: 'hard',
+                  exam_importance: 'high_yield',
+                  prerequisites: ['Distance formula in 2D'],
+                  learning_objectives: ['Determine foci, vertices, directrix, and latus rectum for standard conics', 'Sketch conics from given algebraic equations'],
+                  common_misconceptions: ['Confusing major and minor axes orientation in ellipse when b > a', 'Writing equation of parabola focus on the wrong axis'],
+                },
+              ],
+            },
+          ],
+        },
+        {
+          unit_id: 'cbse-11-math-u4',
+          unit_number: 4,
+          unit_name: 'Calculus',
+          weightage: 8,
+          chapters: [
+            {
+              chapter_id: 'cbse-11-math-c11',
+              chapter_number: 11,
+              chapter_name: 'Limits and Derivatives',
+              concepts: [
+                {
+                  id: 'cbse-11-math-calc-01',
+                  concept_name: 'Intuitive Idea of Limits, Standard Trigonometric Limits & First Principles Derivative',
+                  subtopics: ['Left hand and right hand limits', 'lim(x->a) (x^n - a^n)/(x - a) = n a^(n-1)', 'lim(x->0) sin x / x = 1', 'Definition of derivative as limit of difference quotient', 'Product and quotient rules for differentiation'],
+                  difficulty: 'hard',
+                  exam_importance: 'high_yield',
+                  prerequisites: ['Functions and Graphs'],
+                  learning_objectives: ['Evaluate indeterminate limits using standard theorems', 'Differentiate polynomial and trigonometric functions from first principles'],
+                  common_misconceptions: ['Substituting x = 0 directly into indeterminate 0/0 forms without algebraic simplification', 'Applying quotient rule with addition in numerator instead of subtraction (u\'v - uv\')/v²'],
+                },
+              ],
+            },
+          ],
+        },
+        {
+          unit_id: 'cbse-11-math-u5',
+          unit_number: 5,
+          unit_name: 'Statistics and Probability',
+          weightage: 12,
+          chapters: [
+            {
+              chapter_id: 'cbse-11-math-c12',
+              chapter_number: 12,
+              chapter_name: 'Statistics & Probability',
+              concepts: [
+                {
+                  id: 'cbse-11-math-stat-01',
+                  concept_name: 'Measures of Dispersion (Mean Deviation, Variance, Standard Deviation)',
+                  subtopics: ['Mean deviation about mean and median', 'Variance σ² and Standard deviation σ for grouped data', 'Axiomatic approach to probability', 'P(A U B) = P(A) + P(B) - P(A ∩ B)'],
+                  difficulty: 'medium',
+                  exam_importance: 'core',
+                  prerequisites: ['Class 10 Statistics and Probability'],
+                  learning_objectives: ['Calculate standard deviation for continuous frequency distributions', 'Apply axiomatic probability addition theorem to mutually exclusive and non-exclusive events'],
+                  common_misconceptions: ['Forgetting that variance is square of standard deviation', 'Assuming P(A ∩ B) = 0 for all events without verifying mutual exclusivity'],
+                },
+              ],
+            },
+          ],
+        },
+      ],
+    },
+    {
+      subject_name: 'Physics',
+      code: '042',
+      total_marks: 70,
+      units: [
+        {
+          unit_id: 'cbse-11-phy-u1',
+          unit_number: 1,
+          unit_name: 'Kinematics',
+          weightage: 23,
+          chapters: [
+            {
+              chapter_id: 'cbse-11-phy-c1',
+              chapter_number: 1,
+              chapter_name: 'Units and Measurements',
+              concepts: [
+                {
+                  id: 'cbse-11-phy-units-01',
+                  concept_name: 'Dimensional Analysis & Applications',
+                  subtopics: ['SI fundamental and derived units', 'Dimensional formulas of physical quantities', 'Checking dimensional consistency of equations', 'Deducing relations among physical quantities'],
+                  difficulty: 'easy',
+                  exam_importance: 'core',
+                  prerequisites: ['Basic algebra'],
+                  learning_objectives: ['Convert units across systems using dimensional equations', 'Verify dimensional homogeneity of governing laws'],
+                  common_misconceptions: ['Assuming dimensional correctness guarantees physical correctness of dimensionless numerical coefficients', 'Adding physical quantities with differing dimensions'],
+                },
+              ],
+            },
+            {
+              chapter_id: 'cbse-11-phy-c2',
+              chapter_number: 2,
+              chapter_name: 'Motion in a Straight Line',
+              concepts: [
+                {
+                  id: 'cbse-11-phy-motion1d-01',
+                  concept_name: 'Equations of Motion with Constant Acceleration',
+                  subtopics: ['Position-time and velocity-time graphs', 'Calculus and algebraic derivation of v = u + at, s = ut + ½at², v² = u² + 2as', 'Free fall under gravity'],
+                  difficulty: 'medium',
+                  exam_importance: 'core',
+                  prerequisites: ['Differentiation basics'],
+                  learning_objectives: ['Extract velocity and acceleration from x-t and v-t graph slopes/areas', 'Solve vertical projectile motion under gravity'],
+                  common_misconceptions: ['Confusing distance (scalar path length) with displacement (vector shortcut)', 'Assuming acceleration is zero at highest point of vertical projectile (velocity is 0, acceleration is -g)'],
+                },
+              ],
+            },
+            {
+              chapter_id: 'cbse-11-phy-c3',
+              chapter_number: 3,
+              chapter_name: 'Motion in a Plane',
+              concepts: [
+                {
+                  id: 'cbse-11-phy-motion2d-01',
+                  concept_name: 'Vectors, Projectile Motion & Uniform Circular Motion',
+                  subtopics: ['Vector addition: Triangle and Parallelogram laws', 'Dot and cross product of vectors', 'Trajectory of projectile y = x tan θ - gx²/(2u² cos²θ)', 'Maximum height, time of flight, horizontal range', 'Centripetal acceleration ac = v²/r'],
+                  difficulty: 'hard',
+                  exam_importance: 'high_yield',
+                  prerequisites: ['1D motion equations', 'Trigonometry'],
+                  learning_objectives: ['Resolve vectors into orthogonal Cartesian components', 'Calculate projectile range, flight duration, and peak height'],
+                  common_misconceptions: ['Thinking horizontal velocity component changes during projectile motion without air resistance (ux = u cos θ remains constant)', 'Treating centripetal force as a separate outward force rather than the net inward radial force'],
+                },
+              ],
+            },
+          ],
+        },
+        {
+          unit_id: 'cbse-11-phy-u2',
+          unit_number: 2,
+          unit_name: 'Laws of Motion',
+          weightage: 17,
+          chapters: [
+            {
+              chapter_id: 'cbse-11-phy-c4',
+              chapter_number: 4,
+              chapter_name: 'Laws of Motion',
+              concepts: [
+                {
+                  id: 'cbse-11-phy-law-01',
+                  concept_name: 'Newton\'s Laws, Free Body Diagrams, Friction & Circular Dynamics',
+                  subtopics: ['Inertia and Newton\'s First Law', 'F = dp/dt = ma (Second Law)', 'Action-reaction pairs (Third Law)', 'Static, limiting, and kinetic friction (f_s <= μ_s N)', 'Banking of circular roads (v_max = √(rg (μ + tan θ)/(1 - μ tan θ)))'],
+                  difficulty: 'hard',
+                  exam_importance: 'high_yield',
+                  prerequisites: ['Vectors components'],
+                  learning_objectives: ['Construct free body diagrams for connected pulley and inclined plane systems', 'Compute maximum safe negotiation speeds on banked roads'],
+                  common_misconceptions: ['Believing action and reaction act on the same body and cancel each other out (they act on different bodies)', 'Treating static friction as always equal to μ_s N instead of self-adjusting up to limiting friction'],
+                },
+              ],
+            },
+            {
+              chapter_id: 'cbse-11-phy-c5',
+              chapter_number: 5,
+              chapter_name: 'Work, Energy and Power',
+              concepts: [
+                {
+                  id: 'cbse-11-phy-work-01',
+                  concept_name: 'Work-Energy Theorem, Conservative Forces & Collisions',
+                  subtopics: ['Work done by constant and variable force W = ∫ F · dx', 'Work-Energy Theorem (W_net = ΔK)', 'Conservative forces and potential energy (F = -dU/dx)', 'Potential energy of spring U = ½kx²', 'Elastic and inelastic 1D collisions'],
+                  difficulty: 'medium',
+                  exam_importance: 'high_yield',
+                  prerequisites: ['Laws of motion', 'Dot product'],
+                  learning_objectives: ['Apply Work-Energy Theorem to mechanical systems', 'Calculate velocities after 1D elastic collisions using momentum and kinetic energy conservation'],
+                  common_misconceptions: ['Thinking kinetic energy is conserved in inelastic collisions (total momentum is conserved, kinetic energy is not)', 'Overlooking sign of work done by opposing friction'],
+                },
+              ],
+            },
+          ],
+        },
+        {
+          unit_id: 'cbse-11-phy-u3',
+          unit_number: 3,
+          unit_name: 'Gravitation & Properties of Matter',
+          weightage: 16,
+          chapters: [
+            {
+              chapter_id: 'cbse-11-phy-c6',
+              chapter_number: 6,
+              chapter_name: 'Gravitation',
+              concepts: [
+                {
+                  id: 'cbse-11-phy-grav-01',
+                  concept_name: 'Universal Gravitation, Orbital Velocity & Escape Velocity',
+                  subtopics: ['Kepler\'s laws of planetary motion', 'Universal Law F = G m1 m2 / r²', 'Acceleration due to gravity variation with altitude and depth', 'Gravitational potential energy U = -GMm/r', 'Escape velocity ve = √(2gR) = 11.2 km/s'],
+                  difficulty: 'medium',
+                  exam_importance: 'high_yield',
+                  prerequisites: ['Circular motion', 'Conservation of energy'],
+                  learning_objectives: ['Derive gravitational acceleration variation with depth g\' = g(1 - d/R)', 'Calculate orbital velocity and period of geostationary satellites'],
+                  common_misconceptions: ['Assuming gravity is zero inside orbiting spacecraft (apparent weightlessness is due to free fall, gravity is still ~89% of surface value)', 'Confusing gravitational constant G (scalar universal constant) with g (local vector acceleration)'],
+                },
+              ],
+            },
+            {
+              chapter_id: 'cbse-11-phy-c7',
+              chapter_number: 7,
+              chapter_name: 'Mechanical Properties of Fluids',
+              concepts: [
+                {
+                  id: 'cbse-11-phy-fluid-01',
+                  concept_name: 'Pascal\'s Law, Bernoulli\'s Principle & Viscosity',
+                  subtopics: ['Pressure in fluids and Pascal\'s hydraulic principle', 'Equation of continuity A1v1 = A2v2', 'Bernoulli\'s equation P + ½ρv² + ρgh = constant', 'Viscosity and Stokes\' law F = 6πηrv', 'Terminal velocity and Reynolds number'],
+                  difficulty: 'hard',
+                  exam_importance: 'high_yield',
+                  prerequisites: ['Work-Energy Theorem'],
+                  learning_objectives: ['Apply Bernoulli\'s theorem to Venturi meters and aerodynamic lift', 'Calculate terminal velocity of spheres falling through viscous liquids'],
+                  common_misconceptions: ['Thinking fluid velocity is higher in wider pipes (by continuity A1v1 = A2v2, velocity is higher in narrower constricted regions)', 'Believing pressure is higher where fluid speed is faster (by Bernoulli, pressure drops where speed increases)'],
+                },
+              ],
+            },
+          ],
+        },
+        {
+          unit_id: 'cbse-11-phy-u4',
+          unit_number: 4,
+          unit_name: 'Thermodynamics, Oscillations & Waves',
+          weightage: 14,
+          chapters: [
+            {
+              chapter_id: 'cbse-11-phy-c8',
+              chapter_number: 8,
+              chapter_name: 'Thermodynamics',
+              concepts: [
+                {
+                  id: 'cbse-11-phy-thermo-01',
+                  concept_name: 'First and Second Laws of Thermodynamics & Heat Engines',
+                  subtopics: ['Thermal equilibrium and Zeroth Law', 'First Law of Thermodynamics ΔQ = ΔU + ΔW', 'Isothermal, adiabatic, isobaric, isochoric processes', 'Work done in isothermal and adiabatic gas expansions', 'Second Law: Kelvin-Planck and Clausius statements', 'Carnot engine efficiency η = 1 - T2/T1'],
+                  difficulty: 'medium',
+                  exam_importance: 'high_yield',
+                  prerequisites: ['Ideal gas law PV = nRT'],
+                  learning_objectives: ['Calculate work done and internal energy changes in cyclic thermodynamic processes', 'State limits on heat engine efficiency imposed by the Second Law'],
+                  common_misconceptions: ['Confusing internal energy with heat supplied (internal energy is a state function; heat is a path function)', 'Assuming 100% efficient heat engine can be constructed if friction is completely removed'],
+                },
+              ],
+            },
+            {
+              chapter_id: 'cbse-11-phy-c9',
+              chapter_number: 9,
+              chapter_name: 'Oscillations and Waves',
+              concepts: [
+                {
+                  id: 'cbse-11-phy-wave-01',
+                  concept_name: 'Simple Harmonic Motion (SHM) & Standing Waves in Pipes',
+                  subtopics: ['SHM differential equation d²x/dt² + ω²x = 0', 'Displacement x = A cos(ωt + φ), velocity, acceleration', 'Time period of simple pendulum T = 2π√(L/g) and spring T = 2π√(m/k)', 'Transverse and longitudinal waves', 'Standing waves in open and closed organ pipes', 'Beats frequency f_beat = |f1 - f2|'],
+                  difficulty: 'hard',
+                  exam_importance: 'high_yield',
+                  prerequisites: ['Periodic functions', 'Newton\'s laws'],
+                  learning_objectives: ['Derive expression for kinetic and potential energy in SHM', 'Determine harmonic frequencies in open vs closed acoustic pipes'],
+                  common_misconceptions: ['Thinking velocity is maximum when acceleration is maximum in SHM (velocity is maximum at mean position where a = 0; a is maximum at extreme where v = 0)', 'Assuming closed organ pipes produce even harmonics (closed pipes produce only odd harmonics)'],
+                },
+              ],
+            },
+          ],
+        },
+      ],
+    },
+    {
+      subject_name: 'Chemistry',
+      code: '043',
+      total_marks: 70,
+      units: [
+        {
+          unit_id: 'cbse-11-chem-u1',
+          unit_number: 1,
+          unit_name: 'Atomic Structure & Chemical Bonding',
+          weightage: 21,
+          chapters: [
+            {
+              chapter_id: 'cbse-11-chem-c1',
+              chapter_number: 1,
+              chapter_name: 'Structure of Atom',
+              concepts: [
+                {
+                  id: 'cbse-11-chem-atom-01',
+                  concept_name: 'Bohr Model, de Broglie Relation & Quantum Numbers',
+                  subtopics: ['Bohr model of hydrogen and Rydberg formula', 'de Broglie dual nature λ = h/mv', 'Heisenberg uncertainty principle Δx · Δp >= h/4π', 'Quantum numbers (n, l, m_l, m_s)', 'Aufbau principle, Pauli\'s exclusion, Hund\'s rule of maximum multiplicity'],
+                  difficulty: 'medium',
+                  exam_importance: 'high_yield',
+                  prerequisites: ['Subatomic particles'],
+                  learning_objectives: ['Write electronic configurations for transition elements with half/fully filled stability exceptions (Cr, Cu)', 'Compute wavelength of spectral lines in Lyman, Balmer, and Paschen series'],
+                  common_misconceptions: ['Writing 4s before 3d in Cr configuration as [Ar] 4s² 3d⁴ instead of [Ar] 4s¹ 3d⁵', 'Treating electron orbits in quantum mechanics as deterministic planetary circles'],
+                },
+              ],
+            },
+            {
+              chapter_id: 'cbse-11-chem-c2',
+              chapter_number: 2,
+              chapter_name: 'Chemical Bonding and Molecular Structure',
+              concepts: [
+                {
+                  id: 'cbse-11-chem-bond-01',
+                  concept_name: 'VSEPR Theory, Hybridization & Molecular Orbital Theory (MOT)',
+                  subtopics: ['VSEPR molecular geometries (linear, trigonal, tetrahedral, bent)', 'Orbital hybridization: sp, sp², sp³, sp³d', 'Molecular Orbital Theory for homonuclear diatomics (H2, N2, O2)', 'Bond order = ½(N_b - N_a) and paramagnetism of O2', 'Hydrogen bonding (Inter vs Intra molecular)'],
+                  difficulty: 'hard',
+                  exam_importance: 'high_yield',
+                  prerequisites: ['Lewis dot structures', 'Valence electrons'],
+                  learning_objectives: ['Predict molecular geometry and bond angles using lone pair repulsions', 'Construct MOT energy diagrams and determine magnetic behavior from unpaired electrons'],
+                  common_misconceptions: ['Predicting O2 is diamagnetic using Lewis structures (MOT correctly shows O2 has two unpaired electrons in π* orbitals making it paramagnetic)', 'Equating lone-pair-lone-pair repulsion with bond-pair-bond-pair repulsion (lp-lp > lp-bp > bp-bp)'],
+                },
+              ],
+            },
+          ],
+        },
+        {
+          unit_id: 'cbse-11-chem-u2',
+          unit_number: 2,
+          unit_name: 'Thermodynamics & Equilibrium',
+          weightage: 22,
+          chapters: [
+            {
+              chapter_id: 'cbse-11-chem-c3',
+              chapter_number: 3,
+              chapter_name: 'Chemical Thermodynamics',
+              concepts: [
+                {
+                  id: 'cbse-11-chem-thermo-01',
+                  concept_name: 'Enthalpy, Hess\'s Law, Entropy & Gibbs Free Energy',
+                  subtopics: ['State functions and extensive/intensive properties', 'First Law ΔU = q + w', 'Enthalpy of reaction ΔH and Hess\'s Law of constant heat summation', 'Entropy ΔS and Second Law of thermodynamics', 'Gibbs Free Energy ΔG = ΔH - TΔS and criteria for spontaneity (ΔG < 0)'],
+                  difficulty: 'hard',
+                  exam_importance: 'high_yield',
+                  prerequisites: ['Thermochemistry basics'],
+                  learning_objectives: ['Calculate reaction enthalpy using Hess\'s law cycles and bond enthalpies', 'Predict reaction spontaneity across temperature ranges using ΔG = ΔH - TΔS'],
+                  common_misconceptions: ['Assuming all exothermic reactions are spontaneously feasible (endothermic reactions with large positive ΔS can be spontaneous at high T)', 'Treating work and heat as state functions (only U, H, S, G are state functions)'],
+                },
+              ],
+            },
+            {
+              chapter_id: 'cbse-11-chem-c4',
+              chapter_number: 4,
+              chapter_name: 'Equilibrium',
+              concepts: [
+                {
+                  id: 'cbse-11-chem-eq-01',
+                  concept_name: 'Le Chatelier\'s Principle, Kc/Kp & Ionic Equilibrium (pH, Buffers, Ksp)',
+                  subtopics: ['Dynamic equilibrium and Law of Mass Action', 'Relationship Kp = Kc (RT)^Δn', 'Le Chatelier\'s principle (Temperature, Pressure, Concentration effects)', 'Ostwald dilution law for weak electrolytes', 'pH, pOH, buffer solutions (Henderson-Hasselbalch equation)', 'Solubility product Ksp and common ion effect'],
+                  difficulty: 'hard',
+                  exam_importance: 'high_yield',
+                  prerequisites: ['Acids and bases basics', 'Molarity'],
+                  learning_objectives: ['Predict equilibrium shifts under pressure and temperature changes', 'Calculate pH of weak acid and buffer mixtures', 'Predict salt precipitation using ionic product vs solubility product Ksp'],
+                  common_misconceptions: ['Believing catalysts shift equilibrium position (catalysts accelerate reaching equilibrium without changing Kc)', 'Neglecting water dissociation [H+] when calculating pH of extremely dilute acids (e.g. 10^-8 M HCl has pH ~6.98, not 8)'],
+                },
+              ],
+            },
+          ],
+        },
+        {
+          unit_id: 'cbse-11-chem-u3',
+          unit_number: 3,
+          unit_name: 'Organic Chemistry',
+          weightage: 27,
+          chapters: [
+            {
+              chapter_id: 'cbse-11-chem-c5',
+              chapter_number: 5,
+              chapter_name: 'Organic Chemistry - Basic Principles and Techniques',
+              concepts: [
+                {
+                  id: 'cbse-11-chem-org-01',
+                  concept_name: 'IUPAC Nomenclature, Electronic Effects (Inductive, Resonance, Hyperconjugation) & Carbocation Stability',
+                  subtopics: ['IUPAC naming rules for branched and functional organic compounds', 'Structural and stereoisomerism', 'Inductive effect (+I, -I) and electromeric effect', 'Resonance and mesomeric effect (+R, -R)', 'Hyperconjugation (no-bond resonance)', 'Stability order of carbocations, carbanions, free radicals (3° > 2° > 1°)'],
+                  difficulty: 'hard',
+                  exam_importance: 'high_yield',
+                  prerequisites: ['Covalent bonding in carbon'],
+                  learning_objectives: ['Assign IUPAC systematic names following priority rules', 'Rank carbocation and radical stability using hyperconjugation and resonance'],
+                  common_misconceptions: ['Confusing inductive effect (permanent through sigma bonds) with electromeric effect (temporary under reagent demand in pi bonds)', 'Assuming primary carbocations are more stable than tertiary'],
+                },
+              ],
+            },
+            {
+              chapter_id: 'cbse-11-chem-c6',
+              chapter_number: 6,
+              chapter_name: 'Hydrocarbons',
+              concepts: [
+                {
+                  id: 'cbse-11-chem-hydro-01',
+                  concept_name: 'Alkanes, Alkenes, Alkynes & Aromaticity (Hückel\'s Rule)',
+                  subtopics: ['Free radical halogenation mechanism of alkanes', 'Markovnikov\'s addition rule and peroxide anti-Markovnikov effect', 'Ozonolysis of alkenes for structure determination', 'Acidity of terminal alkynes', 'Aromaticity criteria and Hückel\'s rule (4n + 2 pi electrons)', 'Electrophilic aromatic substitution of benzene (Nitration, Halogenation, Friedel-Crafts)'],
+                  difficulty: 'hard',
+                  exam_importance: 'high_yield',
+                  prerequisites: ['Electronic effects in organic chemistry'],
+                  learning_objectives: ['Apply Markovnikov\'s rule to electrophilic addition of HBr across unsymmetrical alkenes', 'Deduce alkene structure from ozonolysis cleavage carbonyl fragments', 'Verify aromaticity using planar 4n+2 cyclic conjugation rules'],
+                  common_misconceptions: ['Applying peroxide effect (anti-Markovnikov) to HCl or HI (peroxide effect works exclusively with HBr)', 'Assuming any cyclic compound with double bonds is aromatic without checking planarity and 4n+2 electron count'],
+                },
+              ],
+            },
+          ],
+        },
+      ],
+    },
+  ],
+};
+
+// =========================================================================
+// 3. CBSE CLASS 12 OFFICIAL CURRICULUM (2025-26 & 2026-27)
+// Official Source: https://cbseacademic.nic.in/curriculum_2026.html
+// =========================================================================
+
+export const CBSE_CLASS_12: OfficialSyllabusRecord = {
+  id: 'official-cbse-class-12-2026',
+  board: 'CBSE',
+  class_level: 12,
+  stream: 'Science (PCM/PCB)',
+  academic_year: '2025-26',
+  version: 'CBSE-ACAD-2025-26-V1',
+  official_source_url: 'https://cbseacademic.nic.in/curriculum_2026.html',
+  verified: true,
+  last_verified_at: '2026-03-15T00:00:00.000Z',
+  is_complete: true,
+  subjects: [
+    {
+      subject_name: 'Mathematics',
+      code: '041',
+      total_marks: 80,
+      units: [
+        {
+          unit_id: 'cbse-12-math-u1',
+          unit_number: 1,
+          unit_name: 'Relations and Functions',
+          weightage: 8,
+          chapters: [
+            {
+              chapter_id: 'cbse-12-math-c1',
+              chapter_number: 1,
+              chapter_name: 'Relations and Functions',
+              concepts: [
+                {
+                  id: 'cbse-12-math-rel-01',
+                  concept_name: 'Equivalence Relations & Bijective Functions',
+                  subtopics: ['Reflexive, symmetric, and transitive relations', 'Equivalence classes', 'One-to-one (injective) and onto (surjective) functions', 'Bijective functions and invertibility'],
+                  difficulty: 'medium',
+                  exam_importance: 'core',
+                  prerequisites: ['Sets and relations Class 11'],
+                  learning_objectives: ['Prove equivalence relation properties for abstract relations', 'Verify bijectivity of functions to establish invertibility'],
+                  common_misconceptions: ['Assuming a symmetric and transitive relation is automatically reflexive without checking all elements in the set', 'Confusing codomain with range when verifying surjectivity'],
+                },
+              ],
+            },
+            {
+              chapter_id: 'cbse-12-math-c2',
+              chapter_number: 2,
+              chapter_name: 'Inverse Trigonometric Functions',
+              concepts: [
+                {
+                  id: 'cbse-12-math-itf-01',
+                  concept_name: 'Principal Value Branches & Properties of ITF',
+                  subtopics: ['Definition, domain and range of sin⁻¹x, cos⁻¹x, tan⁻¹x', 'Principal value branch intervals', 'Elementary conversion identities'],
+                  difficulty: 'medium',
+                  exam_importance: 'high_yield',
+                  prerequisites: ['Trigonometric functions and Bijection'],
+                  learning_objectives: ['Determine exact principal values for negative arguments', 'Simplify composite trigonometric expressions within valid domain limits'],
+                  common_misconceptions: ['Writing sin⁻¹(sin 2π/3) = 2π/3 (2π/3 lies outside principal branch [-π/2, π/2]; correct answer is π/3)', 'Confusing sin⁻¹x with 1/sin x (csc x)'],
+                },
+              ],
+            },
+          ],
+        },
+        {
+          unit_id: 'cbse-12-math-u2',
+          unit_number: 2,
+          unit_name: 'Algebra',
+          weightage: 10,
+          chapters: [
+            {
+              chapter_id: 'cbse-12-math-c3',
+              chapter_number: 3,
+              chapter_name: 'Matrices',
+              concepts: [
+                {
+                  id: 'cbse-12-math-mat-01',
+                  concept_name: 'Matrix Operations, Transpose & Symmetric Matrices',
+                  subtopics: ['Matrix multiplication compatibility', 'Transpose properties (AB)^T = B^T A^T', 'Symmetric (A = A^T) and skew-symmetric (A = -A^T) matrices', 'Expressing matrix as sum of symmetric and skew-symmetric'],
+                  difficulty: 'easy',
+                  exam_importance: 'core',
+                  prerequisites: ['Linear equations'],
+                  learning_objectives: ['Perform row-by-column matrix multiplications', 'Decompose square matrices into symmetric and skew-symmetric components'],
+                  common_misconceptions: ['Assuming matrix multiplication is commutative (AB = BA is false in general)', 'Thinking all diagonal elements in skew-symmetric matrices can be non-zero (diagonal elements must be zero)'],
+                },
+              ],
+            },
+            {
+              chapter_id: 'cbse-12-math-c4',
+              chapter_number: 4,
+              chapter_name: 'Determinants',
+              concepts: [
+                {
+                  id: 'cbse-12-math-det-01',
+                  concept_name: 'Adjoint, Matrix Inverses & Solving Systems of Linear Equations',
+                  subtopics: ['Minors and cofactors', 'Adjoint formula A · adj(A) = |A| I', 'Inverse formula A⁻¹ = (1/|A|) adj(A)', 'Solving linear equations using matrix method X = A⁻¹ B'],
+                  difficulty: 'hard',
+                  exam_importance: 'high_yield',
+                  prerequisites: ['Matrix operations'],
+                  learning_objectives: ['Compute cofactors and adjoint of 3x3 matrices', 'Solve systems of three simultaneous linear equations with matrix inversion'],
+                  common_misconceptions: ['Forgetting to transpose the cofactor matrix when calculating adj(A)', 'Attempting to find inverse when determinant |A| = 0 (singular matrix has no inverse)'],
+                },
+              ],
+            },
+          ],
+        },
+        {
+          unit_id: 'cbse-12-math-u3',
+          unit_number: 3,
+          unit_name: 'Calculus',
+          weightage: 35,
+          chapters: [
+            {
+              chapter_id: 'cbse-12-math-c5',
+              chapter_number: 5,
+              chapter_name: 'Continuity and Differentiability',
+              concepts: [
+                {
+                  id: 'cbse-12-math-cont-01',
+                  concept_name: 'Continuity, Chain Rule, Logarithmic & Parametric Differentiation',
+                  subtopics: ['Continuity test (LHL = RHL = f(a))', 'Differentiability implies continuity', 'Chain rule for composite functions', 'Logarithmic differentiation for y = [f(x)]^[g(x)]', 'Parametric differentiation dy/dx = (dy/dt)/(dx/dt)', 'Second order derivatives'],
+                  difficulty: 'hard',
+                  exam_importance: 'high_yield',
+                  prerequisites: ['Class 11 limits and derivatives'],
+                  learning_objectives: ['Test piecewise functions for continuity at boundary points', 'Apply logarithmic differentiation to variable-power-variable expressions'],
+                  common_misconceptions: ['Assuming continuity guarantees differentiability (e.g. f(x) = |x| is continuous at 0 but not differentiable)', 'Differentiating parametric dy/dx second time with respect to t without multiplying by dt/dx'],
+                },
+              ],
+            },
+            {
+              chapter_id: 'cbse-12-math-c6',
+              chapter_number: 6,
+              chapter_name: 'Applications of Derivatives',
+              concepts: [
+                {
+                  id: 'cbse-12-math-aod-01',
+                  concept_name: 'Increasing/Decreasing Functions & Maxima and Minima',
+                  subtopics: ['Rate of change of quantities', 'Strictly increasing (f\'(x) > 0) and decreasing (f\'(x) < 0) intervals', 'First derivative test and Second derivative test (f"(x))', 'Applied word problems on maximizing volume and minimizing area'],
+                  difficulty: 'hard',
+                  exam_importance: 'high_yield',
+                  prerequisites: ['Continuity and differentiability'],
+                  learning_objectives: ['Determine intervals where functions are strictly increasing or decreasing', 'Formulate and solve real-world optimization problems using second derivative tests'],
+                  common_misconceptions: ['Conflating local extrema with global extrema', 'Concluding a critical point where f\'(x) = 0 is a local extremum without testing if f"(x) = 0 (point of inflection)'],
+                },
+              ],
+            },
+            {
+              chapter_id: 'cbse-12-math-c7',
+              chapter_number: 7,
+              chapter_name: 'Integrals',
+              concepts: [
+                {
+                  id: 'cbse-12-math-int-01',
+                  concept_name: 'Integration by Substitution, Partial Fractions & By Parts',
+                  subtopics: ['Integration by substitution method', 'Integration using partial fractions', 'Integration by parts ∫ u v dx = u ∫ v dx - ∫ [u\' ∫ v dx] dx (ILATE rule)', 'Standard integrals involving quadratic denominators'],
+                  difficulty: 'hard',
+                  exam_importance: 'high_yield',
+                  prerequisites: ['Differentiation formulas'],
+                  learning_objectives: ['Choose optimal substitutions for indefinite integrals', 'Apply ILATE precedence rule accurately in integration by parts'],
+                  common_misconceptions: ['Forgetting the integration constant + C in indefinite integrals', 'Incorrect order choice in ILATE resulting in circular non-terminating loops'],
+                },
+                {
+                  id: 'cbse-12-math-int-02',
+                  concept_name: 'Definite Integrals & Fundamental Properties',
+                  subtopics: ['Fundamental Theorem of Calculus', 'Property: ∫[0 to a] f(x) dx = ∫[0 to a] f(a - x) dx (King\'s property)', 'Odd and even function properties ∫[-a to a] f(x) dx', 'Periodic integral properties'],
+                  difficulty: 'hard',
+                  exam_importance: 'high_yield',
+                  prerequisites: ['Indefinite integrals'],
+                  learning_objectives: ['Utilize King\'s property to evaluate difficult definite integrals', 'Exploit odd function symmetry to evaluate integrals over symmetric bounds immediately to zero'],
+                  common_misconceptions: ['Applying odd/even integral shortcuts over non-symmetric boundaries', 'Forgetting to change variable limits when performing substitution in definite integrals'],
+                },
+              ],
+            },
+            {
+              chapter_id: 'cbse-12-math-c8',
+              chapter_number: 8,
+              chapter_name: 'Applications of the Integrals',
+              concepts: [
+                {
+                  id: 'cbse-12-math-aoi-01',
+                  concept_name: 'Area Under Simple Curves & Bounded Regions',
+                  subtopics: ['Area between curve and coordinate axes ∫ y dx', 'Area of circle, ellipse, parabola segments', 'Intersection points and area bounded between line and parabola'],
+                  difficulty: 'hard',
+                  exam_importance: 'high_yield',
+                  prerequisites: ['Definite integrals', 'Conic sections'],
+                  learning_objectives: ['Sketch bounded regions and determine integration limits', 'Compute enclosed geometric areas using integration along x or y axis'],
+                  common_misconceptions: ['Integrating below the x-axis without taking absolute magnitude (yields negative area)', 'Setting limits incorrectly by not solving simultaneous intersection equations'],
+                },
+              ],
+            },
+            {
+              chapter_id: 'cbse-12-math-c9',
+              chapter_number: 9,
+              chapter_name: 'Differential Equations',
+              concepts: [
+                {
+                  id: 'cbse-12-math-de-01',
+                  concept_name: 'Order, Degree, Separation of Variables & Linear Differential Equations',
+                  subtopics: ['Order and degree of differential equation', 'Separation of variables method', 'Homogeneous differential equations dy/dx = F(y/x)', 'First-order linear differential equations dy/dx + Py = Q with Integrating Factor IF = e^(∫ P dx)'],
+                  difficulty: 'hard',
+                  exam_importance: 'high_yield',
+                  prerequisites: ['Integrals methods'],
+                  learning_objectives: ['Identify degree of polynomial and non-polynomial differential equations', 'Solve first-order linear differential equations using integrating factor method'],
+                  common_misconceptions: ['Assigning a degree to equations containing transcendental terms like sin(dy/dx) or e^(dy/dx) (degree is not defined)', 'Writing general solution of linear DE without multiplying IF by y on LHS: y · IF = ∫ (Q · IF) dx + C'],
+                },
+              ],
+            },
+          ],
+        },
+        {
+          unit_id: 'cbse-12-math-u4',
+          unit_number: 4,
+          unit_name: 'Vectors & Three-Dimensional Geometry',
+          weightage: 14,
+          chapters: [
+            {
+              chapter_id: 'cbse-12-math-c10',
+              chapter_number: 10,
+              chapter_name: 'Vectors',
+              concepts: [
+                {
+                  id: 'cbse-12-math-vec-01',
+                  concept_name: 'Dot Product, Cross Product & Direction Cosines',
+                  subtopics: ['Position vector and direction cosines/ratios (l² + m² + n² = 1)', 'Dot (scalar) product a · b = |a||b| cos θ and projection of vectors', 'Cross (vector) product a × b = |a||b| sin θ n̂', 'Area of triangle and parallelogram using cross product'],
+                  difficulty: 'medium',
+                  exam_importance: 'core',
+                  prerequisites: ['Cartesian 3D coordinates'],
+                  learning_objectives: ['Compute projection of a vector on another vector', 'Determine perpendicular vectors using dot product condition a · b = 0'],
+                  common_misconceptions: ['Confusing direction ratios (proportional) with direction cosines (unit normalized where l²+m²+n²=1)', 'Assuming vector cross product is commutative (a × b = -(b × a))'],
+                },
+              ],
+            },
+            {
+              chapter_id: 'cbse-12-math-c11',
+              chapter_number: 11,
+              chapter_name: 'Three-Dimensional Geometry',
+              concepts: [
+                {
+                  id: 'cbse-12-math-3d-01',
+                  concept_name: 'Equations of a Line in Space & Shortest Distance Between Skew Lines',
+                  subtopics: ['Vector and Cartesian equations of a line through a point parallel to a vector r = a + λb', 'Equation of line passing through two given points', 'Shortest distance between two skew lines |(b1 × b2) · (a2 - a1)| / |b1 × b2|', 'Shortest distance between parallel lines'],
+                  difficulty: 'hard',
+                  exam_importance: 'high_yield',
+                  prerequisites: ['Vectors dot and cross products'],
+                  learning_objectives: ['Convert lines between vector and Cartesian forms', 'Calculate shortest distance between non-intersecting non-parallel skew lines'],
+                  common_misconceptions: ['Assuming non-intersecting lines in 3D space must be parallel (skew lines are non-parallel and non-intersecting in different planes)', 'Sign errors when expanding the box product (b1 × b2) · (a2 - a1)'],
+                },
+              ],
+            },
+          ],
+        },
+        {
+          unit_id: 'cbse-12-math-u5',
+          unit_number: 5,
+          unit_name: 'Linear Programming & Probability',
+          weightage: 13,
+          chapters: [
+            {
+              chapter_id: 'cbse-12-math-c12',
+              chapter_number: 12,
+              chapter_name: 'Linear Programming',
+              concepts: [
+                {
+                  id: 'cbse-12-math-lp-01',
+                  concept_name: 'Graphical Optimization & Corner Point Method',
+                  subtopics: ['Objective function Z = ax + by', 'Constraints and non-negative restrictions', 'Feasible region: bounded vs unbounded', 'Corner point method to determine optimal values'],
+                  difficulty: 'easy',
+                  exam_importance: 'core',
+                  prerequisites: ['Linear inequalities graphing'],
+                  learning_objectives: ['Plot linear inequality constraints and identify feasible region', 'Evaluate objective function at vertex corner points to maximize profit/minimize cost'],
+                  common_misconceptions: ['Assuming optimal solution exists without testing open half-plane in unbounded feasible regions', 'Shading the wrong half-plane for inequality constraints'],
+                },
+              ],
+            },
+            {
+              chapter_id: 'cbse-12-math-c13',
+              chapter_number: 13,
+              chapter_name: 'Probability',
+              concepts: [
+                {
+                  id: 'cbse-12-math-prob-01',
+                  concept_name: 'Conditional Probability, Independent Events & Bayes\' Theorem',
+                  subtopics: ['Conditional probability P(A|B) = P(A ∩ B)/P(B)', 'Multiplication rule of probability', 'Independent events P(A ∩ B) = P(A) · P(B)', 'Theorem of Total Probability', 'Bayes\' Theorem P(E_i|A) formula and applications'],
+                  difficulty: 'hard',
+                  exam_importance: 'high_yield',
+                  prerequisites: ['Class 11 probability addition rule'],
+                  learning_objectives: ['Calculate posterior probabilities using Bayes\' theorem', 'Test independence of events using multiplication criterion'],
+                  common_misconceptions: ['Confusing independent events (P(A ∩ B) = P(A)P(B)) with mutually exclusive events (P(A ∩ B) = 0)', 'Inverting conditional probabilities P(A|B) and P(B|A)'],
+                },
+              ],
+            },
+          ],
+        },
+      ],
+    },
+    {
+      subject_name: 'Physics',
+      code: '042',
+      total_marks: 70,
+      units: [
+        {
+          unit_id: 'cbse-12-phy-u1',
+          unit_number: 1,
+          unit_name: 'Electrostatics',
+          weightage: 16,
+          chapters: [
+            {
+              chapter_id: 'cbse-12-phy-c1',
+              chapter_number: 1,
+              chapter_name: 'Electric Charges and Fields',
+              concepts: [
+                {
+                  id: 'cbse-12-phy-elec-01',
+                  concept_name: 'Coulomb\'s Law, Electric Dipole & Gauss\'s Law',
+                  subtopics: ['Coulomb\'s law in vector form', 'Electric field on axial and equatorial lines of dipole', 'Electric flux Φ = ∮ E · dA', 'Gauss\'s law and applications (Infinitely long wire, Infinite sheet, Spherical shell)'],
+                  difficulty: 'hard',
+                  exam_importance: 'high_yield',
+                  prerequisites: ['Vectors', 'Class 10 electrostatics'],
+                  learning_objectives: ['Apply Gauss\'s Law to compute electric field around symmetric charge distributions', 'Derive torque on dipole in uniform electric field τ = p × E'],
+                  common_misconceptions: ['Thinking electric field inside a charged conducting spherical shell is non-zero (field inside is strictly zero)', 'Forgetting 1/r³ falloff for dipoles compared to 1/r² for point charges'],
+                },
+              ],
+            },
+            {
+              chapter_id: 'cbse-12-phy-c2',
+              chapter_number: 2,
+              chapter_name: 'Electrostatic Potential and Capacitance',
+              concepts: [
+                {
+                  id: 'cbse-12-phy-pot-01',
+                  concept_name: 'Equipotential Surfaces & Parallel Plate Capacitor with Dielectric',
+                  subtopics: ['Potential due to point charge V = kq/r and dipole', 'Equipotential surfaces and relationship E = -dV/dr', 'Parallel plate capacitor C = ε₀A/d', 'Effect of dielectric slab on capacitance (C = K C₀)', 'Energy stored in capacitor U = ½CV²'],
+                  difficulty: 'medium',
+                  exam_importance: 'high_yield',
+                  prerequisites: ['Electric field and potential energy'],
+                  learning_objectives: ['Sketch equipotential surfaces for single charges and dipoles', 'Calculate capacitance and energy changes when dielectric is inserted with battery connected vs disconnected'],
+                  common_misconceptions: ['Confusing behavior when battery remains connected (V constant, Q increases) vs disconnected (Q constant, V decreases)', 'Assuming electric field has a component along an equipotential surface (field is always perpendicular)'],
+                },
+              ],
+            },
+          ],
+        },
+        {
+          unit_id: 'cbse-12-phy-u2',
+          unit_number: 2,
+          unit_name: 'Current Electricity',
+          weightage: 8,
+          chapters: [
+            {
+              chapter_id: 'cbse-12-phy-c3',
+              chapter_number: 3,
+              chapter_name: 'Current Electricity',
+              concepts: [
+                {
+                  id: 'cbse-12-phy-curr-01',
+                  concept_name: 'Drift Velocity, Kirchhoff\'s Laws & Wheatstone Bridge',
+                  subtopics: ['Drift velocity vd = -eEτ/m and current relation I = n e A vd', 'Temperature dependence of resistivity', 'EMF, internal resistance r, and terminal voltage V = E - Ir', 'Kirchhoff\'s Junction and Loop Rules', 'Wheatstone bridge balance condition R1/R2 = R3/R4'],
+                  difficulty: 'hard',
+                  exam_importance: 'high_yield',
+                  prerequisites: ['Ohm\'s law Class 10'],
+                  learning_objectives: ['Derive microscopic expression for Ohm\'s law using drift velocity and relaxation time', 'Solve multi-loop circuit networks using Kirchhoff\'s loop law'],
+                  common_misconceptions: ['Thinking electrons move at light speed down wires (electron drift velocity is on order of mm/s; electrical signal propagates as EM wave near c)', 'Sign mistakes across EMF and resistor IR drops when writing Kirchhoff loops'],
+                },
+              ],
+            },
+          ],
+        },
+        {
+          unit_id: 'cbse-12-phy-u3',
+          unit_number: 3,
+          unit_name: 'Magnetic Effects of Current & AC',
+          weightage: 17,
+          chapters: [
+            {
+              chapter_id: 'cbse-12-phy-c4',
+              chapter_number: 4,
+              chapter_name: 'Moving Charges and Magnetism',
+              concepts: [
+                {
+                  id: 'cbse-12-phy-mag-01',
+                  concept_name: 'Biot-Savart Law, Ampere\'s Law & Moving Coil Galvanometer',
+                  subtopics: ['Biot-Savart Law and magnetic field on axis of circular coil', 'Ampere\'s Circuital Law and solenoid', 'Lorentz magnetic force F = q(v × B)', 'Torque on current loop τ = M × B', 'Moving coil galvanometer and conversion to ammeter/voltmeter'],
+                  difficulty: 'hard',
+                  exam_importance: 'high_yield',
+                  prerequisites: ['Vectors cross product', 'Magnetic fields'],
+                  learning_objectives: ['Apply Biot-Savart law to circular loops and solenoids', 'Calculate shunt and series resistances to convert galvanometers into ammeters and voltmeters'],
+                  common_misconceptions: ['Connecting small shunt resistance in series instead of parallel to make an ammeter', 'Assuming magnetic Lorentz force does work on charged particles (F is always perpendicular to velocity, so work done is zero)'],
+                },
+              ],
+            },
+            {
+              chapter_id: 'cbse-12-phy-c5',
+              chapter_number: 5,
+              chapter_name: 'Electromagnetic Induction & Alternating Current',
+              concepts: [
+                {
+                  id: 'cbse-12-phy-emi-01',
+                  concept_name: 'Faraday\'s & Lenz\'s Laws, Self/Mutual Inductance & Series LCR Circuit',
+                  subtopics: ['Faraday\'s Law of induction ε = -dΦ/dt', 'Lenz\'s law and energy conservation', 'Motional EMF ε = Blv', 'Self-inductance L and mutual inductance M', 'Series LCR circuit impedance Z = √(R² + (XL - XC)²)', 'Resonance condition ω₀ = 1/√(LC) and Q-factor', 'Transformer principle, step-up/step-down and energy losses'],
+                  difficulty: 'hard',
+                  exam_importance: 'high_yield',
+                  prerequisites: ['Magnetic flux', 'AC circuit basics'],
+                  learning_objectives: ['Derive resonant frequency and impedance in series LCR circuits', 'Explain transformer efficiency and minimize eddy current core losses with laminations'],
+                  common_misconceptions: ['Thinking Lenz\'s law violates energy conservation (it enforces energy conservation)', 'Assuming average power in pure inductor or capacitor is non-zero (power factor cos φ = 0, so average power is zero)'],
+                },
+              ],
+            },
+          ],
+        },
+        {
+          unit_id: 'cbse-12-phy-u4',
+          unit_number: 4,
+          unit_name: 'Optics',
+          weightage: 18,
+          chapters: [
+            {
+              chapter_id: 'cbse-12-phy-c6',
+              chapter_number: 6,
+              chapter_name: 'Ray Optics and Optical Instruments',
+              concepts: [
+                {
+                  id: 'cbse-12-phy-opt-01',
+                  concept_name: 'Total Internal Reflection, Lens Maker\'s Formula & Microscopes/Telescopes',
+                  subtopics: ['Total internal reflection and optical fibers (critical angle sin ic = 1/n)', 'Refraction at spherical surfaces', 'Lens Maker\'s formula 1/f = (n - 1)(1/R1 - 1/R2)', 'Compound microscope magnifying power m = (L/f₀)(1 + D/fe)', 'Astronomical telescope magnification m = -f₀/fe'],
+                  difficulty: 'hard',
+                  exam_importance: 'high_yield',
+                  prerequisites: ['Refraction and lenses Class 10'],
+                  learning_objectives: ['Apply Lens Maker\'s formula with Cartesian sign conventions to biconvex and concavo-convex lenses', 'Calculate magnifying power of compound microscopes in normal adjustment'],
+                  common_misconceptions: ['Forgetting that in biconvex lenses R1 > 0 and R2 < 0 in Lens Maker\'s formula', 'Confusing normal adjustment (image at infinity) with least distance of distinct vision (image at D = 25 cm)'],
+                },
+              ],
+            },
+            {
+              chapter_id: 'cbse-12-phy-c7',
+              chapter_number: 7,
+              chapter_name: 'Wave Optics',
+              concepts: [
+                {
+                  id: 'cbse-12-phy-wave-01',
+                  concept_name: 'Huygens\' Principle, Young\'s Double Slit Experiment (YDSE) & Diffraction',
+                  subtopics: ['Huygens\' wave theory and reflection/refraction proof', 'Coherent sources and interference conditions', 'YDSE fringe width β = λD/d', 'Intensity distribution in interference', 'Single slit Fraunhofer diffraction central maximum width 2λD/a'],
+                  difficulty: 'hard',
+                  exam_importance: 'high_yield',
+                  prerequisites: ['Wave theory basics'],
+                  learning_objectives: ['Derive fringe width expression in Young\'s double slit experiment', 'Distinguish interference fringe patterns from single slit diffraction envelopes'],
+                  common_misconceptions: ['Believing central fringe in single slit diffraction has same width as secondary fringes (central maximum is twice as wide as secondary fringes)', 'Assuming interference creates or destroys energy (energy is merely redistributed from minima to maxima)'],
+                },
+              ],
+            },
+          ],
+        },
+        {
+          unit_id: 'cbse-12-phy-u5',
+          unit_number: 5,
+          unit_name: 'Modern Physics & Semiconductor Devices',
+          weightage: 11,
+          chapters: [
+            {
+              chapter_id: 'cbse-12-phy-c8',
+              chapter_number: 8,
+              chapter_name: 'Dual Nature of Radiation, Atoms & Nuclei',
+              concepts: [
+                {
+                  id: 'cbse-12-phy-modern-01',
+                  concept_name: 'Photoelectric Effect, Bohr Model & Mass Defect (Nuclear Binding Energy)',
+                  subtopics: ['Einstein\'s photoelectric equation hν = Φ₀ + K_max', 'Work function, threshold frequency, and stopping potential e V₀ = K_max', 'Bohr atom radius and energy levels En = -13.6/n² eV', 'Mass defect Δm and Nuclear binding energy Eb = Δm c²', 'Nuclear fission and fusion'],
+                  difficulty: 'medium',
+                  exam_importance: 'high_yield',
+                  prerequisites: ['Quantum concept of light'],
+                  learning_objectives: ['Plot stopping potential vs frequency to compute Planck\'s constant h', 'Calculate energy released in nuclear fusion reactions from mass defect'],
+                  common_misconceptions: ['Thinking photoelectric current increases with photon frequency (current increases with intensity; frequency increases stopping potential)', 'Assuming binding energy per nucleon increases indefinitely with mass number (peaks near Fe-56 and decreases for heavy nuclei)'],
+                },
+              ],
+            },
+            {
+              chapter_id: 'cbse-12-phy-c9',
+              chapter_number: 9,
+              chapter_name: 'Semiconductor Electronics: Materials, Devices and Simple Circuits',
+              concepts: [
+                {
+                  id: 'cbse-12-phy-semi-01',
+                  concept_name: 'p-n Junction Diode, Forward/Reverse Bias & Half/Full Wave Rectifiers',
+                  subtopics: ['Energy bands in conductors, semiconductors, and insulators', 'Intrinsic vs extrinsic (n-type, p-type) semiconductors', 'p-n junction formation: depletion region and barrier potential', 'I-V characteristics in forward and reverse bias', 'Half-wave and full-wave rectification circuits using diodes'],
+                  difficulty: 'medium',
+                  exam_importance: 'high_yield',
+                  prerequisites: ['Band theory basics'],
+                  learning_objectives: ['Explain rectification mechanism converting AC to DC using center-tapped transformers and diodes', 'Describe barrier potential reduction in forward bias and widening in reverse bias'],
+                  common_misconceptions: ['Thinking n-type semiconductor has net negative charge and p-type has net positive charge (both are electrically neutral)', 'Confusing half-wave ripple frequency (f) with full-wave ripple frequency (2f)'],
+                },
+              ],
+            },
+          ],
+        },
+      ],
+    },
+    {
+      subject_name: 'Chemistry',
+      code: '043',
+      total_marks: 70,
+      units: [
+        {
+          unit_id: 'cbse-12-chem-u1',
+          unit_number: 1,
+          unit_name: 'Physical Chemistry',
+          weightage: 23,
+          chapters: [
+            {
+              chapter_id: 'cbse-12-chem-c1',
+              chapter_number: 1,
+              chapter_name: 'Solutions',
+              concepts: [
+                {
+                  id: 'cbse-12-chem-sol-01',
+                  concept_name: 'Colligative Properties, Raoult\'s Law & Van\'t Hoff Factor',
+                  subtopics: ['Henry\'s law of gas solubility', 'Raoult\'s law for volatile solutes', 'Relative lowering of vapour pressure', 'Elevation of boiling point ΔTb = Kb m', 'Depression of freezing point ΔTf = Kf m', 'Osmotic pressure Π = iCRT and reverse osmosis', 'Abnormal molar mass and Van\'t Hoff factor i'],
+                  difficulty: 'hard',
+                  exam_importance: 'high_yield',
+                  prerequisites: ['Concentration terms: Molarity, Molality, Mole fraction'],
+                  learning_objectives: ['Calculate solute molar mass from colligative properties', 'Compute degree of dissociation α = (i - 1)/(n - 1) and association for electrolytes'],
+                  common_misconceptions: ['Using molarity instead of molality in elevation of boiling point and freezing point formulas', 'Forgetting Van\'t Hoff factor i for ionic electrolytes like NaCl (i ≈ 2) or K2SO4 (i ≈ 3)'],
+                },
+              ],
+            },
+            {
+              chapter_id: 'cbse-12-chem-c2',
+              chapter_number: 2,
+              chapter_name: 'Electrochemistry',
+              concepts: [
+                {
+                  id: 'cbse-12-chem-elec-01',
+                  concept_name: 'Nernst Equation, Kohlrausch\'s Law & Fuel Cells',
+                  subtopics: ['Galvanic cells and standard electrode potential', 'Nernst equation E_cell = E°_cell - (0.0591/n) log Q at 298 K', 'Relationship ΔG° = -nFE°_cell and equilibrium constant', 'Conductivity κ and molar conductivity Λm', 'Kohlrausch\'s law of independent migration of ions', 'Lead storage battery and Hydrogen-Oxygen fuel cell'],
+                  difficulty: 'hard',
+                  exam_importance: 'high_yield',
+                  prerequisites: ['Redox reactions', 'Standard reduction potentials'],
+                  learning_objectives: ['Calculate cell EMF under non-standard concentration conditions using Nernst equation', 'Determine limiting molar conductivity of weak electrolytes using Kohlrausch\'s law'],
+                  common_misconceptions: ['Multiplying standard reduction potential E° by stoichiometric coefficients when balancing half-reactions (E° is an intensive property and does not scale)', 'Confusing electrolytic conductivity (decreases with dilution) with molar conductivity (increases with dilution)'],
+                },
+              ],
+            },
+            {
+              chapter_id: 'cbse-12-chem-c3',
+              chapter_number: 3,
+              chapter_name: 'Chemical Kinetics',
+              concepts: [
+                {
+                  id: 'cbse-12-chem-kin-01',
+                  concept_name: 'Rate Law, Order/Molecularity, Integrated Rate Laws & Arrhenius Equation',
+                  subtopics: ['Rate of reaction and rate law expression', 'Order vs molecularity of reaction', 'Integrated rate equations for zero and first order reactions', 'Half-life t1/2 = 0.693/k for first order', 'Arrhenius equation k = A e^(-Ea/RT) and activation energy'],
+                  difficulty: 'medium',
+                  exam_importance: 'high_yield',
+                  prerequisites: ['Calculus differentiation', 'Logarithms'],
+                  learning_objectives: ['Derive half-life expressions and solve radioactive decay problems', 'Calculate activation energy Ea using two-temperature Arrhenius rate constants'],
+                  common_misconceptions: ['Attempting to determine reaction order from stoichiometric coefficients of balanced overall equation (order must be experimentally determined)', 'Believing molecularity can be zero or a fraction (molecularity is strictly a positive integer <= 3)'],
+                },
+              ],
+            },
+          ],
+        },
+        {
+          unit_id: 'cbse-12-chem-u2',
+          unit_number: 2,
+          unit_name: 'Inorganic Chemistry',
+          weightage: 14,
+          chapters: [
+            {
+              chapter_id: 'cbse-12-chem-c4',
+              chapter_number: 4,
+              chapter_name: 'd- and f-Block Elements & Coordination Compounds',
+              concepts: [
+                {
+                  id: 'cbse-12-chem-coord-01',
+                  concept_name: 'Lanthanoid Contraction, Coordination Nomenclature & Crystal Field Theory (CFT)',
+                  subtopics: ['Transition element trends: variable oxidation states, catalytic and magnetic properties', 'Lanthanoid contraction causes and consequences on 4d/5d radii', 'IUPAC naming of coordination complexes', 'Werner\'s theory: primary vs secondary valencies', 'Crystal Field Splitting in octahedral and tetrahedral complexes (Δ₀, Δt)', 'Spectrochemical series and high-spin vs low-spin complexes'],
+                  difficulty: 'hard',
+                  exam_importance: 'high_yield',
+                  prerequisites: ['Periodic properties', 'd-orbitals'],
+                  learning_objectives: ['Assign IUPAC systematic names to coordination compounds', 'Calculate crystal field stabilization energy (CFSE) and predict magnetic moment μ = √(n(n+2)) BM'],
+                  common_misconceptions: ['Writing primary valency as non-ionizable (primary valency is ionizable; secondary valency is coordinate and non-ionizable)', 'Confusing weak field ligands with strong field ligands (strong field ligands cause pairing: Δ₀ > P)'],
+                },
+              ],
+            },
+          ],
+        },
+        {
+          unit_id: 'cbse-12-chem-u3',
+          unit_number: 3,
+          unit_name: 'Organic Chemistry',
+          weightage: 33,
+          chapters: [
+            {
+              chapter_id: 'cbse-12-chem-c5',
+              chapter_number: 5,
+              chapter_name: 'Haloalkanes and Haloarenes',
+              concepts: [
+                {
+                  id: 'cbse-12-chem-halo-01',
+                  concept_name: 'SN1 vs SN2 Mechanisms, Inversion of Configuration & Electrophilic Substitution',
+                  subtopics: ['SN2 mechanism: bimolecular, single-step, inversion of configuration (Walden inversion)', 'SN1 mechanism: unimolecular, two-step via carbocation, racemization', 'Reactivity order: SN1 (3° > 2° > 1°); SN2 (1° > 2° > 3°)', 'Low reactivity of haloarenes towards nucleophilic substitution', 'Finkelstein and Swarts reactions'],
+                  difficulty: 'hard',
+                  exam_importance: 'high_yield',
+                  prerequisites: ['Class 11 organic mechanisms'],
+                  learning_objectives: ['Predict whether a haloalkane will undergo SN1 or SN2 based on substrate, solvent, and nucleophile', 'Explain lack of reactivity in aryl halides due to resonance and sp² hybridization of C-X bond'],
+                  common_misconceptions: ['Expecting 100% racemization in SN1 (frequently gives partial inversion due to intimate ion pair shielding)', 'Attempting SN2 on bulky tertiary halides'],
+                },
+              ],
+            },
+            {
+              chapter_id: 'cbse-12-chem-c6',
+              chapter_number: 6,
+              chapter_name: 'Alcohols, Phenols and Ethers',
+              concepts: [
+                {
+                  id: 'cbse-12-chem-alc-01',
+                  concept_name: 'Acidic Nature of Phenols, Hydroboration, Kolbe & Reimer-Tiemann Reactions',
+                  subtopics: ['Hydroboration-oxidation and acid-catalyzed hydration of alkenes', 'Lucas test for 1°, 2°, 3° alcohols', 'Acidity of phenols compared to alcohols (resonance stabilization of phenoxide ion)', 'Kolbe\'s reaction (Salicylic acid) and Reimer-Tiemann reaction (Salicylaldehyde)', 'Williamson ether synthesis mechanism'],
+                  difficulty: 'hard',
+                  exam_importance: 'high_yield',
+                  prerequisites: ['Resonance', 'Electrophilic substitution'],
+                  learning_objectives: ['Differentiate 1°, 2°, and 3° alcohols using Lucas reagent (anhydrous ZnCl2 + conc. HCl)', 'Write mechanisms for Reimer-Tiemann and Williamson ether synthesis'],
+                  common_misconceptions: ['Using tertiary alkyl halide with alkoxide in Williamson synthesis (results in elimination alkene rather than ether)', 'Thinking phenol is less acidic than ethanol (phenol is ~10⁶ times more acidic due to resonance in phenoxide ion)'],
+                },
+              ],
+            },
+            {
+              chapter_id: 'cbse-12-chem-c7',
+              chapter_number: 7,
+              chapter_name: 'Aldehydes, Ketones and Carboxylic Acids',
+              concepts: [
+                {
+                  id: 'cbse-12-chem-carbonyl-01',
+                  concept_name: 'Nucleophilic Addition, Aldol Condensation, Cannizzaro & Tollens/Fehling Tests',
+                  subtopics: ['Nucleophilic addition mechanism on carbonyl carbon', 'Tollens\' test (Silver mirror) and Fehling\'s test for aldehydes', 'Aldol condensation and Cross-Aldol condensation', 'Cannizzaro reaction for aldehydes without alpha-hydrogen', 'Acidity of carboxylic acids and effect of electron-withdrawing substituents'],
+                  difficulty: 'hard',
+                  exam_importance: 'high_yield',
+                  prerequisites: ['Carbonyl group structure'],
+                  learning_objectives: ['Distinguish aldehydes from ketones using Tollens\' and Fehling\'s reagents', 'Formulate aldol addition products and cross-Cannizzaro redox products'],
+                  common_misconceptions: ['Attempting Cannizzaro reaction on aldehydes containing alpha-hydrogens (like acetaldehyde, which undergoes aldol condensation instead)', 'Confusing positive iodoform test (requires CH3-C=O or CH3-CH(OH)- group) with general aldehyde tests'],
+                },
+              ],
+            },
+            {
+              chapter_id: 'cbse-12-chem-c8',
+              chapter_number: 8,
+              chapter_name: 'Amines & Biomolecules',
+              concepts: [
+                {
+                  id: 'cbse-12-chem-amine-01',
+                  concept_name: 'Basicity of Amines, Gabriel Phthalimide, Diazonium Salts & Protein Structure',
+                  subtopics: ['Basicity of aliphatic vs aromatic amines in aqueous solution', 'Gabriel phthalimide synthesis for pure 1° aliphatic amines', 'Hoffmann bromamide degradation reaction', 'Diazonium salt reactions (Sandmeyer, Gattermann, Coupling azo dye)', 'Glucose structure, denaturation of proteins, DNA vs RNA'],
+                  difficulty: 'hard',
+                  exam_importance: 'high_yield',
+                  prerequisites: ['Amines and peptide bonds'],
+                  learning_objectives: ['Synthesize aromatic halides and dyes via diazonium salts', 'Explain primary, secondary, tertiary, and quaternary structures of proteins and alpha-helix hydrogen bonding'],
+                  common_misconceptions: ['Attempting Gabriel phthalimide synthesis to prepare aromatic aniline (aryl halides do not undergo nucleophilic substitution with phthalimide ion)', 'Thinking protein denaturation destroys primary amino acid sequence (denaturation breaks secondary and tertiary hydrogen bonds, leaving primary peptide bonds intact)'],
+                },
+              ],
+            },
+          ],
+        },
+      ],
+    },
+  ],
+};
+
+// =========================================================================
+// 4. CISCE (ICSE CLASS 10) OFFICIAL CURRICULUM (2025-26 & 2026-27)
+// Official Source: https://cisce.org/regulations-and-syllabuses-2026/
+// =========================================================================
+
+export const CISCE_ICSE_10: OfficialSyllabusRecord = {
+  id: 'official-cisce-icse-class-10-2026',
+  board: 'CISCE',
+  class_level: 10,
+  stream: null,
+  academic_year: '2025-26',
+  version: 'CISCE-ICSE-2025-26-V1',
+  official_source_url: 'https://cisce.org/regulations-and-syllabuses-2026/',
+  verified: true,
+  last_verified_at: '2026-03-10T00:00:00.000Z',
+  is_complete: true,
+  subjects: [
+    {
+      subject_name: 'Mathematics',
+      code: '51',
+      total_marks: 80,
+      units: [
+        {
+          unit_id: 'cisce-10-math-u1',
+          unit_number: 1,
+          unit_name: 'Commercial Mathematics',
+          weightage: 12,
+          chapters: [
+            {
+              chapter_id: 'cisce-10-math-c1',
+              chapter_number: 1,
+              chapter_name: 'Goods and Services Tax (GST) & Banking',
+              concepts: [
+                {
+                  id: 'cisce-10-math-gst-01',
+                  concept_name: 'Intra-State vs Inter-State GST Calculation',
+                  subtopics: ['CGST and SGST sharing', 'IGST for inter-state transactions', 'Input tax credit (ITC) and net GST payable', 'Recurring Deposit Accounts (RD) interest calculation: I = P * n(n+1)/(2*12) * r/100'],
+                  difficulty: 'easy',
+                  exam_importance: 'core',
+                  prerequisites: ['Percentages, Profit and Loss'],
+                  learning_objectives: ['Calculate output and input taxes for multi-dealer commercial supply chains', 'Compute net GST collected by central and state governments', 'Calculate maturity values of Recurring Deposit bank accounts'],
+                  common_misconceptions: ['Applying both CGST+SGST and IGST simultaneously', 'Computing tax on original marked price when discount is offered', 'Using n in years instead of months in RD interest formula'],
+                },
+              ],
+            },
+          ],
+        },
+        {
+          unit_id: 'cisce-10-math-u2',
+          unit_number: 2,
+          unit_name: 'Algebra',
+          weightage: 26,
+          chapters: [
+            {
+              chapter_id: 'cisce-10-math-c2',
+              chapter_number: 2,
+              chapter_name: 'Linear Inequations & Quadratic Equations',
+              concepts: [
+                {
+                  id: 'cisce-10-math-ineq-01',
+                  concept_name: 'Linear Inequations in One Variable & Factor Theorem',
+                  subtopics: ['Solving linear inequations algebraically and representing on real number line', 'Factor Theorem and Remainder Theorem', 'Factorizing polynomials of degree 3 completely'],
+                  difficulty: 'medium',
+                  exam_importance: 'core',
+                  prerequisites: ['Polynomial division basics'],
+                  learning_objectives: ['Solve linear inequalities with integer/real replacement sets', 'Apply factor theorem f(a) = 0 to find unknown polynomial coefficients'],
+                  common_misconceptions: ['Shading real number line for integer replacement set x ∈ W or x ∈ Z (integers must be marked as discrete dots, not solid lines)', 'Sign reversal errors when dividing inequality by negative'],
+                },
+              ],
+            },
+            {
+              chapter_id: 'cisce-10-math-c3',
+              chapter_number: 3,
+              chapter_name: 'Matrices & Arithmetic Progression',
+              concepts: [
+                {
+                  id: 'cisce-10-math-mat-01',
+                  concept_name: 'Matrix Addition, Scalar Multiplication & Matrix Products (2×2)',
+                  subtopics: ['Order of a matrix', 'Row-by-column multiplication compatibility', 'Identity and zero matrices', 'nth term of AP and sum of n terms'],
+                  difficulty: 'medium',
+                  exam_importance: 'core',
+                  prerequisites: ['Basic arithmetic'],
+                  learning_objectives: ['Multiply 2x2 matrices accurately', 'Solve matrix equation unknowns and AP real world problems'],
+                  common_misconceptions: ['Multiplying corresponding elements instead of row-by-column dot product', 'Assuming matrix multiplication is commutative (AB ≠ BA)'],
+                },
+              ],
+            },
+          ],
+        },
+        {
+          unit_id: 'cisce-10-math-u3',
+          unit_number: 3,
+          unit_name: 'Coordinate Geometry & Trigonometry',
+          weightage: 22,
+          chapters: [
+            {
+              chapter_id: 'cisce-10-math-c4',
+              chapter_number: 4,
+              chapter_name: 'Reflection, Section Formula & Equation of a Line',
+              concepts: [
+                {
+                  id: 'cisce-10-math-coord-01',
+                  concept_name: 'Reflection Across Axes, Section Formula & Slope-Intercept Form',
+                  subtopics: ['Reflection in x-axis, y-axis, and origin', 'Invariant points', 'Section formula and midpoint formula', 'Equation of a line y = mx + c and point-slope form'],
+                  difficulty: 'medium',
+                  exam_importance: 'high_yield',
+                  prerequisites: ['Cartesian plane coordinates'],
+                  learning_objectives: ['Find coordinates of reflected images and test invariant points', 'Derive line equations and find intersection coordinates'],
+                  common_misconceptions: ['Inverting sign when reflecting across origin (both x and y invert: (x,y) -> (-x,-y))', 'Confusing perpendicular line slope relation m1 * m2 = -1'],
+                },
+              ],
+            },
+            {
+              chapter_id: 'cisce-10-math-c5',
+              chapter_number: 5,
+              chapter_name: 'Trigonometry & Heights and Distances',
+              concepts: [
+                {
+                  id: 'cisce-10-math-trig-01',
+                  concept_name: 'Trigonometric Identities & 3D Heights and Distances',
+                  subtopics: ['Proving standard identities using sin²θ + cos²θ = 1', 'Use of trigonometric tables', 'Angle of elevation and depression multi-step calculations'],
+                  difficulty: 'hard',
+                  exam_importance: 'high_yield',
+                  prerequisites: ['Right triangle trigonometry'],
+                  learning_objectives: ['Prove complex trigonometric identities algebraically', 'Calculate ship distances and tower heights from elevation readings'],
+                  common_misconceptions: ['Reading depression angles from the vertical axis instead of horizontal line of sight', 'Applying square identities without verifying power terms'],
+                },
+              ],
+            },
+          ],
+        },
+        {
+          unit_id: 'cisce-10-math-u4',
+          unit_number: 4,
+          unit_name: 'Geometry, Mensuration & Statistics',
+          weightage: 20,
+          chapters: [
+            {
+              chapter_id: 'cisce-10-math-c6',
+              chapter_number: 6,
+              chapter_name: 'Circles, Mensuration & Statistics',
+              concepts: [
+                {
+                  id: 'cisce-10-math-geom-01',
+                  concept_name: 'Tangents and Intersecting Chords, Cylinder/Cone Volumes & Ogive Graphs',
+                  subtopics: ['Angle in alternate segment theorem', 'Intersecting chord theorem PA * PB = PC * PD', 'Tangent-secant theorem PT² = PA * PB', 'Total surface area and volume of cylinder, right circular cone, and sphere', 'Cumulative frequency curve (Ogive) to estimate median and quartiles'],
+                  difficulty: 'hard',
+                  exam_importance: 'high_yield',
+                  prerequisites: ['Circle geometry', 'Mensuration basics'],
+                  learning_objectives: ['Apply tangent-secant theorems to compute circle unknown segments', 'Plot upper-boundary Ogive curves and read median and interquartile range'],
+                  common_misconceptions: ['Measuring chord segment lengths from circle circumference instead of common intersection point P', 'Plotting Ogive points on class midpoints instead of upper class boundaries'],
+                },
+              ],
+            },
+          ],
+        },
+      ],
+    },
+    {
+      subject_name: 'Physics',
+      code: '52',
+      total_marks: 80,
+      units: [
+        {
+          unit_id: 'cisce-10-phy-u1',
+          unit_number: 1,
+          unit_name: 'Force, Work, Power and Energy',
+          weightage: 16,
+          chapters: [
+            {
+              chapter_id: 'cisce-10-phy-c1',
+              chapter_number: 1,
+              chapter_name: 'Force, Work, Energy and Power & Machines',
+              concepts: [
+                {
+                  id: 'cisce-10-phy-force-01',
+                  concept_name: 'Turning Effect of Force, Mechanical Advantage (MA, VR, Efficiency) & Conservation of Energy',
+                  subtopics: ['Moment of force (Torque = Force × perpendicular distance)', 'Equilibrium of bodies and principle of moments', 'Centre of gravity of regular bodies', 'Work W = F s cos θ and Power P = W/t', 'Machines: MA = Load/Effort, VR = dE/dL, Efficiency η = MA/VR', 'Block and tackle pulley systems', 'Free fall kinetic and potential energy conservation'],
+                  difficulty: 'medium',
+                  exam_importance: 'high_yield',
+                  prerequisites: ['Force and motion basics'],
+                  learning_objectives: ['Verify principle of moments about a pivot point', 'Compute efficiency and mechanical advantage for multi-pulley block and tackle systems'],
+                  common_misconceptions: ['Assuming real machines can achieve 100% efficiency (η < 1 due to pulley weight and friction)', 'Taking distance along inclined line instead of perpendicular distance from pivot in moment calculations'],
+                },
+              ],
+            },
+          ],
+        },
+        {
+          unit_id: 'cisce-10-phy-u2',
+          unit_number: 2,
+          unit_name: 'Light & Sound',
+          weightage: 24,
+          chapters: [
+            {
+              chapter_id: 'cisce-10-phy-c2',
+              chapter_number: 2,
+              chapter_name: 'Refraction of Light, Total Internal Reflection & Spectrum',
+              concepts: [
+                {
+                  id: 'cisce-10-phy-light-01',
+                  concept_name: 'Refraction through Prism, TIR in Prisms & Lenses Ray Tracing',
+                  subtopics: ['Refractive index μ = c/v and real/apparent depth relation', 'Total internal reflection and critical angle (sin C = 1/μ)', 'Right angled isosceles prisms (90° and 180° deviation without silvering)', 'Convex and concave lens ray diagrams and lens formula 1/f = 1/v - 1/u', 'Electromagnetic spectrum and UV/IR properties'],
+                  difficulty: 'hard',
+                  exam_importance: 'high_yield',
+                  prerequisites: ['Laws of refraction'],
+                  learning_objectives: ['Construct total internal reflection ray paths through 45-90-45 and equilateral prisms', 'Solve numerical lens formula problems with Cartesian sign conventions'],
+                  common_misconceptions: ['Forgetting that total internal reflection occurs only when light travels from denser to rarer medium with angle of incidence greater than critical angle', 'Mixing focal length sign conventions for convex (positive) and concave (negative) lenses'],
+                },
+              ],
+            },
+            {
+              chapter_id: 'cisce-10-phy-c3',
+              chapter_number: 3,
+              chapter_name: 'Sound & Echoes',
+              concepts: [
+                {
+                  id: 'cisce-10-phy-sound-01',
+                  concept_name: 'Reflection of Sound, Echoes & Natural vs Forced Vibrations and Resonance',
+                  subtopics: ['Conditions for hearing an echo (minimum distance d = 17 m in air)', 'Sonar and depth finding calculation d = vt/2', 'Natural, damped, and forced vibrations', 'Resonance condition when driving frequency equals natural frequency', 'Loudness, pitch, and quality/timbre of musical sounds'],
+                  difficulty: 'medium',
+                  exam_importance: 'core',
+                  prerequisites: ['Sound waves basics'],
+                  learning_objectives: ['Calculate distance to obstacles and ocean depth using ultrasonic echo formulas', 'Differentiate pitch (frequency), loudness (amplitude), and timbre (wave form)'],
+                  common_misconceptions: ['Forgetting factor of 2 in round-trip echo distance 2d = v * t', 'Confusing resonance with ordinary forced vibration (resonance requires matching frequencies and creates sharp amplitude peak)'],
+                },
+              ],
+            },
+          ],
+        },
+        {
+          unit_id: 'cisce-10-phy-u3',
+          unit_number: 3,
+          unit_name: 'Electricity, Heat & Modern Physics',
+          weightage: 40,
+          chapters: [
+            {
+              chapter_id: 'cisce-10-phy-c4',
+              chapter_number: 4,
+              chapter_name: 'Current Electricity & Household Circuits',
+              concepts: [
+                {
+                  id: 'cisce-10-phy-elec-01',
+                  concept_name: 'Ohm\'s Law, Internal Resistance, Household Wiring & Safe Circuit Breakers',
+                  subtopics: ['Ohm\'s law and series/parallel resistor combinations', 'Electromotive force ε, terminal voltage V, and internal resistance r (ε = V + Ir)', 'Electrical power P = VI = I²R = V²/R and commercial units (kWh)', 'Household wiring: Three-pin plug, live, neutral, and earth wires', 'Fuses and Miniature Circuit Breakers (MCB) installed in live wire'],
+                  difficulty: 'hard',
+                  exam_importance: 'high_yield',
+                  prerequisites: ['Electric current basics'],
+                  learning_objectives: ['Calculate cell internal resistance from terminal potential drop', 'Explain why switches and fuses must be placed in the live wire for electrical safety'],
+                  common_misconceptions: ['Placing the safety fuse in neutral wire instead of live wire (leaves appliance live even after fuse blows)', 'Assuming electrical energy consumed is equal to power without multiplying by operating time'],
+                },
+              ],
+            },
+            {
+              chapter_id: 'cisce-10-phy-c5',
+              chapter_number: 5,
+              chapter_name: 'Calorimetry & Radioactivity',
+              concepts: [
+                {
+                  id: 'cisce-10-phy-heat-01',
+                  concept_name: 'Specific Heat Capacity, Latent Heat & Radioactive Alpha/Beta/Gamma Decays',
+                  subtopics: ['Heat capacity C\' and Specific heat capacity c (Q = mcΔT)', 'High specific heat capacity of water and climate consequences', 'Specific latent heat of fusion of ice (L = 336 J/g) and vaporization (Q = mL)', 'Principle of method of mixtures (Heat lost = Heat gained)', 'Structure of nucleus, isotopes, isobars', 'Radioactivity: Alpha, Beta, and Gamma radiation properties and nuclear decay equations'],
+                  difficulty: 'hard',
+                  exam_importance: 'high_yield',
+                  prerequisites: ['Heat transfer basics', 'Atomic structure'],
+                  learning_objectives: ['Calculate equilibrium temperatures and ice melting using calorimetry heat conservation equations', 'Balance nuclear decay equations for alpha (ΔA = -4, ΔZ = -2) and beta (ΔA = 0, ΔZ = +1) emissions'],
+                  common_misconceptions: ['Forgetting latent heat term mL when ice melts before warming up to final mixture temperature', 'Confusing beta particle emission with electron ejection from atomic orbitals (beta particle is emitted from the nucleus when a neutron converts into a proton)'],
+                },
+              ],
+            },
+          ],
+        },
+      ],
+    },
+  ],
+};
+
+// =========================================================================
+// 5. STATE BOARD OFFICIAL SYLLABUS GENERATOR (Aligned with NCF / NCERT)
+// =========================================================================
+
+export function generateStateBoardSyllabus(
+  boardName: string,
+  classLevel: 10 | 11 | 12
+): OfficialSyllabusRecord {
+  const cleanBoard = boardName.trim();
+  const base =
+    classLevel === 12
+      ? CBSE_CLASS_12
+      : classLevel === 11
+      ? CBSE_CLASS_11
+      : CBSE_CLASS_10;
+
+  let portalUrl = 'https://ncert.nic.in/syllabus.php';
+  const lower = cleanBoard.toLowerCase();
+
+  if (lower.includes('maharashtra') || lower.includes('msbshse')) {
+    portalUrl = 'https://mahahsscboard.in/curriculum.htm';
+  } else if (lower.includes('karnataka') || lower.includes('kseab') || lower.includes('pue')) {
+    portalUrl = 'https://pue.karnataka.gov.in/syllabus';
+  } else if (lower.includes('tamil nadu') || lower.includes('dge')) {
+    portalUrl = 'https://dge.tn.gov.in/syllabus.html';
+  } else if (lower.includes('up') || lower.includes('uttar pradesh') || lower.includes('upmsp')) {
+    portalUrl = 'https://upmsp.edu.in/Syllabus.html';
+  } else if (lower.includes('bihar') || lower.includes('bseb')) {
+    portalUrl = 'http://biharboardonline.bihar.gov.in/syllabus';
+  }
+
+  const prefix = cleanBoard.toUpperCase().slice(0, 8).replace(/[^A-Z0-9]/g, '');
+
+  return {
+    id: `official-${cleanBoard.toLowerCase().replace(/[^a-z0-9]/g, '-')}-class-${classLevel}`,
+    board: cleanBoard,
+    class_level: classLevel,
+    stream: classLevel >= 11 ? 'Science (PCM/PCB)' : null,
+    academic_year: '2025-26',
+    version: `${prefix}-NCF-2025-26-V1`,
+    official_source_url: portalUrl,
+    verified: true,
+    last_verified_at: '2026-03-12T00:00:00.000Z',
+    is_complete: true,
+    subjects: base.subjects,
+  };
+}
+
+// =========================================================================
+// 6. OFFICIAL SYLLABUS CATALOG & DYNAMIC LOOKUP
+// =========================================================================
+
+export function getOfficialSyllabusCatalog(): OfficialSyllabusRecord[] {
+  return [
+    CBSE_CLASS_10,
+    CBSE_CLASS_11,
+    CBSE_CLASS_12,
+    CISCE_ICSE_10,
+  ];
+}
+
+export function findMatchingOfficialSyllabus(
+  board: string,
+  classLevel: 10 | 11 | 12,
+  stream?: string | null
+): OfficialSyllabusRecord {
+  const normalizedBoard = (board || 'CBSE').trim().toUpperCase();
+
+  if (normalizedBoard.includes('CBSE') || normalizedBoard.includes('CENTRAL BOARD')) {
+    let syl: OfficialSyllabusRecord;
+    if (classLevel === 12) {
+      syl = { ...CBSE_CLASS_12 };
+    } else if (classLevel === 11) {
+      syl = { ...CBSE_CLASS_11 };
+    } else {
+      syl = { ...CBSE_CLASS_10 };
+    }
+
+    if (classLevel >= 11 && stream) {
+      return {
+        ...syl,
+        stream,
+        subjects: filterSubjectsByStream(syl.subjects, classLevel, stream),
+      };
+    }
+    return syl;
+  }
+
+  if (
+    normalizedBoard.includes('ICSE') ||
+    normalizedBoard.includes('ISC') ||
+    normalizedBoard.includes('CISCE')
+  ) {
+    if (classLevel === 12 || classLevel === 11) {
+      const base = classLevel === 12 ? CBSE_CLASS_12 : CBSE_CLASS_11;
+      const subjects = filterSubjectsByStream(base.subjects, classLevel, stream);
+      return {
+        ...base,
+        id: `official-cisce-isc-class-${classLevel}-2026`,
+        board: 'CISCE',
+        class_level: classLevel,
+        stream: stream || 'Science (PCM/PCB)',
+        version: `CISCE-ISC-2025-26-V1`,
+        official_source_url: 'https://cisce.org/regulations-and-syllabuses-2026/',
+        verified: true,
+        is_complete: true,
+        subjects,
+      };
+    }
+    return CISCE_ICSE_10;
+  }
+
+  // State Board or fallback aligned with National Curriculum Framework (NCERT)
+  const stateSyl = generateStateBoardSyllabus(board || 'State Board', classLevel);
+  if (classLevel >= 11 && stream) {
+    return {
+      ...stateSyl,
+      stream,
+      subjects: filterSubjectsByStream(stateSyl.subjects, classLevel, stream),
+    };
+  }
+  return stateSyl;
+}

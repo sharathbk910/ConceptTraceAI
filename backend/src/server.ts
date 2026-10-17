@@ -13,6 +13,8 @@ import practiceRoutes from './routes/practice.routes.js';
 import analyticsRoutes from './routes/analytics.routes.js';
 import studyRoutes from './routes/study.routes.js';
 import settingsRoutes from './routes/settings.routes.js';
+import syllabusRoutes from './routes/syllabus.routes.js';
+import learningRoutes from './routes/learning.routes.js';
 
 const app = express();
 
@@ -59,6 +61,8 @@ app.use('/api/v1', practiceRoutes);
 app.use('/api/v1', analyticsRoutes);
 app.use('/api/v1', studyRoutes);
 app.use('/api/v1', settingsRoutes);
+app.use('/api/v1', syllabusRoutes);
+app.use('/api/v1', learningRoutes);
 
 // Fallback 404 for unknown API endpoints
 app.use('/api/*', (req, res) => {

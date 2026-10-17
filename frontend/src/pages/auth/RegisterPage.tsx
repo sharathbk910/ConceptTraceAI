@@ -1,8 +1,9 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { Sparkles, ArrowRight, Lock, Mail, User, ShieldCheck } from 'lucide-react';
 import { useAuth } from '../../hooks/useAuth.js';
 import { useToast } from '../../hooks/useToast.js';
+import { GoogleSignInButton } from '../../components/auth/GoogleSignInButton.js';
 
 export const RegisterPage: React.FC = () => {
   const [fullName, setFullName] = useState('');
@@ -12,14 +13,36 @@ export const RegisterPage: React.FC = () => {
   const [termsAccepted, setTermsAccepted] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  const { register } = useAuth();
+  const { register, isAuthenticated, educationProfile, isLoading } = useAuth();
   const { error: toastError, success: toastSuccess } = useToast();
   const navigate = useNavigate();
 
+  // Redirect if already authenticated
+  useEffect(() => {
+    if (!isLoading && isAuthenticated) {
+      if (!educationProfile?.onboarding_completed) {
+        navigate('/setup-profile', { replace: true });
+      } else {
+        navigate('/home', { replace: true });
+      }
+    }
+  }, [isAuthenticated, educationProfile, isLoading, navigate]);
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!fullName.trim() || !email.trim() || !password || !confirmPassword) {
+    if (isSubmitting) return;
+
+    const nameClean = fullName.trim();
+    const emailClean = email.trim().toLowerCase();
+
+    if (!nameClean || !emailClean || !password || !confirmPassword) {
       toastError('Required Fields', 'Please complete all fields to register.');
+      return;
+    }
+
+    const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+    if (!emailRegex.test(emailClean)) {
+      toastError('Invalid Email Format', 'Please enter a valid email address with a domain extension (e.g., student@example.com).');
       return;
     }
 
@@ -40,9 +63,12 @@ export const RegisterPage: React.FC = () => {
 
     setIsSubmitting(true);
     try {
-      await register(fullName, email, password, confirmPassword);
-      toastSuccess('Account Created! 🎉', 'Please complete your education profile to start.');
-      navigate('/setup-profile');
+      await register(nameClean, emailClean, password, confirmPassword);
+      toastSuccess(
+        'Registration Successful! 📧',
+        'We sent a 6-digit verification code to your email. Please verify to continue.'
+      );
+      navigate(`/verify-email?email=${encodeURIComponent(emailClean)}`);
     } catch (err: any) {
       toastError('Registration Failed', err.message || 'Could not complete registration.');
     } finally {
@@ -168,6 +194,21 @@ export const RegisterPage: React.FC = () => {
               )}
             </button>
           </form>
+
+          {/* Social Sign-Up Divider */}
+          <div className="relative my-6">
+            <div className="absolute inset-0 flex items-center">
+              <div className="w-full border-t border-slate-200" />
+            </div>
+            <div className="relative flex justify-center text-xs uppercase">
+              <span className="bg-white px-3 text-slate-400 font-semibold tracking-wider">
+                Or sign up with
+              </span>
+            </div>
+          </div>
+
+          {/* Google Sign Up */}
+          <GoogleSignInButton label="Sign up with Google" />
 
           <div className="mt-6 pt-6 border-t border-slate-100 text-center text-xs text-slate-500">
             Already have an account?{' '}

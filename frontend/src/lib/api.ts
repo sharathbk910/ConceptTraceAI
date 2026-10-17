@@ -26,17 +26,8 @@ class ApiClient {
     }
 
     const token = localStorage.getItem('concepttrace_token');
-    const userJson = localStorage.getItem('concepttrace_user');
     if (token) {
       headers['Authorization'] = `Bearer ${token}`;
-    }
-    if (userJson) {
-      try {
-        const u = JSON.parse(userJson);
-        if (u.id) headers['x-user-id'] = u.id;
-        if (u.email) headers['x-user-email'] = u.email;
-        if (u.full_name) headers['x-user-name'] = u.full_name;
-      } catch {}
     }
 
     return headers;
@@ -125,6 +116,12 @@ class ApiClient {
     } else {
       const text = await res.text();
       throw new ApiError(text || `HTTP error ${res.status}`);
+    }
+
+    if (res.status === 401 || json?.error?.code === 'UNAUTHORIZED' || json?.error?.code === 'AUTH_FAILED') {
+      localStorage.removeItem('concepttrace_token');
+      localStorage.removeItem('concepttrace_user');
+      localStorage.removeItem('concepttrace_education_profile');
     }
 
     if (!json.success || json.error) {
