@@ -109,11 +109,14 @@ const isServerless = Boolean(
 const isMainModule = typeof require !== 'undefined' && require.main === module;
 const PORT = process.env.PORT ? parseInt(process.env.PORT, 10) : (env.PORT || 8000);
 
-if (process.env.PORT || (!isServerless && isMainModule)) {
-  app.listen(PORT, () => {
+if (!isServerless && (isMainModule || (!process.env.VERCEL && process.env.PORT))) {
+  const server = app.listen(PORT, () => {
     console.log(`🚀 ConceptTrace AI Backend running on port ${PORT}`);
     console.log(`📚 Tagline: Learn • Improve • Succeed`);
     console.log(`🤖 AI Provider: ${env.AI_PROVIDER} (${env.GEMINI_MODEL})`);
+  });
+  server.on('error', (err) => {
+    console.error('Server listen error:', err);
   });
 }
 
@@ -124,3 +127,4 @@ if (typeof module !== 'undefined' && module.exports) {
   module.exports = app;
   (module.exports as any).default = app;
 }
+

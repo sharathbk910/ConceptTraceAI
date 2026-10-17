@@ -97,11 +97,14 @@ const isServerless = Boolean(process.env.VERCEL ||
     process.env.LAMBDA_TASK_ROOT);
 const isMainModule = typeof require !== 'undefined' && require.main === module;
 const PORT = process.env.PORT ? parseInt(process.env.PORT, 10) : (env_js_1.env.PORT || 8000);
-if (process.env.PORT || (!isServerless && isMainModule)) {
-    app.listen(PORT, () => {
+if (!isServerless && (isMainModule || (!process.env.VERCEL && process.env.PORT))) {
+    const server = app.listen(PORT, () => {
         console.log(`🚀 ConceptTrace AI Backend running on port ${PORT}`);
         console.log(`📚 Tagline: Learn • Improve • Succeed`);
         console.log(`🤖 AI Provider: ${env_js_1.env.AI_PROVIDER} (${env_js_1.env.GEMINI_MODEL})`);
+    });
+    server.on('error', (err) => {
+        console.error('Server listen error:', err);
     });
 }
 exports.default = app;

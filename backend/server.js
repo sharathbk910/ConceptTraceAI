@@ -8,14 +8,6 @@ try {
   console.error('CRITICAL: Failed to load backend ./dist/server.js:', err);
 }
 
-// If PORT is provided (Vercel container service or standalone), start listener
-const port = process.env.PORT ? parseInt(process.env.PORT, 10) : null;
-if (port && app && typeof app.listen === 'function') {
-  app.listen(port, () => {
-    console.log(`🚀 ConceptTrace AI Backend listening on port ${port}`);
-  });
-}
-
 const handler = app || ((req, res) => {
   res.statusCode = 500;
   res.setHeader('Content-Type', 'application/json');
@@ -28,9 +20,16 @@ const handler = app || ((req, res) => {
   }));
 });
 
+// Standalone local execution fallback only when run directly: `node backend/server.js`
+if (typeof require !== 'undefined' && require.main === module && !process.env.VERCEL) {
+  const port = process.env.PORT ? parseInt(process.env.PORT, 10) : 8000;
+  if (app && typeof app.listen === 'function') {
+    app.listen(port, () => {
+      console.log(`Backend server listening on port ${port}`);
+    });
+  }
+}
+
 module.exports = handler;
 module.exports.default = handler;
 module.exports.app = handler;
-
-
-
