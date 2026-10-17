@@ -1,0 +1,31 @@
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.errorHandler = void 0;
+const zod_1 = require("zod");
+const errorHandler = (err, req, res, next) => {
+    if (err instanceof zod_1.ZodError) {
+        const errorDetails = err.errors.map(e => `${e.path.join('.')}: ${e.message}`).join(', ');
+        res.status(400).json({
+            success: false,
+            data: null,
+            error: {
+                code: 'VALIDATION_ERROR',
+                message: `Validation failed: ${errorDetails}`,
+            },
+        });
+        return;
+    }
+    const statusCode = err.statusCode || (err.message && err.message.startsWith('DUPLICATE') ? 409 : 500);
+    const errorCode = err.code || 'INTERNAL_ERROR';
+    const message = err.message || 'An unexpected error occurred. Please try again.';
+    console.error(`❌ [${req.method} ${req.path}] Error:`, err);
+    res.status(statusCode).json({
+        success: false,
+        data: null,
+        error: {
+            code: errorCode,
+            message,
+        },
+    });
+};
+exports.errorHandler = errorHandler;
